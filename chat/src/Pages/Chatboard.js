@@ -436,8 +436,8 @@ useEffect(() => {
         newDpMap[contact.mobile] = dpData.dp || "default.png"; // Use default if no DP
         newAboutMap[contact.mobile]=dpData.about;
       } catch (error) {
-        newDpMap[contact.mobile] = dpData.dp || "default.png"; // Use default if no DP
-        newAboutMap[contact.mobile]=dpData.about;
+        newDpMap[contact.mobile] = "image.png";
+        newAboutMap[contact.mobile]="Hello ! I am new user in MindChat !";
       }
     }
     setDpMap(newDpMap);

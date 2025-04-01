@@ -293,7 +293,7 @@ export const fetchDp = async (req, res) => {
 
     res.status(200).json({ dp: user.dp, about: user.about }); // Send DP and About
   } catch (error) {
-    res.status(500).json({ dp:"image.png", about: "Hello ! I am new user in MindChat !" });
+    res.status(500).json({ message: error.message });
   }
 };
 
