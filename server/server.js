@@ -21,20 +21,22 @@ const io = new Server(server, {
     
   },
 });
-const allowedOrigins = ['https://mindchat-one.vercel.app']; // Define the correct origin without trailing slash
+app.use((req, res, next) => {
+  const allowedOrigins = ['https://mindchat-one.vercel.app']; // List of allowed origins
+  const requestOrigin = req.headers.origin;
 
-// Configuration options for CORS
-const corsOptions = {
-  origin: function (origin, callback) {
-    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
-      callback(null, true); // Origin is allowed
-    } else {
-      callback(new Error('Not allowed by CORS')); // Origin is not allowed
-    }
-  },
-};
-// Enable CORS with the specified options
-app.use(cors(corsOptions));
+  if (allowedOrigins.includes(requestOrigin)) {
+      res.setHeader('Access-Control-Allow-Origin', requestOrigin);
+  }
+  // Allow other common headers
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+  res.setHeader('Access-Control-Allow-Credentials', true); // If you are sending credentials
+
+  // Continue to the next middleware
+  next();
+});
+app.use(cors());
 const PORT = process.env.PORT || 7000;
 const MONGOURL = process.env.MONGO_URL;
 
