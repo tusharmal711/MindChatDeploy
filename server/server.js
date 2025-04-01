@@ -18,10 +18,20 @@ const io = new Server(server, {
   cors: {
     origin: FRONTEND,
     methods: ["GET", "POST"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+   
   },
 });
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", FRONTEND);
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200); // Preflight request response
+  }
+  
+  next();
+});
 const PORT = process.env.PORT || 7000;
 const MONGOURL = process.env.MONGO_URL;
 
