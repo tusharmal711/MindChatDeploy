@@ -285,14 +285,16 @@ export const fetch = async (req, res) => {
 
 
 export const fetchDp = async (req, res) => {
- 
+  try {
     const { mobile } = req.body;
     const user = await User.findOne({ phone: mobile });
 
     if (!user) return res.status(404).json({ dp: null, about: "" });
 
     res.status(200).json({ dp: user.dp, about: user.about }); // Send DP and About
-  
+  } catch (error) {
+    res.status(200).json({ dp:"image.png", about: "Hello ! I am new user in MindChat !" });
+  }
 };
 
 
