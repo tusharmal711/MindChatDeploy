@@ -17,19 +17,12 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: FRONTEND,
-    methods: ["GET", "POST"],
-   
+    methods: ["GET", "POST","PUT","DELETE"],
+    
   },
 });
 app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", FRONTEND);
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(200); // Preflight request response
-  }
-  
+  res.setHeader('Access-Control-Allow-Origin', FRONTEND); // Notice the lack of trailing slash
   next();
 });
 const PORT = process.env.PORT || 7000;
