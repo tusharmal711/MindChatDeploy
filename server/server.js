@@ -18,12 +18,10 @@ const io = new Server(server, {
   cors: {
     origin: FRONTEND,
     methods: ["GET", "POST","PUT","DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   },
 });
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', FRONTEND); // Notice the lack of trailing slash
-  next();
-});
+
 const PORT = process.env.PORT || 7000;
 const MONGOURL = process.env.MONGO_URL;
 
