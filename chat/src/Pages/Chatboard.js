@@ -436,7 +436,8 @@ useEffect(() => {
         newDpMap[contact.mobile] = dpData.dp || "default.png"; // Use default if no DP
         newAboutMap[contact.mobile]=dpData.about;
       } catch (error) {
-        console.error("Error fetching DP:", error);
+        newDpMap[contact.mobile] = dpData.dp || "default.png"; // Use default if no DP
+        newAboutMap[contact.mobile]=dpData.about;
       }
     }
     setDpMap(newDpMap);
