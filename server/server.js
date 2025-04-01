@@ -11,40 +11,24 @@ import fs from "fs";
 import User from "./User.js";
 import Contact from "./Contact.js";
 dotenv.config();
-const FRONTEND = process.env.FRONTEND;
+
 const app = express();
 const server = http.createServer(app);
+const FRONTEND=process.env.FRONTEND;
 const io = new Server(server, {
   cors: {
-    origin: FRONTEND,
-    methods: ["GET", "POST","PUT","DELETE"],
-    
+    origin: "https://mindchat-one.vercel.app/",
+    methods: ["GET", "POST"],
   },
 });
-app.use((req, res, next) => {
-  const allowedOrigins = ['https://mindchat-one.vercel.app']; // List of allowed origins
-  const requestOrigin = req.headers.origin;
 
-  if (allowedOrigins.includes(requestOrigin)) {
-      res.setHeader('Access-Control-Allow-Origin', requestOrigin);
-  }
-  // Allow other common headers
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-  res.setHeader('Access-Control-Allow-Credentials', true); // If you are sending credentials
-
-  // Continue to the next middleware
-  next();
-});
-app.use(cors());
 const PORT = process.env.PORT || 7000;
 const MONGOURL = process.env.MONGO_URL;
 
 app.use(express.json());
-
+app.use(cors());
 app.use("/api", route);
-app.use('/uploads', express.static('public/uploads'));
-
+app.use(express.static('public'));
 // Home Route
 app.get("/", (req, res) => {
   res.send("Welcome to the home page");

@@ -401,17 +401,8 @@ export const deleteDp=async (req,res)=>{
          const user = await User.findOne({ phone, email });
          if (!user) return res.status(404).json("User not found");
      
-         const dpFilename = user.dp; // Assuming dp contains the filename (e.g., "profile123.jpg")
-     
-         if (dpFilename) {
-         
-          const filePath = path.join("public/uploads", dpFilename);
-    
-         
-          if (fs.existsSync(filePath)) {
-            fs.unlinkSync(filePath); // Delete the file
-          }
-        }
+        
+       
          const edit = await User.updateOne(
           { phone, email }, // Find the document
           { $unset: { dp: 1 } } // Remove the 'dp' field
