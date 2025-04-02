@@ -431,7 +431,7 @@ useEffect(() => {
     for (const contact of filteredContacts) {
       try {
         const dpRes = await fetch(`${backendUrl}api/fetchDp`, {
-          method: "POST",
+          method: "GET",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ mobile: contact.mobile }),
         });
