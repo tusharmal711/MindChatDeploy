@@ -430,7 +430,7 @@ useEffect(() => {
           body: JSON.stringify({ mobile: contact.mobile }),
         });
 
-        if (!dpRes.ok) throw new Error("Failed to fetch DP");
+       
         const dpData = await dpRes.json();
 
         newDpMap[contact.mobile] = dpData.dp || "default.png"; // Use default if no DP
