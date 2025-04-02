@@ -37,7 +37,7 @@ const socket = io("https://mindchatapplication.onrender.com", {
   withCredentials: true, // Allows cross-origin credentials
   reconnection: true,
   reconnectionAttempts: 5,
-  reconnectionDelay: 1000
+  reconnectionDelay: 2000
 });
 
 const Chatboard = ({ user, contact , message}) => {
