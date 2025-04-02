@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 const Home = () => {
     return (
         <div className="home-container">
+            <div className="home-subcontainer">
           <motion.img 
             src="./Images/app.png" 
             alt="MindChat Logo" 
@@ -43,6 +44,7 @@ const Home = () => {
               <button className="signup-button">Signup</button>
             </Link>
           </motion.div>
+        </div>
         </div>
       );
     };
