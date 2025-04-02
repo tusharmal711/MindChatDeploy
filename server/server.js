@@ -50,6 +50,7 @@ app.use('/uploads', express.static('public/uploads', {
 }));
 
 
+
 // Home Route
 app.get("/", (req, res) => {
   res.send("Welcome to the home page");
