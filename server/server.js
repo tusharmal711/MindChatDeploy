@@ -38,6 +38,18 @@ app.use(express.json());
 app.use(cors());
 app.use("/api", route);
 app.use(express.static('public'));
+
+
+
+app.use('/uploads', express.static('public/uploads', {
+  setHeaders: (res, path, stat) => {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+  }
+}));
+
+
 // Home Route
 app.get("/", (req, res) => {
   res.send("Welcome to the home page");
