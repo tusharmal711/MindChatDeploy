@@ -462,7 +462,7 @@ useEffect(() => {
 
 
 const addContact = async (e) => {
-  event.preventDefault(); // Prevents page refresh
+  e.preventDefault(); // Prevents page refresh
   console.log("Form submitted!");
 
   const newRoom = [phone, mobile].sort().join("_");
