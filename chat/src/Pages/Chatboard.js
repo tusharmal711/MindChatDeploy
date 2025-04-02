@@ -1284,7 +1284,7 @@ you.map((profile)=>(
         </div>
 
         <div>
-        <form onClick={addContact}>
+        <form onSubmit={addContact}>
             <div className="textarea">
             <input type="text" className="name" placeholder="Enter contact name..." onChange={(e) => setUsername(e.target.value)} required />
             <input tupe="number" className="phone" placeholder="Enter mobile number..."  onChange={(e) => setMobile(e.target.value)} required />
