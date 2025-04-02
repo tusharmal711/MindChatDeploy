@@ -35,6 +35,9 @@ const backendUrl = process.env.REACT_APP_BACKEND_URL;
 const socket = io("https://mindchatapplication.onrender.com", {
   transports: ["websocket"], // Forces WebSocket connection
   withCredentials: true, // Allows cross-origin credentials
+  reconnection: true,
+  reconnectionAttempts: 5,
+  reconnectionDelay: 2000
 });
 
 const Chatboard = ({ user, contact , message}) => {
