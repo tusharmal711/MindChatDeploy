@@ -20,6 +20,7 @@ const io = new Server(server, {
     origin: "https://mindchat-one.vercel.app/",
     methods: ["GET", "POST"],
     credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
   },
 });
 app.use((req, res, next) => {

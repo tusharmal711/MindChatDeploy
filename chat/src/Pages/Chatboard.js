@@ -32,7 +32,10 @@ import { PiMicrosoftWordLogoFill } from "react-icons/pi";
 import { FaPlay } from "react-icons/fa";
 import EmojiPicker from 'emoji-picker-react';
 const backendUrl = process.env.REACT_APP_BACKEND_URL; 
-const socket=io.connect(`${backendUrl}`);
+const socket = io("https://mindchatapplication.onrender.com", {
+  transports: ["websocket"], // Forces WebSocket connection
+  withCredentials: true, // Allows cross-origin credentials
+});
 
 const Chatboard = ({ user, contact , message}) => {
   const navigate = useNavigate();
