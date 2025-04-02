@@ -431,9 +431,9 @@ useEffect(() => {
     for (const contact of filteredContacts) {
       try {
         const dpRes = await fetch(`https://cors-anywhere.herokuapp.com/${backendUrl}api/fetchDp?mobile=${contact.mobile}`, {
-          method: "GET",
-          headers: { "Content-Type": "application/json" }
-        });
+     method: "POST",
+    headers: { "Content-Type": "application/json" }
+  });
 
        
         const dpData = await dpRes.json();
