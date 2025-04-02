@@ -779,8 +779,8 @@ useEffect(()=>{
 },[firstName,lastName])
 
 // edit contact
-const updateContacts = async () => {
-         
+const updateContacts = async (e) => {
+        e.preventDefault();
   try {
     const phone = sessionStorage.getItem("phone");
     const res = await fetch(`${backendUrl}api/updateContact`, {
