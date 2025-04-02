@@ -2390,3 +2390,98 @@ width:100%;
         margin-left: 0;
     }
 }
+
+
+
+
+/* home page design is starting from here */
+.home-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: white;
+    color: #333;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .home-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    animation: fadeInDown 0.8s ease-out;
+  }
+  
+  .home-description {
+    font-size: 1.2rem;
+    color: gray;
+    max-width: 400px;
+    margin-bottom: 30px;
+    animation: fadeInUp 1s ease-out;
+  }
+  
+  .home-buttons {
+    display: flex;
+    gap: 15px;
+  }
+  .home-logo{
+    height:100px;
+    width:100px;
+    margin-bottom: 1.5rem;
+  }
+  .login-button,
+  .signup-button {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+  }
+  
+  .login-button {
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+  }
+  
+  .signup-button {
+    background-color: #e5e7eb;
+    color: #333;
+    border: none;
+  }
+  
+  .login-button:hover {
+    background-color: #2563eb;
+    transform: scale(1.05);
+  }
+  
+  .signup-button:hover {
+    background-color: #d1d5db;
+    transform: scale(1.05);
+  }
+  
+  /* Animations */
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
