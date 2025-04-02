@@ -99,9 +99,7 @@ const Signup = () => {
         <div className="img">
           <img src="./Images/app.png" alt="Not found" />
         </div>
-        <div className="text">
-          <p id="logo-text">Mind Chat</p>
-        </div>
+       
       </div>
       <div className="container">
         <ToastContainer />

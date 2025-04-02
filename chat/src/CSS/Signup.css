@@ -2249,7 +2249,16 @@ width:100%;
     .navbar {
         width: 3rem;
     }
-    
+    .logo {
+        flex-direction: column;
+        align-items: center;
+    }
+    #logo-text{
+        font-size: 1.2rem;
+    }
+    input {
+        padding: 0.9rem;
+    }
     .first {
         margin-left: 3rem;
     }
@@ -2257,8 +2266,25 @@ width:100%;
     .container {
         height: auto;
         padding: 1rem;
+        padding-top: 0;
+        box-shadow: none;
+        border:none;
     }
-    
+     .signup, .login{
+        padding:0.9rem;
+        font-size: 0.9rem;
+    }
+    .otp button{
+        padding:0.9rem;
+        background-color: black;
+    }
+    #otp{
+        padding:0.9rem;
+    }
+    .img img{
+        height:100px;
+        width:100px;
+    }
     .clogin {
         height: auto;
     }
@@ -2274,6 +2300,7 @@ width:100%;
     .logo {
         margin-left: 0;
         justify-content: center;
+
     }
     
     .view-photo img, .view-photo1 img, .view-photo1 video {
@@ -2297,6 +2324,7 @@ width:100%;
         height: 150px;
     }
 }
+
 
 /* Mobile-specific adjustments */
 @media (max-width: 480px) {
@@ -2495,3 +2523,14 @@ width:100%;
       transform: translateY(0);
     }
   }
+
+
+
+  /* home page design is end here  */
+
+
+
+
+  /* responsiveness of chating part is starting from here */
+
+  /* responsiveness of chating part is ending here */
