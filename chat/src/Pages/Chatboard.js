@@ -430,7 +430,7 @@ useEffect(() => {
     const newAboutMap={};
     for (const contact of filteredContacts) {
       try {
-   
+       
         const dpRes = await fetch(`${backendUrl}api/fetchDp`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -940,11 +940,8 @@ const [dchat,setDchat]=useState(false);
 {
 you.map((profile)=>(
 
- 
-<img 
-  src={`${backendUrl}uploads/${dpMap[selectedContact.mobile]}?t=${Date.now()}`}   key={profile.id}
-  alt="Profile" 
-/> 
+
+<img src={`${backendUrl}uploads/${dpMap[selectedContact.mobile]}`}  alt="Profile" key={profile.id} />
 
  
 ))
@@ -964,11 +961,7 @@ you.map((profile)=>(
 you.map((profile)=>(
 <div className="view-photo" key={profile.id}>
 
-<img 
-  src={`${backendUrl}uploads/${dpMap[selectedContact.mobile]}?t=${Date.now()}`}  
-  alt="Profile" 
-/>
-
+<img src={`${backendUrl}uploads/${dpMap[selectedContact.mobile]}`}  alt="Profile" />
 </div>
  
 ))
@@ -1233,12 +1226,7 @@ you.map((profile)=>(
           onClick={() => handleContactClick(contact._id)}  
           className={activeContact === contact._id ? "active" : ""}
         >
-         <img 
-  src={`${backendUrl}uploads/${dpMap[contact.mobile]}?t=${Date.now()}`}  
-  id="dp-default" 
-  alt="Profile" 
-/>
-
+          <img src={`${backendUrl}uploads/${dpMap[contact.mobile]}`} id="dp-default" alt="Profile" />
           <div className="textChat">
             <p id="username">{contact.username}</p>
             
