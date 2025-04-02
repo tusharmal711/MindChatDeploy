@@ -21,6 +21,19 @@ const io = new Server(server, {
     methods: ["GET", "POST"],
   },
 });
+app.use((req, res, next) => {
+  const allowedOrigin = 'https://mindchat-one.vercel.app'; // Remove the trailing slash
+  const requestOrigin = req.headers.origin;
+
+  if (allowedOrigin === requestOrigin) {
+    res.setHeader('Access-Control-Allow-Origin', requestOrigin);
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    // ... other headers
+  }
+  next();
+});
+
 
 const PORT = process.env.PORT || 7000;
 const MONGOURL = process.env.MONGO_URL;
