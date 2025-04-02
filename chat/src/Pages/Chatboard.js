@@ -430,11 +430,12 @@ useEffect(() => {
     const newAboutMap={};
     for (const contact of filteredContacts) {
       try {
-        const dpRes = await fetch(`${backendUrl}api/fetchDp`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ mobile: contact.mobile }),
-        });
+        const dpRes = await fetch(`${backendUrl}/api/user?mobile=${contact.mobile}`);
+        // const dpRes = await fetch(`${backendUrl}api/fetchDp`, {
+        //   method: "POST",
+        //   headers: { "Content-Type": "application/json" },
+        //   body: JSON.stringify({ mobile: contact.mobile }),
+        // });
 
        
         const dpData = await dpRes.json();

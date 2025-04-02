@@ -286,8 +286,8 @@ export const fetch = async (req, res) => {
 
 export const fetchDp = async (req, res) => {
   try {
-    const { mobile } = req.body;
-    const user = await User.findOne({ phone: mobile });
+    
+    const user = await User.findOne({ phone: req.query.mobile}).lean();;
 
     if (!user) return res.status(404).json({ dp: null, about: "" });
 
