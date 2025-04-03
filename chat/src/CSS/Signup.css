@@ -918,7 +918,7 @@ ul{
 }
 .messages{
     position: relative; /* Ensures it's above the ::before */
-    z-index: 1;
+   
     
 }
 .type-msg{
@@ -2625,10 +2625,10 @@ width:100%;
         width:100%;
       }
    .own{
-    margin-right: 1rem;
+    margin-right: 0.3rem;
    }
    .other{
-    margin-left: 1rem;
+    margin-left: 0.3rem;
    }
    .file-send {
     position: absolute;
