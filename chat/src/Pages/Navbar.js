@@ -742,19 +742,19 @@ you.map((profile)=>(
 
 
 
-{you.map((profile)=>(
-<img src={`${backendUrl}uploads/${profile.dp}`} id="profile-default" key={profile.id} alt="Not found" onClick={()=>{setNavProfile(true)}}/>
-))}
+
     <NavLink to="/chatboard" className="link chat"><MdChat /></NavLink>
     <NavLink to="/moments" className="link moments"><SiEventstore /></NavLink>
     <NavLink to="/connect" className="link connect"><TbFriends /></NavLink>
     <NavLink to="/calls" className="link calls"><BiSolidPhoneCall /></NavLink>
     {/* <NavLink to="#" id="logout" className="link logout" onClick={sendData}><IoLogOut /></NavLink> */}
 
-    <button id="logout" className="link logout" onClick={()=>{setIsOpen(true)}}>
+    {/* <button id="logout" className="link logout" onClick={()=>{setIsOpen(true)}}>
         <IoLogOut />
-      </button>
-
+      </button> */}
+{you.map((profile)=>(
+<img src={`${backendUrl}uploads/${profile.dp}`} id="profile-default" key={profile.id} alt="Not found" onClick={()=>{setNavProfile(true)}}/>
+))}
 
 
 
