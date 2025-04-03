@@ -85,7 +85,7 @@ const Signup = () => {
 
       if (response.status === 201) {
         toast.success("Signup successful!", { position: "top-right" });
-       
+        sessionStorage.setItem("phone",phone);
         navigate("/chatboard");
       }
     } catch (error) {
