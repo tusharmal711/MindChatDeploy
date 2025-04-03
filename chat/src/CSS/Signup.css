@@ -2625,10 +2625,10 @@ width:100%;
         width:100%;
       }
    .own{
-    margin-right: 0.2rem;
+    margin-right: 0rem;
    }
    .other{
-    margin-left: 0.2rem;
+    margin-left: 0rem;
    }
    .file-send {
     position: absolute;
@@ -2651,12 +2651,12 @@ width:100%;
 
 
 .messages{
-    height:calc(100vh - 13.65rem);
+    height:calc(100vh - 13.6rem);
    
     padding-bottom: 85px;
 }
 iframe{
-    height:130px;
+    height:140px;
    
 }
 .own{
