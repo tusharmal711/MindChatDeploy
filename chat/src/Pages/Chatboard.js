@@ -76,6 +76,29 @@ const [joined, setJoined] = useState(false);
 const [room, setRoom] = useState("");
 const [imageBuffer, setImageBuffer] = useState([]);
 const messagesEndRef = useRef(null);
+
+
+
+// navigation back is starting from here
+useEffect(() => {
+  // Push a new state to the history stack to prevent back navigation
+  window.history.pushState(null, "", window.location.href);
+
+  const handleBackButton = () => {
+    window.location.reload(); // Refresh the page
+  };
+
+  window.addEventListener("popstate", handleBackButton);
+
+  return () => {
+    window.removeEventListener("popstate", handleBackButton);
+  };
+}, []);
+
+// navigation back is ending here
+
+
+
 useEffect(() => {
   if (!room) return;
 
