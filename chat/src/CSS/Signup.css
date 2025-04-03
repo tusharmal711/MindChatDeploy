@@ -2625,10 +2625,10 @@ width:100%;
         width:100%;
       }
    .own{
-    margin-right: 0.3rem;
+    margin-right: 0.1rem;
    }
    .other{
-    margin-left: 0.3rem;
+    margin-left: 0.1rem;
    }
    .file-send {
     position: absolute;
@@ -2648,6 +2648,11 @@ width:100%;
 .typing-text{
     display: none;
 }
+.messages{
+    height:calc(100vh - 14rem);  
+    padding-bottom: 85px;
+}
+
   }
  
 
