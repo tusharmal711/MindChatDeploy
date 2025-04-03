@@ -530,6 +530,21 @@ const addContact = async (e) => {
 
   // Fetch selected contact details
   const handleContactClick = async (contactId) => {
+    const first = document.querySelector(".first");
+    const second = document.querySelector(".second");
+    
+    if (first) {
+      first.classList.add("reducewidth");
+    } else {
+      console.warn("Element with class 'first' not found");
+    }
+    
+    if (second) {
+      second.classList.add("sec");
+    } else {
+      console.warn("Element with class 'second' not found");
+    }
+  
     try {
       if (!contactId) {
         console.error("Error: Invalid contact ID");

@@ -347,6 +347,18 @@ const deleteDp = async(req,res)=>{
 
 
 
+const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+useEffect(() => {
+  const handleResize = () => {
+    setIsMobile(window.innerWidth <= 768);
+  };
+
+  window.addEventListener('resize', handleResize);
+  
+  // Cleanup
+  return () => window.removeEventListener('resize', handleResize);
+}, []);
 
 
 
@@ -357,11 +369,12 @@ const deleteDp = async(req,res)=>{
 
 
 
-
-  return <div className="navbar">
+  return <div className="navbar-container">
      
 {/* dp setting is starting from here */}
-
+{
+   isMobile?(
+        <div className="mobile-navbar">
 {dp && (
         <div className="popup-overlay" id="crop-overlay">
           <div className="photo-nav">
@@ -744,6 +757,412 @@ you.map((profile)=>(
 
 
 
+
+
+        </div>
+
+
+
+
+
+
+
+
+
+
+
+   ):(
+
+
+
+       <div className="navbar">
+          {dp && (
+        <div className="popup-overlay" id="crop-overlay">
+          <div className="photo-nav">
+
+<div className="left-nav">
+{
+you.map((profile)=>(
+
+
+<img src={`${backendUrl}uploads/${profile.dp}`}  alt="Profile" key={profile.id} />
+
+ 
+))
+}
+<p>You</p>
+</div>
+
+
+<div className="right-nav" onClick={dpPopup}>
+<RxCross2 id="right-cross"/>
+</div>
+
+
+</div>
+          <div className="row">
+            <div className="col-lg-6 text-center">
+              <label>Crop Image</label>
+              <div className="crop-div">
+                <img  className="cropper" ref={imageRef} src={imageSrc} alt="To Crop"/>
+              </div>
+              <button className="crop" onClick={handleCrop}>
+                Crop
+              </button>
+            </div>
+           
+           {
+            croppedImage && (
+               <div className="cropped">
+            <label>Preview</label>
+              <div style={{ marginBottom: "10px" }}>
+               
+                  <img src={croppedImage} alt="Cropped" className="cropped-img"/>
+               
+              </div>
+              <button className="crop-save" onClick={updateDp}>
+                Save
+              </button>
+            </div>
+            )
+           }
+            
+          </div>
+        </div>
+      )}
+
+    {/* dp setting is ending here */}
+{/* view photo part is starting from here */}
+
+{
+  view && (
+<div className="photo-overlay">
+<div className="photo-nav">
+
+<div className="left-nav">
+{
+you.map((profile)=>(
+
+
+<img src={`${backendUrl}uploads/${profile.dp}`}  alt="Profile" key={profile.id} />
+
+ 
+))
+}
+<p>You</p>
+</div>
+
+
+<div className="right-nav" onClick={()=>{setView(false)}}>
+<RxCross2 id="right-cross"/>
+</div>
+
+
+</div>
+
+{
+you.map((profile)=>(
+<div className="view-photo" key={profile.id}>
+
+<img src={`${backendUrl}uploads/${profile.dp}`}  alt="Profile" />
+</div>
+ 
+))
+}
+</div>
+
+  )
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{/* view photo part is ending here */}
+
+{/* Logout Popup */}
+{isOpen && (
+        <div className="popup-overlay">
+          <div className="logout-popup">
+            <div className="popup-text">
+              <h3>Logout?</h3>
+              <p>Are you sure you want to logout?</p>
+              <p id="see">See you next time! Click 'Logout' to confirm.</p>
+            </div>
+            <div className="popup-button">
+              <button type="button" id="logoutCancel" onClick={() => setIsOpen(false)}>
+                Cancel
+              </button>
+              <button id="logoutBtn" onClick={() => navigate("/login")}>
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    
+
+
+
+
+
+{
+  remove && (
+    <div className="popup-overlay">
+    <div className="logout-popup">
+      <div className="popup-text">
+        <h3>Delete Profile picture</h3>
+        <p>Are you sure to delete ?</p>
+        <p id="see">Click 'Delete' to confirm.</p>
+      </div>
+      <div className="popup-button">
+        <button type="button" id="logoutCancel" onClick={() => setRemove(false)}>
+          Cancel
+        </button>
+        <button id="logoutBtn" onClick={deleteDp}>
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+  )
+}
+
+   
+
+
+
+
+
+
+
+
+
+
+
+  {
+   navProfile &&(
+      <div className="nav-profile">
+         <TiArrowLeftThick  onClick={()=>{setNavProfile(false)}} id="left-arrow"/>
+        
+      <div className="heading-part">
+      <h2 id="chat-heading">Profile</h2>
+      </div>
+
+
+      <div className="profile-scroll">
+       
+
+    
+      {
+      you.map((profile)=>(
+       
+
+     <div className="profile-pic" key={profile.id} id="profile-pic">
+
+     <img  src={`${backendUrl}uploads/${profile.dp}`} className="profile-pic-img" id="profile-pic-img" onClick={showPopup}   onMouseEnter={() => setIsHovered(true)}  onMouseLeave={() => setIsHovered(false)} alt="Profile" />
+     </div>
+      ))
+}
+
+
+     <div className="change-profile">
+    {
+      ((isHovered && !showUpload) || (!isHovered && showUpload) || (isHovered && showUpload))&&(
+        <p id="pic-text"> <ImCamera id="profile-camera"/><br></br>CHANGE <br></br>PROFILE PHOTO</p>
+      )
+    }
+    
+        
+      </div>
+
+
+     
+    <div className="upload-popup" id="upload-popup">
+    <ul>
+      <li  onClick={viewProfile}>
+      <HiOutlineEye id="up"/> View photo
+      </li>
+      <li>
+      <MdOutlinePhotoCamera id="up"/> Take photo
+     
+      </li>
+      <label for="file-input">
+      <li>
+       
+        <MdOutlineDriveFolderUpload id="up"/> Upload photo 
+       
+        
+        <input type="file" id="file-input" accept="image/*"  onChange={handleFileChange} onClick={closePopup}/> 
+      </li>
+      </label>
+      <li onClick={Remove}>
+      <RiDeleteBin6Line id="up"/> Remove photo
+      </li>
+    </ul>
+  </div>
+
+   
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+     
+     {
+      you.map((profile)=>(
+        <div key={profile.id}>
+          <h2>{profile.username}</h2>
+          <p id="your-mobile">+91 {profile.phone}</p>
+          <div className="p-t-z pt">
+          <div>
+          <MdEmail className="email-icon"/>
+          </div>
+        <div className="ptContent">
+        <span>Email</span>
+        <span>{profile.email}</span>
+      
+        </div>
+
+       
+      </div>
+
+
+
+
+
+        </div>
+        
+      ))
+     }
+
+
+
+
+
+
+
+
+         
+      <div className="profile-text">
+        
+
+      <div className="p-t-f pt">
+        <div> <TbInfoSquareRoundedFilled id="about-icon"/></div>
+        <div className="ptContent">
+        <span>About</span>
+        {
+          aboutIcon?(
+            <div>
+            <input type="text" id="about-input" className="about-input" value={about} 
+            onChange={handleChange} placeholder={placeholder} autoFocus required/>
+          
+            </div>
+          ):(
+
+            
+              you.map((profile)=>(
+                <span>{profile.about}</span>
+              ))
+            
+
+
+          
+          )
+        }
+       
+      
+        </div>
+        {
+          abtn?(
+            <div className="bttn">
+            <div className="edit-icon" onClick={visible} > <TiTick  className="tick"/></div>
+            <div className="edit-icon" onClick={visible1} > <ImCross  className="cross-tick"/></div>
+            </div>
+          ):(
+            <div className="edit-icon" onClick={Invisible}> <FaEdit id="edit-icon"/></div>
+          )
+        }
+       
+     
+       
+       
+      </div>
+
+
+
+      <div className="p-t-s pt">
+        <IoSettingsSharp id="setting-icon"/>
+        <span>Settings</span>
+      
+      </div>
+
+
+      </div>
+
+      </div>
+
+
+  </div>
+   )
+  }
+      
+  
+
+
+
+
+
+
+
+
+
+
+{you.map((profile)=>(
+<img src={`${backendUrl}uploads/${profile.dp}`} id="profile-default" key={profile.id} alt="Not found" onClick={()=>{setNavProfile(true)}}/>
+))}
+    <NavLink to="/chatboard" className="link chat"><MdChat /></NavLink>
+    <NavLink to="/moments" className="link moments"><SiEventstore /></NavLink>
+    <NavLink to="/connect" className="link connect"><TbFriends /></NavLink>
+    <NavLink to="/calls" className="link calls"><BiSolidPhoneCall /></NavLink>
+    {/* <NavLink to="#" id="logout" className="link logout" onClick={sendData}><IoLogOut /></NavLink> */}
+
+    <button id="logout" className="link logout" onClick={()=>{setIsOpen(true)}}>
+        <IoLogOut />
+      </button>
+
+
+
+
+
+        </div>
+   )
+}
 
 
 

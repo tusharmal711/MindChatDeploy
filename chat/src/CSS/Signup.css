@@ -2217,6 +2217,7 @@ width:100%;
     }
     
     .first {
+        left:0;
         width: 100%;
         margin-left: 3.5rem;
         z-index: 900;
@@ -2275,7 +2276,7 @@ width:100%;
         font-size: 0.9rem;
     }
     .otp button{
-        padding:0.6rem;
+        padding:0.9rem;
         background-color: black;
     }
     #otp{
@@ -2324,7 +2325,6 @@ width:100%;
         height: 150px;
     }
 }
-
 
 /* Mobile-specific adjustments */
 @media (max-width: 480px) {
@@ -2526,11 +2526,105 @@ width:100%;
 
 
 
-  /* home page design is end here  */
 
 
 
 
-  /* responsiveness of chating part is starting from here */
+  /* responsive part is starting from here  */
 
-  /* responsiveness of chating part is ending here */
+
+
+/* Mobile Navbar Styles */
+.mobile-navbar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background-color: #fff;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+    z-index: 99;
+  }
+  .mob{
+    font-size: 1.5rem;
+  }
+  
+  #mobile-default{
+    height:45px;
+    width:45px;
+    border-radius: 50%;
+  }
+
+  .mobile-nav-profile{
+
+  }
+
+  @media (max-width: 675px) {
+    #profile-default{
+        height:45px;
+        width:45px;
+        border-radius: 50%;
+      }
+    .nav-profile{
+        top:0;
+        z-index: 1000000000;
+        box-shadow: none;
+        height:100%;
+       
+    }
+   
+    
+      /* Main container for chat interface */
+     
+      /* First panel (contact list) - initially visible */
+      .first {
+        margin-left: 0%;
+       
+        width: 100%;
+        height: 100%;
+       
+        transform: translateX(0);
+        transition: transform 0.3s ease;
+        z-index: 10;
+        overflow-y: auto;
+      }
+    
+      /* When contact is selected, slide first panel left */
+      .first.reducewidth {
+        transform: translateX(-100%);
+      }
+    
+      /* Second panel (chat area) - initially hidden right */
+      .second {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1000000000;
+        transform: translateX(0%);
+        transition: transform 0.3s ease;
+       
+        overflow-y: auto;
+      }
+    
+      /* When active, slide second panel into view */
+      .second.sec {
+        transform: translateX(0);
+        z-index: 9999999999999;
+      }
+      .contact-nav{
+        width:100%;
+      }
+      .profile-window{
+        z-index: 9999999;
+      }
+   
+  }
+ 
+
+
+  
