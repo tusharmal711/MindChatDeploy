@@ -921,6 +921,7 @@ ul{
 .messages{
     position: relative; /* Ensures it's above the ::before */
     z-index: 1;
+    
 }
 .type-msg{
     bottom: 0;
@@ -928,7 +929,7 @@ ul{
     width:100%;
     height:4rem;
     background-color:rgb(241, 241, 241);
-   z-index: 9999999999;
+   
     display: flex;
     justify-content: center;
    
@@ -2622,7 +2623,31 @@ width:100%;
       .profile-window{
         z-index: 9999999;
       }
-   
+      #image-view{
+        width:100%;
+      }
+   .own{
+    margin-right: 1rem;
+   }
+   .other{
+    margin-left: 1rem;
+   }
+   .file-send {
+    position: absolute;
+    top: 45%;
+    left: 1.35rem;
+}
+
+.emoji-picker{
+   position: absolute;
+   left:45%;
+   width:100%;
+}
+.emoji-style{
+    bottom: 0;
+    transform: scale(0.55);
+}
+
   }
  
 
