@@ -918,7 +918,7 @@ ul{
 }
 .messages{
     position: relative; /* Ensures it's above the ::before */
-    z-index: 1;
+  
     
 }
 .type-msg{
@@ -2651,21 +2651,21 @@ width:100%;
 
 
 .messages{
-    height:calc(100vh - 13.75rem);
+    height:calc(100vh - 13.65rem);
    
     padding-bottom: 85px;
 }
 iframe{
-    height:110px;
+    height:130px;
    
 }
 .own{
     width:auto;
-    max-width: 70%;
+    max-width: 80%;
 }
 .other{
     width:auto;
-    max-width: 70%;
+    max-width: 80%;
 }
   }
  
