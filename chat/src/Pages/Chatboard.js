@@ -940,8 +940,7 @@ const [dchat,setDchat]=useState(false);
 you.map((profile)=>(
 
 
-<img src={`${backendUrl}uploads/${dpMap[selectedContact.mobile]}`.replace(/\/+/g, "/")}
-  alt="Profile" key={profile.id} />
+<img src={`${backendUrl}uploads/${dpMap[selectedContact.mobile]}`}  alt="Profile" key={profile.id} />
 
  
 ))
@@ -961,8 +960,7 @@ you.map((profile)=>(
 you.map((profile)=>(
 <div className="view-photo" key={profile.id}>
 
-<img src={`${backendUrl}uploads/${dpMap[selectedContact.mobile]}`.replace(/\/+/g, "/")}
-  alt="Profile" />
+<img src={`${backendUrl}uploads/${dpMap[selectedContact.mobile]}`}  alt="Profile" />
 </div>
  
 ))
@@ -1075,13 +1073,11 @@ you.map((profile)=>(
           <div key={index}>
             {msg.userName === pro_uname ? (
              
-                <img src={`${backendUrl}uploads/${profile.dp}`.replace(/\/+/g, "/")}
-                alt="Profile" key={profile.id} /> 
+                <img src={`${backendUrl}uploads/${profile.dp}`}  alt="Profile" key={profile.id} /> 
                
             ) : (
               <img
-              src={`${backendUrl}uploads/${dpMap[selectedContact.mobile]}`.replace(/\/+/g, "/")}
-
+                src={`${backendUrl}uploads/${dpMap[selectedContact.mobile]}`}
                 alt="Profile"
               />
             )}
@@ -1156,7 +1152,7 @@ you.map((profile)=>(
     controls autoPlay alt="Profile"/>;
   } else {
     return <img src={`${backendUrl}${selectedImage.startsWith("/") ? selectedImage.substring(1) : selectedImage}`}
-    alt="Profile" />;
+ alt="Profile" />;
   }
 })()}
 </div>
@@ -1231,7 +1227,7 @@ you.map((profile)=>(
           onClick={() => handleContactClick(contact._id)}  
           className={activeContact === contact._id ? "active" : ""}
         >
-          <img src={`${backendUrl}uploads/${dpMap[contact.mobile]}`.replace(/\/+/g, "/")} id="dp-default" alt="Profile" />
+          <img src={`${backendUrl}uploads/${dpMap[contact.mobile]}`} id="dp-default" alt="Profile" />
           <div className="textChat">
             <p id="username">{contact.username}</p>
             
@@ -1342,7 +1338,7 @@ you.map((profile)=>(
             {
               selectedContact && (
               <div className="chat-header" onClick={()=>{setThird(true)}}>
-              <img src={`${backendUrl}uploads/${dpMap[selectedContact.mobile]}`.replace(/\/+/g, "/")} id="chat-header-img" alt="Profile" />
+              <img src={`${backendUrl}uploads/${dpMap[selectedContact.mobile]}`} id="chat-header-img" alt="Profile" />
               <p>{selectedContact.username}<br/>{typingUser && <span className="typing-indicator">{typingUser}</span>}</p>
              
               {/* {typingUser && } */}
