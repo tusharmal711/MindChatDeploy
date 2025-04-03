@@ -918,7 +918,7 @@ ul{
 }
 .messages{
     position: relative; /* Ensures it's above the ::before */
-   
+    z-index: 1;
     
 }
 .type-msg{
@@ -2625,14 +2625,14 @@ width:100%;
         width:100%;
       }
    .own{
-    margin-right: 0.1rem;
+    margin-right: 1rem;
    }
    .other{
-    margin-left: 0.1rem;
+    margin-left: 1rem;
    }
    .file-send {
     position: absolute;
-    top: 45%;
+    top: 60%;
     left: 1.35rem;
 }
 
@@ -2643,16 +2643,26 @@ width:100%;
 }
 .emoji-style{
     bottom: 0;
-    transform: scale(0.55);
+    transform: scale(0.45);
 }
 .typing-text{
     display: none;
 }
+
+
 .messages{
-    height:calc(100vh - 14rem);  
+    height:calc(100vh - 13.75rem);
+   
     padding-bottom: 85px;
 }
-
+iframe{
+    height:110px;
+   
+}
+.own{
+    width:auto;
+    max-width: 70%;
+}
   }
  
 
