@@ -1458,7 +1458,7 @@ you.map((profile)=>(
         </div>
    
       <video
-       src={`${backendUrl}${msg.text.startsWith("/") ? msg.text.substring(1) : msg.text}`}
+        src={`${backendUrl}${msg.text}`}
         id="image-view"
         onClick={() => handleMessageClick(msg.text)}
         onError={(e) => (e.target.style.display = "none")}
@@ -1472,7 +1472,7 @@ you.map((profile)=>(
      return (
       <div className="audio-view">
       <audio controls  id="audio-view">
-        <source src={`${backendUrl}${msg.text.startsWith("/") ? msg.text.substring(1) : msg.text}`} id="audio-view-child"  onClick={() => handleMessageClick(msg.text)}
+        <source src={`${backendUrl}${msg.text}`} id="audio-view-child"  onClick={() => handleMessageClick(msg.text)}
         />
          
       </audio>
@@ -1487,7 +1487,7 @@ you.map((profile)=>(
       <div>
       <div>
       <iframe
-       src={`${backendUrl}${msg.text.startsWith("/") ? msg.text.substring(1) : msg.text}`}
+        src={`${backendUrl}${msg.text}`}
         className="pdf-view"
        
       />
@@ -1517,7 +1517,7 @@ you.map((profile)=>(
       <div>
       <div>
       <iframe
-  src={`https://docs.google.com/viewer?url=${backendUrl}${msg.text.startsWith("/") ? msg.text.substring(1) : msg.text}&embedded=true`}
+  src={`https://docs.google.com/viewer?url=${backendUrl}${msg.text}&embedded=true`}
   className="docx-view"
 />
       </div>
@@ -1545,7 +1545,7 @@ you.map((profile)=>(
       <div>
       <div>
       <iframe
-        src={`${backendUrl}${msg.text.startsWith("/") ? msg.text.substring(1) : msg.text}&embedded=true`}
+        src={`${backendUrl}${msg.text}&embedded=true`}
         className="docx-view"
        
       />
@@ -1595,7 +1595,7 @@ you.map((profile)=>(
       
       <div className="image-view">
       <img
-        src={`${backendUrl}${msg.text.startsWith("/") ? msg.text.substring(1) : msg.text}`}
+        src={`${backendUrl}/${msg.text}`}
         id="image-view"
         onClick={() => handleMessageClick(msg.text)}
         onError={(e) => (e.target.style.display = "none")}
