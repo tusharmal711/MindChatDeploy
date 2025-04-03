@@ -440,11 +440,10 @@ useEffect(() => {
        
         const dpData = await dpRes.json();
 
-        newDpMap[contact.mobile] = dpData.dp || "default.png"; // Use default if no DP
+        newDpMap[contact.mobile] = dpData.dp || "./Images/image.png"; // Use default if no DP
         newAboutMap[contact.mobile]=dpData.about;
       } catch (error) {
-        newDpMap[contact.mobile] = "image.png";
-        newAboutMap[contact.mobile]="Hello ! I am new user in MindChat !";
+        console.error("Error fetching DP:", error);
       }
     }
     setDpMap(newDpMap);
@@ -1459,7 +1458,7 @@ you.map((profile)=>(
         </div>
    
       <video
-        src={`${backendUrl}${msg.text}`}
+       src={`${backendUrl}${msg.text.startsWith("/") ? msg.text.substring(1) : msg.text}`}
         id="image-view"
         onClick={() => handleMessageClick(msg.text)}
         onError={(e) => (e.target.style.display = "none")}
@@ -1473,7 +1472,7 @@ you.map((profile)=>(
      return (
       <div className="audio-view">
       <audio controls  id="audio-view">
-        <source src={`${backendUrl}${msg.text}`} id="audio-view-child"  onClick={() => handleMessageClick(msg.text)}
+        <source src={`${backendUrl}${msg.text.startsWith("/") ? msg.text.substring(1) : msg.text}`} id="audio-view-child"  onClick={() => handleMessageClick(msg.text)}
         />
          
       </audio>
@@ -1488,7 +1487,7 @@ you.map((profile)=>(
       <div>
       <div>
       <iframe
-        src={`${backendUrl}${msg.text}`}
+       src={`${backendUrl}${msg.text.startsWith("/") ? msg.text.substring(1) : msg.text}`}
         className="pdf-view"
        
       />
@@ -1518,7 +1517,7 @@ you.map((profile)=>(
       <div>
       <div>
       <iframe
-  src={`https://docs.google.com/viewer?url=${backendUrl}${msg.text}&embedded=true`}
+  src={`https://docs.google.com/viewer?url=${backendUrl}${msg.text.startsWith("/") ? msg.text.substring(1) : msg.text}&embedded=true`}
   className="docx-view"
 />
       </div>
@@ -1546,7 +1545,7 @@ you.map((profile)=>(
       <div>
       <div>
       <iframe
-        src={`${backendUrl}${msg.text}&embedded=true`}
+        src={`${backendUrl}${msg.text.startsWith("/") ? msg.text.substring(1) : msg.text}&embedded=true`}
         className="docx-view"
        
       />
@@ -1596,7 +1595,7 @@ you.map((profile)=>(
       
       <div className="image-view">
       <img
-        src={`${backendUrl}${msg.text}`}
+        src={`${backendUrl}${msg.text.startsWith("/") ? msg.text.substring(1) : msg.text}`}
         id="image-view"
         onClick={() => handleMessageClick(msg.text)}
         onError={(e) => (e.target.style.display = "none")}
