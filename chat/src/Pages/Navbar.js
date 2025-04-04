@@ -384,7 +384,7 @@ useEffect(() => {
 you.map((profile)=>(
 
 
-<img src={`${backendUrl}uploads/${profile.dp}`}  alt="Profile" key={profile.id} />
+<img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${profile.dp}`}  alt="Profile" key={profile.id} />
 
  
 ))
@@ -443,7 +443,7 @@ you.map((profile)=>(
 you.map((profile)=>(
 
 
-<img src={`${backendUrl}uploads/${profile.dp}`}  alt="Profile" key={profile.id} />
+<img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${profile.dp}`}  alt="Profile" key={profile.id} />
 
  
 ))
@@ -463,7 +463,7 @@ you.map((profile)=>(
 you.map((profile)=>(
 <div className="view-photo" key={profile.id}>
 
-<img src={`${backendUrl}uploads/${profile.dp}`}  alt="Profile" />
+<img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${profile.dp}`}  alt="Profile" />
 </div>
  
 ))
@@ -575,7 +575,7 @@ you.map((profile)=>(
 
      <div className="profile-pic" key={profile.id} id="profile-pic">
 
-     <img  src={`${backendUrl}uploads/${profile.dp}`} className="profile-pic-img" id="profile-pic-img" onClick={showPopup}   onMouseEnter={() => setIsHovered(true)}  onMouseLeave={() => setIsHovered(false)} alt="Profile" />
+     <img  src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${profile.dp}`} className="profile-pic-img" id="profile-pic-img" onClick={showPopup}   onMouseEnter={() => setIsHovered(true)}  onMouseLeave={() => setIsHovered(false)} alt="Profile" />
      </div>
       ))
 }
@@ -753,7 +753,7 @@ you.map((profile)=>(
         <IoLogOut />
       </button> */}
 {you.map((profile)=>(
-<img src={`${backendUrl}uploads/${profile.dp}`} id="profile-default" key={profile.id} alt="Not found" onClick={()=>{setNavProfile(true)}}/>
+<img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${profile.dp}`} id="profile-default" key={profile.id} alt="Not found" onClick={()=>{setNavProfile(true)}}/>
 ))}
 
 
@@ -785,7 +785,7 @@ you.map((profile)=>(
 you.map((profile)=>(
 
 
-<img src={`${backendUrl}uploads/${profile.dp}`}  alt="Profile" key={profile.id} />
+<img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${profile.dp}`}  alt="Profile" key={profile.id} />
 
  
 ))
@@ -844,7 +844,7 @@ you.map((profile)=>(
 you.map((profile)=>(
 
 
-<img src={`${backendUrl}uploads/${profile.dp}`}  alt="Profile" key={profile.id} />
+<img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${profile.dp}`}  alt="Profile" key={profile.id} />
 
  
 ))
@@ -864,7 +864,7 @@ you.map((profile)=>(
 you.map((profile)=>(
 <div className="view-photo" key={profile.id}>
 
-<img src={`${backendUrl}uploads/${profile.dp}`}  alt="Profile" />
+<img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${profile.dp}`}  alt="Profile" />
 </div>
  
 ))
@@ -976,7 +976,7 @@ you.map((profile)=>(
 
      <div className="profile-pic" key={profile.id} id="profile-pic">
 
-     <img  src={`${backendUrl}uploads/${profile.dp}`} className="profile-pic-img" id="profile-pic-img" onClick={showPopup}   onMouseEnter={() => setIsHovered(true)}  onMouseLeave={() => setIsHovered(false)} alt="Profile" />
+     <img  src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${profile.dp}`} className="profile-pic-img" id="profile-pic-img" onClick={showPopup}   onMouseEnter={() => setIsHovered(true)}  onMouseLeave={() => setIsHovered(false)} alt="Profile" />
      </div>
       ))
 }
@@ -1144,7 +1144,7 @@ you.map((profile)=>(
 
 
 {you.map((profile)=>(
-<img src={`${backendUrl}uploads/${profile.dp}`} id="profile-default" key={profile.id} alt="Not found" onClick={()=>{setNavProfile(true)}}/>
+<img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${profile.dp}`} id="profile-default" key={profile.id} alt="Not found" onClick={()=>{setNavProfile(true)}}/>
 ))}
     <NavLink to="/chatboard" className="link chat"><MdChat /></NavLink>
     <NavLink to="/moments" className="link moments"><SiEventstore /></NavLink>

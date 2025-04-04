@@ -11,7 +11,8 @@ import fs from "fs";
 import User from "./User.js";
 import Contact from "./Contact.js";
 dotenv.config();
-
+import { v2 as cloudinary } from 'cloudinary';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
 const app = express();
 const server = http.createServer(app);
 const FRONTEND=process.env.FRONTEND;
@@ -56,20 +57,62 @@ app.get("/", (req, res) => {
   res.send("Welcome to the home page");
 });
 
-// Ensure 'uploads' folder exists
-const publicDir = path.join(process.cwd(), "public");
-const uploadDir = path.join(publicDir, "uploads");
 
-if (!fs.existsSync(publicDir)) fs.mkdirSync(publicDir);
-if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
-
-// Multer configuration for file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, uploadDir),
-  filename: (req, file, cb) =>
-    cb(null, file.fieldname + "_" + Date.now() + path.extname(file.originalname)),
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_API_KEY,
+  api_secret: process.env.CLOUD_API_SECRET,
 });
-const upload = multer({ storage });
+
+
+const upload = multer({
+  storage: new CloudinaryStorage({
+    cloudinary,
+    params: async (req, file) => {
+      let folder = 'uploads/documents';
+      let resource_type = 'auto'; // Let Cloudinary decide
+
+      if (file.mimetype.startsWith('image')) {
+        folder = 'uploads/images';
+        resource_type = 'image';
+      } else if (file.mimetype.startsWith('video')) {
+        folder = 'uploads/videos';
+        resource_type = 'video';
+      }else if(file.mimetype.startsWith('document')){
+        folder='uploads/documents';
+        resource_type='raw';
+      }
+
+      return {
+        folder,
+        resource_type,
+        format: file.mimetype.split("/")[1],
+      };
+    },
+  }),
+});
+
+
+
+
+
+
+
+
+// Ensure 'uploads' folder exists
+// const publicDir = path.join(process.cwd(), "public");
+// const uploadDir = path.join(publicDir, "uploads");
+
+// if (!fs.existsSync(publicDir)) fs.mkdirSync(publicDir);
+// if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
+
+// // Multer configuration for file uploads
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => cb(null, uploadDir),
+//   filename: (req, file, cb) =>
+//     cb(null, file.fieldname + "_" + Date.now() + path.extname(file.originalname)),
+// });
+// const upload = multer({ storage });
 
 // MongoDB connection
 const connectDB = async () => {
@@ -135,38 +178,54 @@ socket.on('delete_for_everyone', ({ room }) => {
 });
 
 // Endpoint to handle image message uploads
-app.post("/api/sendImageMessage", upload.single("image"), async (req, res) => {
+app.post("/api/sendImageMessage", upload.fields([
+  { name: "image", maxCount: 1 },
+  { name: "video", maxCount: 1 },
+  { name: "document", maxCount: 1 },
+]), async (req, res) => {
   try {
     const messageData = JSON.parse(req.body.messageData);
-    const imagePath = req.file ? req.file.filename : null;
 
-    // Save image message to MongoDB
+    // Get the file URL (whichever exists)
+    const filePath =
+      (req.files["image"] ? req.files["image"][0].path : null) ||
+      (req.files["video"] ? req.files["video"][0].path : null) ||
+      (req.files["document"] ? req.files["document"][0].path : null) ||
+      messageData.text; // If no file, keep text
+
+    // Save message to MongoDB (all files stored in `text` field)
     const newMessage = new Messages({
       userName: messageData.userName,
-      text: imagePath ? `uploads/${imagePath}` : messageData.text,
+      text: filePath, // Store the file URL or the text
       room: messageData.room,
       timeStamp: messageData.timeStamp,
-      userId: String, // sender's user ID
-      deletedFor: [{
-        type: String, // will store user IDs who deleted this message
-        default: []
-      }],
+      userId: messageData.userId, // Sender's user ID
+      deletedFor: [],
     });
+
     await newMessage.save();
 
-    // Broadcast image message to the room
+    // Emit message to the chat room
     io.to(messageData.room).emit("receive_message", {
       ...messageData,
-      text: imagePath ? `uploads/${imagePath}` : messageData.text,
+      text: filePath, // Send file URL or text to frontend
     });
 
-    res.status(200).json({ message: "Image message sent successfully!" });
+    res.json({
+      success: true,
+      message: "Message saved",
+      fileUrl: filePath, // Return the file URL if uploaded
+    });
+
   } catch (error) {
-    console.error("Error sending image message:", error);
-    res.status(500).json({ error: "Failed to send image message." });
+    console.error("Error uploading:", error);
+    res.status(500).json({
+      success: false,
+      message: "Upload failed",
+      error: error.message,
+    });
   }
 });
-
 
 
 

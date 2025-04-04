@@ -6,7 +6,7 @@ const data=new mongoose.Schema({
     phone : {type : String}, 
     password : String,
     about: { type: String, default: "Hello ! I am new user in MindChat !" },
-    dp:{type:String,default:"image.png"},
+    dp:{type:String,default:"image_dp_uwfq2g.png"},
     date : {
        type : Date,
        default : Date.now

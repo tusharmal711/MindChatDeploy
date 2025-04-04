@@ -978,7 +978,7 @@ const [dchat,setDchat]=useState(false);
 you.map((profile)=>(
 
 
-<img src={`${backendUrl}uploads/${dpMap[selectedContact.mobile]}`}  alt="Profile" key={profile.id} />
+<img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${dpMap[selectedContact.mobile]}`}  alt="Profile" key={profile.id} />
 
  
 ))
@@ -998,7 +998,7 @@ you.map((profile)=>(
 you.map((profile)=>(
 <div className="view-photo" key={profile.id}>
 
-<img src={`${backendUrl}uploads/${dpMap[selectedContact.mobile]}`}  alt="Profile" />
+<img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${dpMap[selectedContact.mobile]}`}  alt="Profile" />
 </div>
  
 ))
@@ -1111,11 +1111,11 @@ you.map((profile)=>(
           <div key={index}>
             {msg.userName === pro_uname ? (
              
-                <img src={`${backendUrl}uploads/${profile.dp}`}  alt="Profile" key={profile.id} /> 
+                <img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${profile.dp}`}  alt="Profile" key={profile.id} /> 
                
             ) : (
               <img
-                src={`${backendUrl}uploads/${dpMap[selectedContact.mobile]}`}
+                src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${dpMap[selectedContact.mobile]}`}
                 alt="Profile"
               />
             )}
@@ -1153,7 +1153,7 @@ className="download-video"
   onClick={async (e) => {
     e.stopPropagation(); // Prevent closing the popup
 
-    const response = await fetch(`${backendUrl}${selectedImage.startsWith("/") ? selectedImage.substring(1) : selectedImage}`);
+    const response = await fetch(`${selectedImage}`);
     const blob = await response.blob();
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -1186,10 +1186,10 @@ you.map((profile)=>(
 
 {(() => {
   if (selectedImage?.match(/\.(mp4|webm)$/)) {
-    return <video src={`${backendUrl}${selectedImage.startsWith("/") ? selectedImage.substring(1) : selectedImage}`}
+    return <video src={`${selectedImage}`}
     controls autoPlay alt="Profile"/>;
   } else {
-    return <img src={`${backendUrl}${selectedImage.startsWith("/") ? selectedImage.substring(1) : selectedImage}`}
+    return <img src={`${selectedImage}`}
  alt="Profile" />;
   }
 })()}
@@ -1265,7 +1265,7 @@ you.map((profile)=>(
           onClick={() => handleContactClick(contact._id)}  
           className={activeContact === contact._id ? "active" : ""}
         >
-          <img src={`${backendUrl}uploads/${dpMap[contact.mobile]}`} id="dp-default" alt="Profile" />
+          <img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${dpMap[contact.mobile]}`} id="dp-default" alt="Profile" />
           <div className="textChat">
             <p id="username">{contact.username}</p>
             
@@ -1376,7 +1376,7 @@ you.map((profile)=>(
             {
               selectedContact && (
               <div className="chat-header" onClick={()=>{setThird(true)}}>
-              <img src={`${backendUrl}uploads/${dpMap[selectedContact.mobile]}`} id="chat-header-img" alt="Profile" />
+              <img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${dpMap[selectedContact.mobile]}`} id="chat-header-img" alt="Profile" />
               <p>{selectedContact.username}<br/>{typingUser && <span className="typing-indicator">{typingUser}</span>}</p>
              
               {/* {typingUser && } */}
@@ -1498,7 +1498,7 @@ you.map((profile)=>(
         </div>
    
       <video
-        src={`${backendUrl}${msg.text.startsWith("/") ? msg.text.substring(1) : msg.text}`}
+        src={`${msg.text}`}
         id="image-view"
         onClick={() => handleMessageClick(msg.text)}
         onError={(e) => (e.target.style.display = "none")}
@@ -1512,7 +1512,7 @@ you.map((profile)=>(
      return (
       <div className="audio-view">
       <audio controls  id="audio-view">
-        <source src={`${backendUrl}${msg.text.startsWith("/") ? msg.text.substring(1) : msg.text}`} id="audio-view-child"  onClick={() => handleMessageClick(msg.text)}
+        <source src={`${msg.text}`} id="audio-view-child"  onClick={() => handleMessageClick(msg.text)}
         />
          
       </audio>
@@ -1527,7 +1527,7 @@ you.map((profile)=>(
       <div>
       <div>
       <iframe
-        src={`${backendUrl}${msg.text.startsWith("/") ? msg.text.substring(1) : msg.text}`}
+        src={`${msg.text}`}
         className="pdf-view"
        
       />
@@ -1538,7 +1538,7 @@ you.map((profile)=>(
         onClick={() => {
           navigate("/download");
           const link = document.createElement("a");
-          link.href = `${backendUrl}${msg.text.startsWith("/") ? msg.text.substring(1) : msg.text}`;
+          link.href = `${msg.text}`;
           link.download = msg.text;
           document.body.appendChild(link);
           link.click();
@@ -1557,7 +1557,7 @@ you.map((profile)=>(
       <div>
       <div>
       <iframe
-  src={`https://docs.google.com/viewer?url=${backendUrl}${msg.text.startsWith("/") ? msg.text.substring(1) : msg.text}&embedded=true`}
+  src={`https://docs.google.com/viewer?url=${msg.text}&embedded=true`}
   className="docx-view"
 />
       </div>
@@ -1566,7 +1566,7 @@ you.map((profile)=>(
       <button
         onClick={() => {
           const link = document.createElement("a");
-          link.href = `${backendUrl}${msg.text.startsWith("/") ? msg.text.substring(1) : msg.text}`;
+          link.href =`${msg.text}`;
           link.download = msg.text;
           link.click();
         }} id="download-button"
@@ -1585,7 +1585,7 @@ you.map((profile)=>(
       <div>
       <div>
       <iframe
-        src={`${backendUrl}${msg.text.startsWith("/") ? msg.text.substring(1) : msg.text}&embedded=true`}
+        src={`${msg.text}&embedded=true`}
         className="docx-view"
        
       />
@@ -1595,7 +1595,7 @@ you.map((profile)=>(
       <button
         onClick={() => {
           const link = document.createElement("a");
-          link.href = `${backendUrl}${msg.text.startsWith("/") ? msg.text.substring(1) : msg.text}`;
+          link.href = `${msg.text}`;
           link.download = msg.text;
           link.click();
         }} id="download-button"
@@ -1635,7 +1635,7 @@ you.map((profile)=>(
       
       <div className="image-view">
       <img
-       src={`${backendUrl}${msg.text.startsWith("/") ? msg.text.substring(1) : msg.text}`}
+       src={`${msg.text}`}
         id="image-view"
         onClick={() => handleMessageClick(msg.text)}
         onError={(e) => (e.target.style.display = "none")}
@@ -1866,7 +1866,7 @@ you.map((profile)=>(
     <div className="contact-scroll2" onClick={()=>{setPopcontact(false)}}>
     {selectedContact && (
                <div className="contact-chat">
-                 <img src={`${backendUrl}uploads/${dpMap[selectedContact.mobile]}`} id="dp-contact-default" alt="Profile" onClick={()=>{setViewContact(true)}}/>
+                 <img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${dpMap[selectedContact.mobile]}`} id="dp-contact-default" alt="Profile" onClick={()=>{setViewContact(true)}}/>
                 
                  <h2>{selectedContact.username}</h2>
                  <p>
