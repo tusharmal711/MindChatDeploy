@@ -347,7 +347,7 @@ const imageSet = (e) => {
   setShowIcon(true);
   setPlusview(true);
   setTypePlaceholder("Add a caption...");
-  setAutofocus(true);
+  
   fileSend.classList.remove("file-ani");
   // Reset the file input value to allow selecting the same file again
   e.target.value = "";
@@ -430,7 +430,7 @@ const sendMessage = async (req, res) => {
   setPlusview(false);
   setViewUpload(false);
   setTypePlaceholder("Type a message...");
-  setAutofocus(false);
+  
   secondBtn();
   setPreview(null);
   setFile(null);
@@ -1809,7 +1809,7 @@ you.map((profile)=>(
                          <input type="file" id="audio-send" name="image" onChange={imageSet} accept=".mp3, .wav, .ogg , .mpeg" />
                          <input type="file" id="camera-send" name="image" onChange={imageSet} capture="user" accept="image/*"/>
                          <input type="file" id="document-send" name="image" onChange={imageSet} accept=".pdf, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .txt"/>
-                         <LuSticker onClick={fileSticker} id="emoji"  /><input type="text" placeholder={typePlaceholder}  onKeyDown={handleKeyDown} id="entered-msg" value={chat} onChange={handleChange} onClick={secondDiv} ref={inputRef} />
+                         <LuSticker onClick={fileSticker} id="emoji"  /><input type="text" placeholder={typePlaceholder}  onKeyDown={handleKeyDown} id="entered-msg" value={chat} onChange={handleChange} onClick={secondDiv} />
                       
                     
                         {

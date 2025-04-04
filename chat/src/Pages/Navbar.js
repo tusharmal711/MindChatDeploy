@@ -743,10 +743,10 @@ you.map((profile)=>(
 
 
 
-    <NavLink to="/chatboard" className="link chat"><MdChat /></NavLink>
-    <NavLink to="/moments" className="link moments"><SiEventstore /></NavLink>
-    <NavLink to="/connect" className="link connect"><TbFriends /></NavLink>
-    <NavLink to="/calls" className="link calls"><BiSolidPhoneCall /></NavLink>
+      <NavLink to="/chatboard" className="mob chat"><div className="nav-chat"><MdChat className="mob-icon"/><span>Chats</span></div></NavLink>
+      <NavLink to="/moments" className="mob moments"><div className="nav-chat"><SiEventstore className="mob-icon"/><span>Moments</span></div></NavLink>
+      <NavLink to="/connect" className="mob connect"><div className="nav-chat"><TbFriends className="mob-icon"/><span>Friends</span></div></NavLink>
+      <NavLink to="/calls" className="mob calls"><div className="nav-chat"><BiSolidPhoneCall className="mob-icon"/><span>Calls</span></div></NavLink>
     {/* <NavLink to="#" id="logout" className="link logout" onClick={sendData}><IoLogOut /></NavLink> */}
 
     {/* <button id="logout" className="link logout" onClick={()=>{setIsOpen(true)}}>

@@ -638,22 +638,21 @@ ul{
 }
 .textChat{
     padding-left: 0.85rem;
-  margin-top: -1rem;
+  margin-top: 0.3rem;
 }
 #msg{
-  position: absolute;
-    width:auto;
+    
+    min-width:50%;
     max-width:77.8%;
     font-size: 0.87rem;
     font-family: sans-serif;
     color:rgb(94, 94, 94);
-    flex: 1; 
+   
     white-space: nowrap; /* Prevent text from wrapping */
-    overflow: hidden; /* Hide overflowing text */
+   
     text-overflow: ellipsis; /* Add "..." if text is too long */
    
 }
-
 
 
 
@@ -2540,7 +2539,7 @@ width:100%;
     bottom: 0;
     left: 0;
     right: 0;
-    height: 60px;
+    height: 80px;
     background-color: #fff;
     display: flex;
     justify-content: space-around;
@@ -2558,10 +2557,24 @@ width:100%;
     border-radius: 50%;
   }
 
-  .mobile-nav-profile{
-
+  .nav-chat{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+   font-size: 1.3rem;
+    font-family: sans-serif;
   }
-
+  .nav-chat span{
+    font-size: 1.1rem;
+  }
+  .mob{
+    text-decoration: none;
+   
+  }
+  .mob-icon{
+    font-size: 1.5rem;
+  }
   @media (max-width: 675px) {
     #profile-default{
         height:45px;
@@ -2589,9 +2602,11 @@ width:100%;
         transform: translateX(0);
         transition: transform 0.3s ease;
         z-index: 10;
-        overflow-y: auto;
+       
       }
-    
+      .chat-part ul{
+        padding-bottom: 7rem;
+    }
       /* When contact is selected, slide first panel left */
       .first.reducewidth {
         transform: translateX(-100%);
@@ -2650,7 +2665,11 @@ width:100%;
 .typing-text{
     display: none;
 }
-
+.row{
+    overflow-y: auto;
+    box-shadow: none;
+    margin-top: 4rem;
+}
 
 .messages{
     height:calc(100vh - 13.4rem);
@@ -2664,12 +2683,18 @@ iframe{
 .own{
     width:auto;
     max-width: 80%;
-    font-size: 1.3rem;
+    font-size: 1.2rem;
 }
 .other{
     width:auto;
     max-width: 80%;
-    font-size: 1.3rem;
+    font-size: 1.2rem;
+}
+.items{
+    gap:0.3rem;
+}
+.type-msg{
+    height:5rem;
 }
   }
  
