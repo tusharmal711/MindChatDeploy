@@ -1261,6 +1261,7 @@ h2{
     align-items: flex-start; /* Align content to the left */
     justify-content: flex-end; /* Push content to the bottom */
     position: relative;
+   
   }
 
   .other {
@@ -2663,10 +2664,12 @@ iframe{
 .own{
     width:auto;
     max-width: 80%;
+    font-size: 1.3rem;
 }
 .other{
     width:auto;
     max-width: 80%;
+    font-size: 1.3rem;
 }
   }
  
