@@ -466,7 +466,8 @@ useEffect(() => {
         newDpMap[contact.mobile] = dpData.dp || "./Images/image.png"; // Use default if no DP
         newAboutMap[contact.mobile]=dpData.about;
       } catch (error) {
-        console.error("Error fetching DP:", error);
+        newDpMap[contact.mobile] = "https://res.cloudinary.com/dnd9qzxws/image/upload/v1743764088/image_dp_uwfq2g.png";
+        newAboutMap[contact.mobile]="Hello ! I am not in MindChat !";
       }
     }
     setDpMap(newDpMap);
