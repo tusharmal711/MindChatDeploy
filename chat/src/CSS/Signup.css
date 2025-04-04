@@ -212,7 +212,7 @@ margin: 4rem;
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 99999; /* Ensure it's the highest */
+    z-index: 99999999999999999; /* Ensure it's the highest */
 }
 .navbar {
     position: fixed;
