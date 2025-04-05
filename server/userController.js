@@ -170,7 +170,7 @@ export const sendLoginOTP = async (req, res) => {
      
       html: `<div style="font-family: Arial, sans-serif; line-height: 1.5; max-width: 600px; margin: auto; box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;  overflow: hidden;">
   <div style="padding: 20px; text-align: center;">
-    <img src="./Images/app.png" alt="Mind Chat Logo" style="max-width: 150px;">
+    <img src="/Images/app.png" alt="Mind Chat Logo" style="max-width: 150px;">
   </div>
   <div style="padding: 20px;">
     <h2 style="color: #333;  font-family: sans-serif;">Your OTP Code</h2>
