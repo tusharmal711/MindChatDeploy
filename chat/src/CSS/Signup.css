@@ -2768,6 +2768,18 @@ iframe{
     font-size: 1.35rem;
     color:#003d4e;
   }
+  .contact-icon-left{
+    font-size: 1.4rem;
+     left:2rem;
+     position: absolute;
+ }
+ 
+ .contact-icon{
+     position: absolute;
+     right:2rem;
+     font-size: 1.4rem;
+ }
+ 
   }
  
 

@@ -1869,11 +1869,11 @@ you.map((profile)=>(
 
 
 
-          <div className="contact-nav" >
-          
-          <RxCross1 id="contact-cross" onClick={hidePopup}/><span>Contact info</span>
-          <BsThreeDotsVertical id="contact-dot" onClick={()=>{setPopcontact(true)}}/>
-          </div>
+<div className="contact-nav">
+  <FaArrowLeft className="contact-icon-left" onClick={hidePopup} />
+  <span className="contact-title">Contact Info</span>
+  <BsThreeDotsVertical className="contact-icon" onClick={() => setPopcontact(true)} />
+</div>
 
 
     <div className="contact-scroll2" onClick={()=>{setPopcontact(false)}}>
