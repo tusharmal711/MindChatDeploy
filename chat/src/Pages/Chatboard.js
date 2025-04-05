@@ -1266,23 +1266,19 @@ you.map((profile)=>(
           onClick={() => handleContactClick(contact._id)}  
           className={activeContact === contact._id ? "active" : ""}
         >
-            {loading && (
-        <div style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-        }}>
-          <div className="spinner" />
-        </div>
-      )}
-          <img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${dpMap[contact.mobile]}`} id="dp-default"   onLoad={() => setLoading(false)}   style={{
-          display: loading ? 'none' : 'block',
-          width: '100px',
-          height: '100px',
-          borderRadius: '50%',
-          objectFit: 'cover',
-        }} alt={alt} />
+           
+           <div className="dp-wrapper">
+  <img
+    src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${dpMap[contact.mobile]}`}
+    id="dp-default"
+   onLoad={()=>{setLoading(false)}}
+  />
+  {
+    loading &&(
+      <div className="dp-default" />
+    )
+  }
+  </div>
           <div className="textChat">
             <p id="username">{contact.username}</p>
             
