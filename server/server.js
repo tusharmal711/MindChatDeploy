@@ -115,24 +115,19 @@ const upload = multer({
 // const upload = multer({ storage });
 
 // MongoDB connection
-const startServer = async () => {
+const connectDB = async () => {
   try {
     await mongoose.connect(MONGOURL, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    console.log("DB connected");
-
-    server.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
-    });
+    console.log("DB is connected");
   } catch (error) {
-    console.error("Failed to connect DB or start server", error);
+    console.error("DB is not connected", error.message);
     process.exit(1);
   }
 };
-
-startServer();
+connectDB();
 
 // Message schema and model
 const messageSchema = new mongoose.Schema({
@@ -318,6 +313,6 @@ app.post('/api/deleteChats', async (req, res) => {
 
 
 // Start the server
-// server.listen(PORT, () => {
-//   console.log(`Server is running on: http://localhost:${PORT}`);
-// });
+server.listen(PORT, () => {
+  console.log(`Server is running on: http://localhost:${PORT}`);
+});

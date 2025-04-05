@@ -32,7 +32,7 @@ import { PiMicrosoftWordLogoFill } from "react-icons/pi";
 import { FaPlay } from "react-icons/fa";
 import EmojiPicker from 'emoji-picker-react';
 const backendUrl = process.env.REACT_APP_BACKEND_URL; 
-const socket = io("https://mindchatapplication.onrender.com", {
+const socket = io("https://mindchatdeploy-2.onrender.com/", {
   transports: ["websocket"], // Forces WebSocket connection
   withCredentials: true, // Allows cross-origin credentials
   reconnection: true,
