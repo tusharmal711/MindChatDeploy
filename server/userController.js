@@ -167,15 +167,21 @@ export const sendLoginOTP = async (req, res) => {
       from: sender,
       to: user.email,
       subject: "Mind Chat - OTP Verification",
-      html: `<div style="font-family: Arial, sans-serif; line-height: 1.5;">
-      <h2>Your OTP Code</h2>
-      <p>Please use the following OTP code to complete your verification:</p>
-      <div style="font-size: 24px; font-weight: bold; margin: 20px 0;">
-        ${otp}
-      </div>
-      <p>This code is valid for the next 10 minutes.</p>
-      <p>If you did not request this code, please ignore this email.</p>
-    </div>`,
+     
+      html: `<div style="font-family: Arial, sans-serif; line-height: 1.5; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
+  <div style="background-color: #007BFF; padding: 20px; text-align: center;">
+    <img src="./uploads/app.png" alt="Mind Chat Logo" style="max-width: 150px;">
+  </div>
+  <div style="padding: 20px; background-color: #f9f9f9;">
+    <h2 style="color: #333;">Your OTP Code</h2>
+    <p>Please use the following OTP code to complete your verification:</p>
+    <div style="font-size: 24px; font-weight: bold; margin: 20px 0; color: #007BFF;">
+      ${otp}
+    </div>
+    <p>This code is valid for the next 10 minutes.</p>
+    <p>If you did not request this code, please ignore this email.</p>
+  </div>
+</div>`,
     });
 
     // Store OTP temporarily
