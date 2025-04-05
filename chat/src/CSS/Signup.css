@@ -2780,6 +2780,15 @@ iframe{
      font-size: 1.4rem;
  }
 
+
+
+ .change-profile{
+    display: none;
+}
+.upload-popup{
+    left: 12rem;
+}
+
 }
 
  
