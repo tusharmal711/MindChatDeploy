@@ -161,7 +161,7 @@ export const sendLoginOTP = async (req, res) => {
     }
 
     const otp = generateSecureOTP();
-    const imagePath = path.join(__dirname, 'public', 'uploads', 'app.png');
+
     // Send OTP via email
     await otpSend.sendMail({
       from: sender,
@@ -170,7 +170,7 @@ export const sendLoginOTP = async (req, res) => {
      
       html: `<div style="font-family: Arial, sans-serif; line-height: 1.5; max-width: 600px; margin: auto;   overflow: hidden;">
   <div style="padding: 20px; text-align: center;">
-    <img src="cid:rock@2025" alt="Mind Chat Logo" style="max-width: 150px; height : 13d0px; width:130px">
+    <img src="cid:unique-content-id" alt="Mind Chat Logo" style="max-width: 150px; height : 13d0px; width:130px; ">
   </div>
   <div style="padding: 20px;box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;">
     <h2 style="color: #333;  font-family: sans-serif;">Your OTP Code</h2>
@@ -186,8 +186,8 @@ export const sendLoginOTP = async (req, res) => {
 
 attachments: [{
   filename: 'app.png',
-  path: imagePath,
-  cid: 'rock@2025' // same as in the img src
+  path: '/uploads/app.png',
+  cid: 'unique-content-id' // same as in the img src
 }]
 
 
