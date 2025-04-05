@@ -358,11 +358,11 @@ const imageSet = (e) => {
 
 const phone = sessionStorage.getItem("phone");
 const contactNo = sessionStorage.getItem("phone");
+
+
+
 const sendMessage = async (req, res) => {
-
-  
-
-
+  setShowIcon(false);
   // Add new contact
   await fetch(`${backendUrl}api/addNewContact`, {
     method: "POST",
@@ -426,7 +426,7 @@ const sendMessage = async (req, res) => {
 
   // Clear input fields
   setChat("");
-  setShowIcon(false);
+
   setPlusview(false);
   setViewUpload(false);
   setTypePlaceholder("Type a message...");
