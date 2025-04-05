@@ -819,7 +819,7 @@ useEffect(()=>{
 
 // edit contact
 const updateContacts = async (e) => {
-       
+        e.preventDefault();
   try {
     const phone = sessionStorage.getItem("phone");
     const res = await fetch(`${backendUrl}api/updateContact`, {
@@ -829,7 +829,7 @@ const updateContacts = async (e) => {
     });
 
     if (!res.ok) throw new Error("Failed to fetch contacts");
-   
+    window.location.reload();
   } catch (error) {
     console.error("Error updating:", error);
   }
