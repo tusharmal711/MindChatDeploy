@@ -40,10 +40,10 @@ const socket = io("https://mindchatdeploy-2.onrender.com/", {
   reconnectionDelay: 2000
 });
 
-const Chatboard = ({ user, contact , message}) => {
+const Chatboard = ({ user, contact , message ,src, alt, ...props}) => {
   const navigate = useNavigate();
   // const location = useLocation();
-
+  const [loading, setLoading] = useState(true);
   // State variables
   const [contacts, setContacts] = useState([]); // List of contacts
   const [searchTerm, setSearchTerm] = useState(""); // Search term for filtering contacts
@@ -1266,7 +1266,20 @@ you.map((profile)=>(
           onClick={() => handleContactClick(contact._id)}  
           className={activeContact === contact._id ? "active" : ""}
         >
-          <img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${dpMap[contact.mobile]}`} id="dp-default" alt="Profile" />
+            {loading && (
+        <div style={{
+          position: 'absolute',
+          top: 0, left: 0,
+          width: '100%', height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: '#f0f0f0'
+        }}>
+          <div className="spinner" />
+        </div>
+      )}
+          <img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${dpMap[contact.mobile]}`} id="dp-default"   onLoad={() => setLoading(false)}  style={{ display: loading ? 'none' : 'block' }}  {...props} alt={alt} />
           <div className="textChat">
             <p id="username">{contact.username}</p>
             
