@@ -2786,8 +2786,48 @@ iframe{
     display: none;
 }
 .upload-popup{
-    left: 12rem;
+    left: 11rem;
 }
+
+.profile-pic-img:hover{
+    opacity:1;
+}
+
+.row{
+    display: flex;
+    flex-direction: column;
+     margin:0;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+   
+     scale: 0.8;
+     width:110%;
+    align-items: center;
+    margin-top: 3rem;
+      scroll-behavior:auto;
+    height:100vh;
+    overflow-y: auto;
+    position: absolute;
+}
+
+
+.cropper{
+    height:400px;
+    width:400px;
+    background-color: white;
+    gap: 0.5rem;
+}
+.cropped-img{
+    height:200px;
+    width:200px;
+    border-radius: 50%;
+    margin-bottom: 5rem;
+}
+.cropped label{
+    margin-left: -5.5rem;
+    margin-top: -2rem;
+    
+}
+
 
 }
 
