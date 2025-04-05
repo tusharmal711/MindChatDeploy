@@ -2758,10 +2758,15 @@ iframe{
     font-size: 1rem;
 }
 #entered-msg{
-    font-size: 1.2rem;
+    font-size: 1rem;
   }
   .items input{
-    width:60%;
+    width:65%;
+  }
+  #send-arrow{
+    padding-left: 0.2rem;
+    font-size: 1.2rem;
+    color:#003d4e;
   }
   }
  
