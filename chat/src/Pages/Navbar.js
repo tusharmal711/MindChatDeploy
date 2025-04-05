@@ -374,6 +374,7 @@ const [loader,setLoader]=useState(false);
      {
   loader &&(
 <div class="facebook-loader">
+<div className="dot1">Uploading</div>
   <div class="dot"></div>
   <div class="dot"></div>
   <div class="dot"></div>

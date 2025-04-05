@@ -2641,14 +2641,20 @@ width:100%;
   }
   
   .dot {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
     background-color: #1877f2; /* Facebook blue */
     animation: bounce 1.4s infinite ease-in-out;
     margin:0.2rem;
   }
-  
+  .dot1{
+    font-size: 2rem;
+    padding-right: 0.5rem;
+    color:#1877f2;
+    font-weight: 600;
+    font-family: sans-serif;
+  }
   .dot:nth-child(1) {
     animation-delay: -0.32s;
   }
@@ -2840,7 +2846,7 @@ iframe{
      scale: 0.8;
      width:110%;
     align-items: center;
-    margin-top: 3rem;
+    margin-top: 6rem;
       scroll-behavior:auto;
     height:100vh;
     overflow-y: auto;
