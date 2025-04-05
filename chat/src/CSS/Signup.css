@@ -2576,7 +2576,57 @@ width:100%;
     font-size: 1.5rem;
     padding-bottom: 0.3rem;
   }
-
+  .dp-wrapper {
+    position: relative;
+   
+  }
+  
+ 
+  #dp-default{
+    width:50px;
+    height:50px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+}
+.dp-default {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #e0e0e0; /* base gray shimmer */
+    overflow: hidden;
+    z-index: 2;
+  }
+  .dp-default::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.6) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    animation: shimmer 1.5s infinite;
+    border-radius: 50%;
+  }
+  
+  /* Keyframes for shimmer animation */
+  @keyframes shimmer {
+    0% {
+      left: -100%;
+    }
+    100% {
+      left: 100%;
+    }
+  }  
+  
   @media (max-width: 675px) {
     #profile-default{
         height:45px;
@@ -2698,57 +2748,17 @@ iframe{
 .type-msg{
     height:5rem;
 }
+.searchClass{
+    margin-top: -11px;
+    height:3rem;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 1px -1px, rgba(0, 0, 0, 0.03) 0px 1px 1px -1px;
+    
+}
+#search{
+    font-size: 1rem;
+}
+
   }
  
 
-  .dp-wrapper {
-    position: relative;
-   
-  }
-  
  
-  #dp-default{
-    width:50px;
-    height:50px;
-    border-radius: 50%;
-    object-fit: cover;
-    display: block;
-}
-.dp-default {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background-color: #e0e0e0; /* base gray shimmer */
-    overflow: hidden;
-    z-index: 2;
-  }
-  .dp-default::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: -100%;
-    height: 100%;
-    width: 100%;
-    background: linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0.6) 50%,
-      rgba(255, 255, 255, 0) 100%
-    );
-    animation: shimmer 1.5s infinite;
-    border-radius: 50%;
-  }
-  
-  /* Keyframes for shimmer animation */
-  @keyframes shimmer {
-    0% {
-      left: -100%;
-    }
-    100% {
-      left: 100%;
-    }
-  }  
-  
