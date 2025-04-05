@@ -46,7 +46,15 @@ export const sendOTP = async (req, res) => {
       from: sender,
       to: email,
       subject: "Mind Chat - OTP Verification",
-      text: `Your OTP code is: ${otp}`,
+      html: `<div style="font-family: Arial, sans-serif; line-height: 1.5;">
+      <h2>Your OTP Code</h2>
+      <p>Please use the following OTP code to complete your verification:</p>
+      <div style="font-size: 24px; font-weight: bold; margin: 20px 0;">
+        ${otp}
+      </div>
+      <p>This code is valid for the next 10 minutes.</p>
+      <p>If you did not request this code, please ignore this email.</p>
+    </div>`,
     });
 
     otpStorage.set(email, otp);
