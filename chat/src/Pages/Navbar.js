@@ -203,7 +203,8 @@ const handleChange = (e) => {
 
 const updateDp = async () => {
   console.log("Starting updateDp...");
-
+  setDp(false);
+  setLoader(true);
   if (!croppedImage) {
     console.error("No cropped image found.");
     return;
@@ -230,7 +231,7 @@ const updateDp = async () => {
 
     const data = await res.json();
     console.log("Update successful:", data);
-    setDp(false);
+    setLoader(false);
     setCroppedImage(null);
   } catch (error) {
     console.error("Error updating:", error);
@@ -368,9 +369,18 @@ useEffect(() => {
 
 
 
-
+const [loader,setLoader]=useState(false);
   return <div className="navbar-container">
-     
+     {
+  loader &&(
+<div class="facebook-loader">
+  <div class="dot"></div>
+  <div class="dot"></div>
+  <div class="dot"></div>
+ 
+  </div>
+  )
+}
 {/* dp setting is starting from here */}
 {
    isMobile?(

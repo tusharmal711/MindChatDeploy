@@ -2626,7 +2626,45 @@ width:100%;
       left: 100%;
     }
   }  
+  .facebook-loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: white;/* Dark semi-transparent background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999; /* Ensure it's the highest */
+
+  }
   
+  .dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: #1877f2; /* Facebook blue */
+    animation: bounce 1.4s infinite ease-in-out;
+    margin:0.2rem;
+  }
+  
+  .dot:nth-child(1) {
+    animation-delay: -0.32s;
+  }
+  
+  .dot:nth-child(2) {
+    animation-delay: -0.16s;
+  }
+  
+  @keyframes bounce {
+    0%, 80%, 100% { 
+      transform: scale(0);
+    }
+    40% { 
+      transform: scale(1);
+    }
+  }
   @media (max-width: 675px) {
     #profile-default{
         height:45px;
@@ -2797,8 +2835,8 @@ iframe{
     display: flex;
     flex-direction: column;
      margin:0;
-    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
-    padding-bottom: 5rem;
+    box-shadow: #0000000d 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+    padding-bottom: 10rem;
      scale: 0.8;
      width:110%;
     align-items: center;
