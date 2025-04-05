@@ -829,7 +829,7 @@ const updateContacts = async (e) => {
     });
 
     if (!res.ok) throw new Error("Failed to fetch contacts");
-    
+    navigate("/chatboard");
   } catch (error) {
     console.error("Error updating:", error);
   }
@@ -930,10 +930,7 @@ const handleMessageClick = (imageUrl) => {
   }
 };
 
-useEffect(() => {
-  const input = document.getElementById("entered-msg");
-  input?.blur();
-}, []);
+
 
 
 
@@ -1824,7 +1821,7 @@ you.map((profile)=>(
                          <input type="file" id="audio-send" name="image" onChange={imageSet} accept=".mp3, .wav, .ogg , .mpeg" />
                          <input type="file" id="camera-send" name="image" onChange={imageSet} capture="user" accept="image/*"/>
                          <input type="file" id="document-send" name="image" onChange={imageSet} accept=".pdf, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .txt"/>
-                         <LuSticker onClick={fileSticker} id="emoji"  /><input type="text" placeholder="Type a message..."  onKeyDown={handleKeyDown} id="entered-msg" value={chat} onChange={handleChange} onClick={secondDiv}  readOnly onFocus={(e) => e.target.removeAttribute('readOnly')} />
+                         <LuSticker onClick={fileSticker} id="emoji"  /><input type="text" placeholder="Type a message..."  onKeyDown={handleKeyDown} id="entered-msg" value={chat} onChange={handleChange} onClick={secondDiv}  />
                       
                     
                         {
