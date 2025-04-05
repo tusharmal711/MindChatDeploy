@@ -1082,19 +1082,7 @@ you.map((profile)=>(
 
 
 
-{loading && (
-        <div style={{
-          position: 'absolute',
-          top: 0, left: 0,
-          width: '10%', height: '10%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: '#f0f0f0'
-        }}>
-          <div className="spinner" />
-        </div>
-      )}
+
 
 
 
@@ -1278,7 +1266,19 @@ you.map((profile)=>(
           onClick={() => handleContactClick(contact._id)}  
           className={activeContact === contact._id ? "active" : ""}
         >
-           
+            {loading && (
+        <div style={{
+          position: 'absolute',
+          top: 0, left: 0,
+          width: '10%', height: '10%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: '#f0f0f0'
+        }}>
+          <div className="spinner" />
+        </div>
+      )}
           <img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${dpMap[contact.mobile]}`} id="dp-default"   onLoad={() => setLoading(false)}  style={{ display: loading ? 'none' : 'block' }}  {...props} alt={alt} />
           <div className="textChat">
             <p id="username">{contact.username}</p>
@@ -1483,7 +1483,7 @@ you.map((profile)=>(
     {selectedContact && joined &&(
     
       <div className="chat-box" onClick={secondDiv}>
-        <div   className="messages"  onClick={removeSticker} onLoad={() => setLoading(false)}  style={{ display: loading ? 'none' : 'block' }}  {...props}>
+        <div   className="messages"  onClick={removeSticker} onLoad={() => setLoading(false)}  style={{ display: loading ? 'none' : 'block' }}>
           {chats.map((msg, index) => (
             
             <div
