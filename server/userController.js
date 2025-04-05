@@ -168,19 +168,20 @@ export const sendLoginOTP = async (req, res) => {
       to: user.email,
       subject: "Mind Chat - OTP Verification",
      
-      html: `<div style="font-family: Arial, sans-serif; line-height: 1.5; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
-  <div style="background-color: #007BFF; padding: 20px; text-align: center;">
-    <img src="./uploads/app.png" alt="Mind Chat Logo" style="max-width: 150px;">
+      html: `<div style="font-family: Arial, sans-serif; line-height: 1.5; max-width: 600px; margin: auto; box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;  overflow: hidden;">
+  <div style="padding: 20px; text-align: center;">
+    <img src="./Images/app.png" alt="Mind Chat Logo" style="max-width: 150px;">
   </div>
-  <div style="padding: 20px; background-color: #f9f9f9;">
-    <h2 style="color: #333;">Your OTP Code</h2>
-    <p>Please use the following OTP code to complete your verification:</p>
+  <div style="padding: 20px;">
+    <h2 style="color: #333;  font-family: sans-serif;">Your OTP Code</h2>
+    <p style="font-family: sans-serif; font-size : 13px">Please use the following OTP code to complete your verification:</p>
     <div style="font-size: 24px; font-weight: bold; margin: 20px 0; color: #007BFF;">
       ${otp}
     </div>
-    <p>This code is valid for the next 10 minutes.</p>
-    <p>If you did not request this code, please ignore this email.</p>
-  </div>
+    <p style="font-family: sans-serif; font-size : 13px">This code is valid for the next 5 minutes.</p>
+    <p style="font-family: sans-serif; font-size : 13px">If you did not request this code, please ignore this email.</p>
+    <p style="font-family: sans-serif; font-size : 13px">Thank you</p>
+    </div>
 </div>`,
     });
 
