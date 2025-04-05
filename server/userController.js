@@ -186,7 +186,7 @@ export const sendLoginOTP = async (req, res) => {
 
 attachments: [{
   filename: 'app.png',
-  path: '/uploads/app.png',
+  path: 'https://mindchat-one.vercel.app/Images/app.png',
   cid: 'unique-content-id' // same as in the img src
 }]
 
