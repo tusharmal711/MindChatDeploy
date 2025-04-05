@@ -170,12 +170,12 @@ export const sendLoginOTP = async (req, res) => {
      
       html: `<div style="font-family: Arial, sans-serif; line-height: 1.5; max-width: 600px; margin: auto;   overflow: hidden;">
   <div style="padding: 20px; text-align: center;">
-    <img src="cid:unique-content-id" alt="Mind Chat Logo" style="max-width: 150px; height : 13d0px; width:130px; ">
+    <img src="cid:unique-content-id" alt="Mind Chat Logo" style="max-width: 150px; height : 110px; width:110px; ">
   </div>
   <div style="padding: 20px;box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;">
     <h2 style="color: #333;  font-family: sans-serif;">Your OTP Code</h2>
     <p style="font-family: sans-serif; font-size : 15px;  color:rgb(77, 77, 77);">Please use the following OTP code to complete your verification:</p>
-    <div style="font-size: 30px; font-weight: bold; margin: 20px 0; color: #007BFF;">
+    <div style="font-size: 28px; font-weight: bold; margin: 20px 0; color: #007BFF;">
       ${otp}
     </div>
     <p style="font-family: sans-serif; font-size : 15px;  color:rgb(77, 77, 77); ">This code is valid for the next 5 minutes.</p>
