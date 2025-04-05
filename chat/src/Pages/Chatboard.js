@@ -930,7 +930,10 @@ const handleMessageClick = (imageUrl) => {
   }
 };
 
-
+useEffect(() => {
+  const input = document.getElementById("entered-msg");
+  input?.blur();
+}, []);
 
 
 
