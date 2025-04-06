@@ -2574,8 +2574,14 @@ width:100%;
   }
   .mob-icon{
     font-size: 1.5rem;
-    padding-bottom: 0.3rem;
+    padding : 4px 16px;
+    margin-bottom: 3px;
+    border-radius: 1rem;
   }
+  .mobile-navbar .active .mob-icon{
+    background-color: rgb(168, 255, 168);
+   color:rgb(0, 78, 0);
+}
   .dp-wrapper {
     position: relative;
    
