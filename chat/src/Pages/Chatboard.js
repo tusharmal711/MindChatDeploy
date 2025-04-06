@@ -1232,7 +1232,7 @@ you.map((profile)=>(
   showcontainer && (
 <div className="chat first">
         <div className="heading-part">
-          <h2 id="chat-heading">Chats</h2>
+          <h2 id="chat-heading">MindChat</h2>
           <MdPersonAddAlt1 id="add-contact" onClick={()=>{setShowcontainer(false)}} />
         </div>
 
