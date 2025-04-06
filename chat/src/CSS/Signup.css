@@ -2783,17 +2783,7 @@ width:100%;
        
         overflow-y: auto;
       }
-     
-    .second-nav{
-        display: flex;
-        align-items: center;
-      }
-      .second-nav-arrow{
-        color:rgb(62, 62, 62);
-        margin-left: 1rem;
-        font-size: 1.3rem;
-       
-      }
+   
       /* When active, slide second panel into view */
      
       .contact-nav{
@@ -2961,4 +2951,17 @@ iframe{
 }
 
 }
-
+  
+.second-nav{
+    display: flex;
+    align-items: center;
+  }
+  .second-nav-arrow{
+    color:rgb(62, 62, 62);
+    margin-left: 1rem;
+    font-size: 1.3rem;
+   
+  }
+.photo-overlay2{
+    z-index: 99999999999999999999;
+}
