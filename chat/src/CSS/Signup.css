@@ -2766,6 +2766,16 @@ width:100%;
       .sec{
         z-index: 1;
     }
+    .second-nav{
+        display: flex;
+        align-items: center;
+      }
+      .second-nav-arrow{
+        color:rgb(62, 62, 62);
+        margin-left: 1rem;
+        font-size: 1.23rem;
+        display: block;
+      }
       /* When active, slide second panel into view */
      
       .contact-nav{
@@ -2934,4 +2944,6 @@ iframe{
 
 }
 
- 
+.second-nav-arrow{
+    display: none;
+}
