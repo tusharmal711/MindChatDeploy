@@ -2535,7 +2535,7 @@ width:100%;
 
 /* Mobile Navbar Styles */
 .mobile-navbar {
-    position: fixed;
+    position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
@@ -2580,7 +2580,7 @@ width:100%;
   }
   .mobile-navbar .active .mob-icon{
     background-color: rgb(168, 255, 168);
-   color:rgb(0, 78, 0);
+   color:rgb(0, 70, 0);
 }
   .dp-wrapper {
     position: relative;
