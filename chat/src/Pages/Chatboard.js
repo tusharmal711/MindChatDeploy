@@ -557,6 +557,7 @@ const addContact = async (e) => {
     const second2 = document.querySelector(".second");
       if (second2) {
         second2.classList.remove("sec");
+        second2.classList.add("sec-remove");
       } else {
         console.warn("Element with class 'second' not found");
       }
