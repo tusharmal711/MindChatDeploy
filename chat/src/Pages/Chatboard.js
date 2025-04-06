@@ -548,7 +548,7 @@ const addContact = async (e) => {
   // Handle joining the chat room and fetching chat history
  
   const sec=()=>{
-    navigate("/chatboard");
+    window.location.reload();
    
    }
   // Fetch selected contact details
