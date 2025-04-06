@@ -2763,7 +2763,9 @@ width:100%;
        
         overflow-y: auto;
       }
-    
+      .sec{
+        z-index: 1;
+    }
       /* When active, slide second panel into view */
      
       .contact-nav{
@@ -2818,12 +2820,12 @@ iframe{
 .own{
     width:auto;
     max-width: 80%;
-    font-size: 1.2rem;
+    font-size: 1.13rem;
 }
 .other{
     width:auto;
     max-width: 80%;
-    font-size: 1.2rem;
+    font-size: 1.13rem;
 }
 .items{
     gap:0.3rem;
@@ -2919,11 +2921,17 @@ iframe{
 }
 #edit-arrow{
     margin-left: 1rem;
+    margin-top:-0.2rem;
     font-size: 1.4rem;
+    color:rgb(79, 79, 79);
 }
 .contact-chat h2{
-    font-size: 1.8rem;
+    font-size: 1.7rem;
 }
+.chat-header p{
+    font-size: 1.06rem;
+}
+
 }
 
  

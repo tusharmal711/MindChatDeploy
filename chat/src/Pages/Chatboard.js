@@ -547,23 +547,20 @@ const addContact = async (e) => {
   
   // Handle joining the chat room and fetching chat history
  
-
+  const sec=()=>{
+    const second1 = document.querySelector(".second");
+    second1.classList.add("sec");
+   
+   }
   // Fetch selected contact details
   const handleContactClick = async (contactId) => {
-    const first = document.querySelector(".first");
-    const second = document.querySelector(".second");
-    
-    if (first) {
-      first.classList.add("reducewidth");
-    } else {
-      console.warn("Element with class 'first' not found");
-    }
-    
-    if (second) {
-      second.classList.add("sec");
-    } else {
-      console.warn("Element with class 'second' not found");
-    }
+    const second2 = document.querySelector(".second");
+      if (second2) {
+        second2.classList.remove("sec");
+      } else {
+        console.warn("Element with class 'second' not found");
+      }
+     
   
     try {
       if (!contactId) {
@@ -1384,6 +1381,8 @@ you.map((profile)=>(
             <div className="chat second">
             {
               selectedContact && (
+                <div className="second-nav">
+                <FaArrowLeft  onClick={sec} className="second-nav-arrow"/>
               <div className="chat-header" onClick={()=>{setThird(true)}}>
               <img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${dpMap[selectedContact.mobile]}`} id="chat-header-img" alt="Profile" />
               <p>{selectedContact.username}<br/>{typingUser && <span className="typing-indicator">{typingUser}</span>}</p>
@@ -1392,7 +1391,7 @@ you.map((profile)=>(
               
                
   
-  
+              </div>
   
               </div>
               )
