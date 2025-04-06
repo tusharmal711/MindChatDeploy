@@ -2965,3 +2965,9 @@ iframe{
 .photo-overlay2{
     z-index: 99999999999999999999;
 }
+
+.messages{
+    height:calc(100vh - 15rem);
+   
+    padding-bottom: 93px;
+}
