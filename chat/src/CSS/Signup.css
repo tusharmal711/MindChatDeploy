@@ -2885,7 +2885,9 @@ iframe{
 #chat-heading{
     font-size: 1.8rem;
 }
-
+.about-input{
+    width:15rem;
+}
 }
 
  
