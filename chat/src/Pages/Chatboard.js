@@ -310,24 +310,20 @@ const [viewUpload,setViewUpload]=useState(false);
 const [file, setFile] = useState(null);
 const [preview, setPreview] = useState(null);
 const [plusview,setPlusview]=useState(false);
-const [typePlaceholder,setTypePlaceholder]=useState("Type a message...");
-const [autofocus,setAutofocus]=useState(false);
-const inputRef = useRef(null);
+
+
+
 
 const DisableviewUpload = ()=>{
   setPlusview(false);
   setViewUpload(false);
-  setTypePlaceholder("Type a message...");
-  setAutofocus(false);
+
+
   setShowIcon(false);
 }
 
 
-useEffect(() => {
-  if (autofocus && inputRef.current) {
-    inputRef.current.focus();
-  }
-}, [autofocus]);
+
 
 
 const RemoveSticker = ()=>{
@@ -346,7 +342,7 @@ const imageSet = (e) => {
   setViewUpload(true);
   setShowIcon(true);
   setPlusview(true);
-  setTypePlaceholder("Add a caption...");
+ 
   
   fileSend.classList.remove("file-ani");
   // Reset the file input value to allow selecting the same file again
@@ -429,7 +425,7 @@ const sendMessage = async (req, res) => {
 
   setPlusview(false);
   setViewUpload(false);
-  setTypePlaceholder("Type a message...");
+ 
   
   secondBtn();
   setPreview(null);
