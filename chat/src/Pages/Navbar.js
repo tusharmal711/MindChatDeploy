@@ -586,7 +586,22 @@ you.map((profile)=>(
 
      <div className="profile-pic" key={profile.id} id="profile-pic">
 
-     <img  src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${profile.dp}`} className="profile-pic-img" id="profile-pic-img" onClick={showPopup}   onMouseEnter={() => setIsHovered(true)}  onMouseLeave={() => setIsHovered(false)} alt="Profile" />
+<div className="dp-wrapper1">
+     <img  src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${profile.dp}`} className="profile-pic-img" id="profile-pic-img" onClick={showPopup}    onMouseEnter={() => setIsHovered(true)}  onMouseLeave={() => setIsHovered(false)} alt="Profile" />
+    
+        {
+  loader &&(
+      <div class="facebook-loader">
+  
+   <div class="dot"></div>
+  <div class="dot"></div>
+  <div class="dot"></div>
+ 
+      </div>
+  )
+}
+    
+     </div>
      </div>
       ))
 }
@@ -992,7 +1007,22 @@ you.map((profile)=>(
 
      <div className="profile-pic" key={profile.id} id="profile-pic">
 
-     <img  src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${profile.dp}`} className="profile-pic-img" id="profile-pic-img" onClick={showPopup}   onMouseEnter={() => setIsHovered(true)}  onMouseLeave={() => setIsHovered(false)} alt="Profile" />
+<div className="dp-wrapper1">
+     <img  src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${profile.dp}`} className="profile-pic-img" id="profile-pic-img" onClick={showPopup}    onMouseEnter={() => setIsHovered(true)}  onMouseLeave={() => setIsHovered(false)} alt="Profile" />
+    
+        {
+  loader &&(
+      <div class="facebook-loader">
+  
+   <div class="dot"></div>
+  <div class="dot"></div>
+  <div class="dot"></div>
+ 
+      </div>
+  )
+}
+    
+     </div>
      </div>
       ))
 }
