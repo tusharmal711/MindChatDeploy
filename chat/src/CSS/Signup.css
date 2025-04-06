@@ -2837,9 +2837,9 @@ width:100%;
 }
 
 .messages{
-    height:calc(100vh - 13.4rem);
+    height:calc(100vh - 15rem);
    
-    padding-bottom: 85px;
+    padding-bottom: 93px;
 }
 iframe{
     height:220px;
@@ -2848,12 +2848,12 @@ iframe{
 .own{
     width:auto;
     max-width: 80%;
-    font-size: 1.13rem;
+    font-size: 1.15rem;
 }
 .other{
     width:auto;
     max-width: 80%;
-    font-size: 1.13rem;
+    font-size: 1.15rem;
 }
 .items{
     gap:0.3rem;
