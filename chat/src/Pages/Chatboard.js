@@ -548,19 +548,12 @@ const addContact = async (e) => {
   // Handle joining the chat room and fetching chat history
  
   const sec=()=>{
-    const second1 = document.querySelector(".second");
-    second1.classList.add("sec");
+    navigate("/chatboard");
    
    }
   // Fetch selected contact details
   const handleContactClick = async (contactId) => {
-    const second2 = document.querySelector(".second");
-      if (second2) {
-        second2.classList.remove("sec");
-        second2.classList.add("sec-remove");
-      } else {
-        console.warn("Element with class 'second' not found");
-      }
+   
      
   
     try {
