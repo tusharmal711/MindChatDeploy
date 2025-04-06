@@ -2848,12 +2848,12 @@ iframe{
 .own{
     width:auto;
     max-width: 80%;
-    font-size: 1.15rem;
+    font-size: 1rem;
 }
 .other{
     width:auto;
     max-width: 80%;
-    font-size: 1.15rem;
+    font-size: 1rem;
 }
 .items{
     gap:0.3rem;
