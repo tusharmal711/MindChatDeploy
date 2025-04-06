@@ -2774,7 +2774,7 @@ width:100%;
         color:rgb(62, 62, 62);
         margin-left: 1rem;
         font-size: 1.3rem;
-        display: block;
+       
       }
       /* When active, slide second panel into view */
      
@@ -2944,6 +2944,3 @@ iframe{
 
 }
 
-.second-nav-arrow{
-    display: none;
-}
