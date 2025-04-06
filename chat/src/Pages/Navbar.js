@@ -371,17 +371,7 @@ useEffect(() => {
 
 const [loader,setLoader]=useState(false);
   return <div className="navbar-container">
-     {
-  loader &&(
-<div class="facebook-loader">
-<div className="dot1">Uploading</div>
-  <div class="dot"></div>
-  <div class="dot"></div>
-  <div class="dot"></div>
- 
-  </div>
-  )
-}
+     
 {/* dp setting is starting from here */}
 {
    isMobile?(
