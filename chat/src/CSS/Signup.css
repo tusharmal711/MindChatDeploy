@@ -2716,6 +2716,26 @@ width:100%;
       transform: scale(1);
     }
   }
+  .image-container1 {
+    position:fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: white; /* Dark semi-transparent background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999999999999999; /* Ensure it's the highest */
+    
+  }
+  .dot1{
+    font-size: 2.3rem;
+    font-family: sans-serif;
+    font-weight: 600;
+    color:#007bff;
+    padding-right: 0.3rem;
+  }
   @media (max-width: 675px) {
     #profile-default{
         height:45px;

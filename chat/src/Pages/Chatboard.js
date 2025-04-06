@@ -355,10 +355,15 @@ const imageSet = (e) => {
 const phone = sessionStorage.getItem("phone");
 const contactNo = sessionStorage.getItem("phone");
 
-
+const [imageLoading,setImageLoading]=useState(false);
 
 const sendMessage = async (req, res) => {
   setShowIcon(false);
+  setViewUpload(false);
+  if(file){
+    setImageLoading(true);
+  }
+
   // Add new contact
   await fetch(`${backendUrl}api/addNewContact`, {
     method: "POST",
@@ -424,9 +429,9 @@ const sendMessage = async (req, res) => {
   setChat("");
 
   setPlusview(false);
-  setViewUpload(false);
+
  
-  
+  setImageLoading(false);
   secondBtn();
   setPreview(null);
   setFile(null);
@@ -937,7 +942,17 @@ const [dchat,setDchat]=useState(false);
 
 
 
-
+    {
+  imageLoading &&(
+    <div class="image-container1">
+  <div class="dot1">Sending</div>
+   <div class="dot"></div>
+  <div class="dot"></div>
+  <div class="dot"></div>
+ 
+      </div>
+  )
+}
  
    
 
