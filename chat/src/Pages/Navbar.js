@@ -732,7 +732,7 @@ you.map((profile)=>(
       
       </div>
 
-      <div className="p-t-s pt" onClick={()=>{setIsOpen(true)}}>
+      <div className="p-t-s pt" id="mob-logout" onClick={()=>{setIsOpen(true)}}>
         <IoLogOut id="setting-icon"/>
         <span>Logout</span>
       

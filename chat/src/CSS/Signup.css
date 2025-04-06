@@ -307,6 +307,9 @@ margin: 4rem;
    
     
 }
+#mob-logout{
+    margin-bottom: 4rem;
+}
 
 .profile-scroll{
     overflow-y: scroll;
