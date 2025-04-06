@@ -2748,10 +2748,7 @@ width:100%;
       .chat-part ul{
         padding-bottom: 7rem;
     }
-      /* When contact is selected, slide first panel left */
-      .first.reducewidth {
-        transform: translateX(-100%);
-      }
+     
     
       /* Second panel (chat area) - initially hidden right */
       .second {
@@ -2760,7 +2757,7 @@ width:100%;
         left: 0;
         width: 100%;
         height: 100%;
-        z-index: 1000000000;
+        z-index: 10;
         transform: translateX(0%);
         transition: transform 0.3s ease;
        
@@ -2768,10 +2765,7 @@ width:100%;
       }
     
       /* When active, slide second panel into view */
-      .second.sec {
-        transform: translateX(0);
-        z-index: 9999999999999;
-      }
+     
       .contact-nav{
         width:100%;
       }

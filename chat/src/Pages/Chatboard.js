@@ -1379,7 +1379,7 @@ you.map((profile)=>(
       {/* Contact Details Section */}
 
       {
-        !third?(
+       
           second &&(
             <div className="chat second">
             {
@@ -1837,7 +1837,9 @@ you.map((profile)=>(
     
           </div>
           )
-        ):(
+        }
+        {
+          third &&(
 
           <div className="profile-window third" id="profile-window">
 
