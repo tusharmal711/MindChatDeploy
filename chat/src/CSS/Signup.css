@@ -540,6 +540,7 @@ margin: 4rem;
 #chat-heading{
     margin-top: 0.65rem;
     float:left;
+    color:#0165E1;
 }
 #add-contact{
     color:#0165E1;
@@ -2878,6 +2879,9 @@ iframe{
     
 }
 
+#chat-heading{
+    font-size: 1.8rem;
+}
 
 }
 
