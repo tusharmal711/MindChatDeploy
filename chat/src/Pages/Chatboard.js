@@ -1819,7 +1819,7 @@ you.map((profile)=>(
          
          bottom: isFocused ? "4rem" : 0,
         
-       }}>>
+       }}>
                 
    
                  <div className="items">
