@@ -935,7 +935,16 @@ const [dchat,setDchat]=useState(false);
 //     setLastMessage(chats.at(-1)); // Gets the last message in chats
 //   }
 // }, [chats]); // Runs when `chats` updates
+const [isFocused, setIsFocused] = useState(false);
+const inputRef = useRef(null);
+const handleFocus = () => {
+  setIsFocused(true);
+  inputRef.current.scrollIntoView({ behavior: 'smooth' });
+};
 
+const handleBlur = () => {
+  setIsFocused(false);
+};
   return (
     <div className="chatContainer">
     
@@ -1806,7 +1815,11 @@ you.map((profile)=>(
   
   
   
-              <div className="type-msg" >
+              <div className="type-msg"  style={{
+         
+         bottom: isFocused ? "4rem" : 0,
+        
+       }}>>
                 
    
                  <div className="items">
@@ -1825,7 +1838,12 @@ you.map((profile)=>(
                          <input type="file" id="audio-send" name="image" onChange={imageSet} accept=".mp3, .wav, .ogg , .mpeg" />
                          <input type="file" id="camera-send" name="image" onChange={imageSet} capture="user" accept="image/*"/>
                          <input type="file" id="document-send" name="image" onChange={imageSet} accept=".pdf, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .txt"/>
-                         <LuSticker onClick={fileSticker} id="emoji"  /><input type="text" placeholder="Type a message..."  onKeyDown={handleKeyDown} id="entered-msg" value={chat} onChange={handleChange} onClick={secondDiv}  />
+                         <LuSticker onClick={fileSticker} id="emoji"  /><input type="text" placeholder="Type a message..."  onKeyDown={handleKeyDown} id="entered-msg" value={chat} onChange={handleChange} onClick={secondDiv}
+                            ref={inputRef}
+                            onFocus={handleFocus}
+                            onBlur={handleBlur}
+                    
+                         />
                       
                     
                         {
