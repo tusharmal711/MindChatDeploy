@@ -926,7 +926,7 @@ ul{
 }
 .type-msg{
     bottom: 0;
-    position: absolute;
+    position: fixed;
     width:100%;
     height:4rem;
     background-color:rgb(241, 241, 241);
