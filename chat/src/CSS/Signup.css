@@ -907,7 +907,6 @@ ul{
     height: calc(100dvh - 4rem);
     background-size: cover;
     background-position: center;
-    flex:1;
    
 }
 .chat-body::before{
@@ -2950,16 +2949,14 @@ iframe{
 .chat-header p{
     font-size: 1.06rem;
 }
-#entered-msg{
-    margin-bottom: env(safe-area-inset-bottom, 10px);
+#entered-ms:focus{
+    margin-bottom: 20px;
 }
-
 }
   
 .second-nav{
     display: flex;
     align-items: center;
-    position: sticky;
   }
   .second-nav-arrow{
     color:rgb(62, 62, 62);
