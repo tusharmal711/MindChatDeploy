@@ -2951,10 +2951,10 @@ iframe{
 }
 .type-msg{
    
-     
+     width:97%;
     margin:0.3rem;
-     margin-bottom:0.5rem;
-  border-radius: 0.5rem;
+     margin-bottom:0.4rem;
+  border-radius: 0.7rem;
 
 
 }
