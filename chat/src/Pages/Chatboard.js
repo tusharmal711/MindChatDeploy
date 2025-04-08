@@ -1827,7 +1827,7 @@ you.map((profile)=>(
               <div className="type-msg" 
                 style={{
                   marginBottom: isKeyboardOpen ? "0.4rem" : "0",
-
+                  backgroundColor:isKeyboardOpen ? "red" : "white"
                 }}
               >
                 
