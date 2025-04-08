@@ -935,25 +935,7 @@ const [dchat,setDchat]=useState(false);
 //     setLastMessage(chats.at(-1)); // Gets the last message in chats
 //   }
 // }, [chats]); // Runs when `chats` updates
-function useKeyboardStatus() {
-  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
 
-  useEffect(() => {
-    const threshold = 150; // height difference in px
-    const initialHeight = window.innerHeight;
-
-    const handleResize = () => {
-      const heightDiff = initialHeight - window.innerHeight;
-      setIsKeyboardOpen(heightDiff > threshold);
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  return isKeyboardOpen;
-}
-const isKeyboardOpen = useKeyboardStatus();
   return (
     <div className="chatContainer">
     
@@ -1824,12 +1806,9 @@ you.map((profile)=>(
   
   
   
-              <div className="type-msg" 
-                style={{
-                  marginBottom: isKeyboardOpen ? "0.4rem" : "0",
-                  backgroundColor:isKeyboardOpen ? "red" : "white"
-                }}
-              >
+              <div className="type-msg">
+              
+              
                 
    
                  <div className="items">
