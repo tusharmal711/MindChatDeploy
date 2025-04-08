@@ -2949,7 +2949,14 @@ iframe{
 .chat-header p{
     font-size: 1.06rem;
 }
+.type-msg{
+   
+     
+    width:97%;
+     margin:0.3rem;
+     border-radius: 0.5rem;
 
+}
 }
   
 .second-nav{
