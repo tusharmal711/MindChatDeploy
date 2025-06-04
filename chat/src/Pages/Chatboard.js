@@ -96,6 +96,11 @@ useEffect(() => {
 }, []);
 
 // navigation back is ending here
+useEffect(() => {
+  if (Notification.permission !== "granted") {
+    Notification.requestPermission();
+  }
+}, []);
 
 
 useEffect(() => {
