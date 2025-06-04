@@ -12,9 +12,6 @@ import Navbar from "./Pages/Navbar.js";
 const App = () => {
   return (
 
-
-
-   
     <BrowserRouter>
   
       <MainRoutes />
@@ -43,8 +40,6 @@ const MainRoutes = () => {
         
         {/* Routes with Navbar */}
         <Route exact path="/chatboard" element={<Chatboard />} />
-       
-      
         <Route exact path="/navbar" element={<Navbar />} />
       </Routes>
     </>
