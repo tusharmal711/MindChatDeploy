@@ -98,35 +98,27 @@ useEffect(() => {
 // navigation back is ending here
 
 
-
 useEffect(() => {
-  if (!room) return;
+  if (!room){
+    // alert("You are not in any room");
+  }
 
-  socket.emit("join_room", room);
+  socket.emit("join_room", room); // Join current room
+
+  const phone = sessionStorage.getItem("phone");
 
   const fetchHistory = async () => {
     try {
-      const phone = sessionStorage.getItem("phone");
       const res = await fetch(`${backendUrl}api/fetchHistory`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          room,
-          userId: phone // Send current user's phone number
-        }),
+        body: JSON.stringify({ room, userId: phone }),
       });
       const data = await res.json();
       if (data.length > 0) {
-        setChats(data); // Store messages
-
-        // Ensure latest message is displayed at the bottom
-        setTimeout(() => {
-          messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
-        }, 0);
+        setChats(data);
+        setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "instant" }), 0);
       }
-      setTimeout(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
-      }, 1);
     } catch (error) {
       console.error("Error fetching chat history:", error);
     }
@@ -134,37 +126,51 @@ useEffect(() => {
 
   fetchHistory();
 
+  // Receive message event
   socket.on("receive_message", (data) => {
-    console.log("New message received:", data); // ✅ Check if messages arrive
-    
-    if (!data || !data.text) {
-      console.error("Message text is missing:", data);
-      return; // Stop execution if no text
-    }
-  
-    if (data.room === room) {
+    const currentUserPhone = sessionStorage.getItem("phone");
+    const isSender = data.userId === currentUserPhone;
+    const isSameRoom = data.room === room;
+    const isTabActive = !document.hidden;
+
+    // ✅ Always add message if user is in the same room
+    if (isSameRoom) {
       setChats((prevChats) => {
-        console.log("Updated chats:", [...prevChats, data]); // ✅ Debug chat storage
-  
-        // 🔹 Handle Image Buffer Updates
         if (data.text.match(/\.(jpg|jpeg|png|gif)$/)) {
-          console.log("Image detected:", data.text); // ✅ Check if it's an image
-          setImageBuffer((prevBuffer) => [...prevBuffer, data.text]);
+          setImageBuffer((prev) => [...prev, data.text]);
         } else {
-          console.log("Non-image message detected, resetting buffer."); // ✅ Debug reset
-          setImageBuffer([]); // Reset when non-image arrives
+          setImageBuffer([]);
         }
-       
-        return [...prevChats, data]; // Append new message
+        return [...prevChats, data];
       });
     }
+
+    // ✅ Send notification to others except sender, even if they're not in same room
+    if (!isSender) {
+      if (!isSameRoom || !isTabActive) {
+        if (Notification.permission === "granted") {
+          new Notification(`Message from ${data.userName}`, {
+            body: data.text.includes("http") ? "📷 Sent an image" : data.text,
+            icon: "/Images/app.png",
+          });
+        }
+
+        document.title = "(1) New message - Mind Chat";
+
+        const audio = new Audio("/Sounds/notifications.mp3");
+        audio.play().catch((e) => console.log("Sound error:", e));
+      }
+    }
   });
-  
 
   return () => {
     socket.off("receive_message");
   };
-}, [room]); // Depend on room change
+}, [room]);
+
+
+
+
 
 
 const [deleteOption, setDeleteOption] = useState("forMe");
@@ -438,8 +444,7 @@ const sendMessage = async (req, res) => {
   setTimeout(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
   }, 1);
-  const notUser = sessionStorage.getItem("notUser");
-  // showNotification(chat, notUser);
+
 };
 // chating part is ending here
 
