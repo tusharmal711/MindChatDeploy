@@ -139,7 +139,7 @@ useEffect(() => {
 
   // Receive message event
   socket.on("receive_message", (data) => {
-    const currentUserPhone = sessionStorage.getItem("phone");
+    const currentUserPhone = sessionStorage.getItem("phone") || Cookies.get("mobile");
     const isSender = data.userId === currentUserPhone;
     const isSameRoom = data.room === room;
     const isTabActive = !document.hidden;
@@ -198,7 +198,7 @@ const deleteChats = async (deleteType = "forMe") => {
       body: JSON.stringify({ 
         room, 
         deleteType,
-        userId: sessionStorage.getItem("phone") 
+        userId: sessionStorage.getItem("phone") || Cookies.get("mobile")
       }),
     });
 
@@ -369,8 +369,8 @@ const imageSet = (e) => {
 
 
 
-const phone = sessionStorage.getItem("phone");
-const contactNo = sessionStorage.getItem("phone");
+const phone = sessionStorage.getItem("phone") || Cookies.get("mobile");
+const contactNo = sessionStorage.getItem("phone") || Cookies.get("mobile");
 
 const [imageLoading,setImageLoading]=useState(false);
 
@@ -646,7 +646,8 @@ useEffect(() => {
       setSelectedContact(data);
       
       // Generate unique room ID based on session phone and selected contact's mobile
-      const newRoom = [sessionStorage.getItem("phone"), data.mobile].sort().join("_");
+     const phone = sessionStorage.getItem("phone") || Cookies.get("mobile");
+const newRoom = [phone, data.mobile].sort().join("_");
       
       // Clear previous chat history
       setChats([]);
@@ -812,7 +813,7 @@ useEffect(() => {
          const fetchContacts = async () => {
          
            try {
-             const phone = sessionStorage.getItem("phone");
+             const phone = sessionStorage.getItem("phone") || Cookies.get("mobile");
              const res = await fetch(`${backendUrl}api/fetchYou`, {
                method: "POST",
                headers: { "Content-Type": "application/json" },
@@ -874,7 +875,7 @@ useEffect(()=>{
 const updateContacts = async (e) => {
         e.preventDefault();
   try {
-    const phone = sessionStorage.getItem("phone");
+    const phone = sessionStorage.getItem("phone") || Cookies.get("mobile");
     const res = await fetch(`${backendUrl}api/updateContact`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -1315,7 +1316,13 @@ you.map((profile)=>(
   <ul>
     {filteredContacts.map((contact) => {
       // Create the room ID for this specific contact
-      const contactRoom = [sessionStorage.getItem("phone"), contact.mobile].sort().join("_");
+     const phone = sessionStorage.getItem("phone") || Cookies.get("mobile");
+
+if (!phone) {
+  console.error("No phone number found in sessionStorage or cookies.");
+}
+
+const contactRoom = [phone, contact.mobile].sort().join("_");
       
       // Filter messages for this contact's room
       const contactMessages = chats.filter(msg => msg.room === contactRoom);
