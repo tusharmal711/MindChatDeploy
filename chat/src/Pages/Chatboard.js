@@ -9,7 +9,7 @@ import { RiDeleteBin6Fill } from "react-icons/ri";
 import { FcDeleteDatabase } from "react-icons/fc";
 import { IoMdImages } from "react-icons/io";
 import { IoSendSharp } from "react-icons/io5";
-
+import Cookies from "js-cookie";
 import { RxCross1 } from "react-icons/rx";
 import io from "socket.io-client";
 import { LuSticker } from "react-icons/lu";
@@ -457,37 +457,60 @@ const sendMessage = async (req, res) => {
     contact.username.toLowerCase().includes(searchTerm.toLowerCase())
   );
 const [dpMap, setDpMap] = useState({});
-const [aboutMap,setAboutMap]=useState({});
+const [aboutMap, setAboutMap] = useState({});
+
 useEffect(() => {
   const fetchDps = async () => {
+    // Check if cached in cookies
+    const cachedDpMap = Cookies.get("dpMap");
+    const cachedAboutMap = Cookies.get("aboutMap");
+
+    if (cachedDpMap && cachedAboutMap) {
+      try {
+        setDpMap(JSON.parse(cachedDpMap));
+        setAboutMap(JSON.parse(cachedAboutMap));
+        return; // Skip fetching from backend
+      } catch (e) {
+        console.error("Failed to parse cookie data", e);
+        // Fallback to fetching if JSON parsing fails
+      }
+    }
+
     const newDpMap = {};
-    const newAboutMap={};
+    const newAboutMap = {};
+
     for (const contact of filteredContacts) {
       try {
-       
         const dpRes = await fetch(`${backendUrl}api/fetchDp`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ mobile: contact.mobile }),
         });
 
-       
         const dpData = await dpRes.json();
 
-        newDpMap[contact.mobile] = dpData.dp || "./Images/image.png"; // Use default if no DP
-        newAboutMap[contact.mobile]=dpData.about;
+        newDpMap[contact.mobile] = dpData.dp || "./Images/image.png";
+        newAboutMap[contact.mobile] = dpData.about;
       } catch (error) {
         newDpMap[contact.mobile] = "https://res.cloudinary.com/dnd9qzxws/image/upload/v1743764088/image_dp_uwfq2g.png";
-        newAboutMap[contact.mobile]="Hello ! I am not in MindChat !";
+        newAboutMap[contact.mobile] = "Hello ! I am not in MindChat !";
       }
     }
+
+    // Update state
     setDpMap(newDpMap);
     setAboutMap(newAboutMap);
+
+    // Save to cookies (expire in 7 days)
+    Cookies.set("dpMap", JSON.stringify(newDpMap), { expires: 7 });
+    Cookies.set("aboutMap", JSON.stringify(newAboutMap), { expires: 7 });
   };
 
-  fetchDps();
-}, [filteredContacts]); // Run effect when contacts change
-
+  // Prevent running if contacts haven't loaded yet
+  if (filteredContacts.length > 0) {
+    fetchDps();
+  }
+}, [filteredContacts]);
 
 
 
@@ -524,11 +547,18 @@ const addContact = async (e) => {
 };
 
 
-  // Fetch contacts from the backend
-  const reducer = (state) => state + 1;
-  const [update, forceUpdate] = useReducer(reducer, 0);
-  useEffect(() => {
-    const fetchContacts = async () => {
+ // Fetch contacts from the backend with sessionStorage caching
+const reducer = (state) => state + 1;
+const [update, forceUpdate] = useReducer(reducer, 0);
+
+useEffect(() => {
+  const fetchContacts = async () => {
+    const cachedContacts = sessionStorage.getItem("contacts");
+
+    if (cachedContacts) {
+      // Use cached contacts
+      setContacts(JSON.parse(cachedContacts));
+    } else {
       try {
         const phone = sessionStorage.getItem("phone");
         const res = await fetch(`${backendUrl}api/fetch`, {
@@ -538,21 +568,29 @@ const addContact = async (e) => {
         });
 
         if (!res.ok) throw new Error("Failed to fetch contacts");
+
         const data = await res.json();
         setContacts(data);
+
+        // Store in sessionStorage
+        sessionStorage.setItem("contacts", JSON.stringify(data));
       } catch (error) {
         console.error("Error fetching contacts:", error);
       }
-    };
+    }
+  };
 
-    fetchContacts();
-    const interval = setInterval(() => {
-      forceUpdate(); // Triggers re-render to fetch new data
-    }, 1000);
+  fetchContacts();
 
-    return () => clearInterval(interval); 
-  }, [update]);
+  const interval = setInterval(() => {
+    const cachedContacts = sessionStorage.getItem("contacts");
+    if (!cachedContacts) {
+      forceUpdate(); // Only refetch if not cached
+    }
+  }, 1000);
 
+  return () => clearInterval(interval);
+}, [update]);
 
 
 
