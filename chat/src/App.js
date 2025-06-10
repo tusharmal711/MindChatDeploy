@@ -8,14 +8,15 @@ import Login from './Pages/Login.js';
 import Dash from "./Pages/Dashboard.js";
 import Chatboard from "./Pages/Chatboard.js";
 import Navbar from "./Pages/Navbar.js";
-import PrivateRoute from "./Pages/PrivateRoute";
+
 function HomeRedirect() {
   const navigate = useNavigate();
 
   useEffect(() => {
-   const phone = sessionStorage.getItem("phone") || Cookies.get("mobile");
+   const phone = sessionStorage.getItem("phone") || Cookies.get("mobile") || localStorage.getItem("phone");;
 
     if (phone) {
+      sessionStorage.setItem("phone", phone);
       navigate("/chatboard");
     } else {
       navigate("/login");
@@ -50,12 +51,10 @@ const MainRoutes = () => {
         <Route exact path="/signup" element={<Signup />} />
         <Route exact path="/login" element={<Login />} />
         <Route exact path="/dash" element={<Dash />} />
-      <Route
+       <Route
   path="/chatboard"
   element={
-    <PrivateRoute>
-      <Chatboard />
-    </PrivateRoute>
+    Cookies.get("mobile") ? <Chatboard /> : <Navigate to="/login" />
   }
 />
         <Route exact path="/navbar" element={<Navbar />} />

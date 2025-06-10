@@ -370,7 +370,7 @@ const handleLogout = () => {
  Cookies.remove("mobile");
 sessionStorage.removeItem("phone");
 sessionStorage.removeItem("contacts");
-
+localStorage.removeItem("phone");
   navigate("/login");
 };
 

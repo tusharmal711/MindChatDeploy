@@ -64,6 +64,7 @@ const isLogin = async (e) => {
       // Cookies.set("mobile", phone, { expires: 7 }); // expires in 7 days
       Cookies.set("mobile", phone); // Persist login
       sessionStorage.setItem("phone", phone);
+      localStorage.setItem("phone", phone);
      navigate("/chatboard");
     }
    
