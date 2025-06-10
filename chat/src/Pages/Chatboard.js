@@ -144,7 +144,7 @@ useEffect(() => {
     const isSameRoom = data.room === room;
     const isTabActive = !document.hidden;
 
-    // ✅ Always add message if user is in the same room
+    // ✅ Always update messages if same room
     if (isSameRoom) {
       setChats((prevChats) => {
         if (data.text.match(/\.(jpg|jpeg|png|gif)$/)) {
@@ -156,21 +156,29 @@ useEffect(() => {
       });
     }
 
-    // ✅ Send notification to others except sender, even if they're not in same room
-    if (!isSender) {
-      if (!isSameRoom || !isTabActive) {
-        if (Notification.permission === "granted") {
+    // ✅ Notify other users
+    if (!isSender && (!isSameRoom || !isTabActive)) {
+      // Try Notification API
+      if (Notification.permission === "granted") {
+        try {
           new Notification(`Message from ${data.userName}`, {
             body: data.text.includes("http") ? "📷 Sent an image" : data.text,
             icon: "/Images/app.png",
           });
+        } catch (e) {
+          console.warn("Notification error:", e);
         }
-
-        document.title = "(1) New message - Mind Chat";
-
-        const audio = new Audio("/Sounds/notifications.mp3");
-        audio.play().catch((e) => console.log("Sound error:", e));
+      } else {
+        // 🔁 Fallback for mobile: Use alert as temporary notification
+        alert(`📩 Message from ${data.userName}: ${data.text}`);
       }
+
+      // 🔔 Change title to attract attention
+      document.title = "(1) New message - Mind Chat";
+
+      // 🔉 Play sound (mobile requires interaction)
+      const audio = new Audio("/Sounds/notifications.mp3");
+      audio.play().catch((e) => console.log("Sound error:", e));
     }
   });
 
