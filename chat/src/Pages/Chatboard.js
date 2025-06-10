@@ -32,6 +32,8 @@ import { PiMicrosoftWordLogoFill } from "react-icons/pi";
 import { FaPlay } from "react-icons/fa";
 import EmojiPicker from 'emoji-picker-react';
 import {getFCMToken} from "./firebase-config.js";
+import { onMessage } from "firebase/messaging";
+import { messaging } from "./firebase-config"; // adjust path if needed
 const backendUrl = process.env.REACT_APP_BACKEND_URL; 
 const socket = io("https://mindchatdeploy-2.onrender.com/", {
   transports: ["websocket"], // Forces WebSocket connection
@@ -89,6 +91,22 @@ const messagesEndRef = useRef(null);
   }, []);
 
 
+useEffect(() => {
+  const unsubscribe = onMessage(messaging, (payload) => {
+    console.log("📩 Message received in foreground:", payload);
+
+    const { title, body } = payload.notification;
+
+    if (Notification.permission === "granted") {
+      new Notification(title, {
+        body,
+       
+      });
+    }
+  });
+
+  return () => unsubscribe(); // Clean up
+}, []);
 
 
 
@@ -125,19 +143,20 @@ useEffect(() => {
 
 
 async function notifyUser() {
+ 
   const token = fcmToken; // Get this from Firebase Messaging
   const title = "New Message!";
   const body = "You have a new message on Mind Chat.";
 
   try {
-    const response = await fetch(`${backendUrl}notify`, {
+    const response = await fetch("http://localhost:3001/notify", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ token, title, body }),
     });
-
+     
     const result = await response.text();
     console.log(result);
   } catch (error) {
@@ -201,6 +220,7 @@ useEffect(() => {
 
     // ✅ Notify other users
     if (!isSender && (!isSameRoom || !isTabActive)) {
+      document.title="New notification (1)";
       notifyUser();
     }
   });
