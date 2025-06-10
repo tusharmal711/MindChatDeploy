@@ -3,7 +3,7 @@ import { useState} from "react";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import Cookies from "js-cookie";
 const Login = () =>{
   const backendUrl = process.env.REACT_APP_BACKEND_URL; 
   const navigate=useNavigate();
@@ -61,9 +61,7 @@ const isLogin = async (e) => {
     if(response!==400 || response!==401 || response!==500){
       sessionStorage.setItem("phone",phone);
       toast.success("Successfully logged in!", { position: "top-right" });
-        const jwtToken = response.token; 
-      localStorage.setItem("token", jwtToken); // or sessionStorage
-      localStorage.setItem("phone", phone);
+      Cookies.set("mobile", phone, { expires: 7 }); // expires in 7 days
      navigate("/chatboard");
     }
    
