@@ -8,7 +8,7 @@ import Login from './Pages/Login.js';
 import Dash from "./Pages/Dashboard.js";
 import Chatboard from "./Pages/Chatboard.js";
 import Navbar from "./Pages/Navbar.js";
-
+import PrivateRoute from "./Pages/PrivateRoute";
 function HomeRedirect() {
   const navigate = useNavigate();
 
@@ -50,10 +50,12 @@ const MainRoutes = () => {
         <Route exact path="/signup" element={<Signup />} />
         <Route exact path="/login" element={<Login />} />
         <Route exact path="/dash" element={<Dash />} />
-       <Route
+      <Route
   path="/chatboard"
   element={
-    Cookies.get("mobile") ? <Chatboard /> : <Navigate to="/login" />
+    <PrivateRoute>
+      <Chatboard />
+    </PrivateRoute>
   }
 />
         <Route exact path="/navbar" element={<Navbar />} />
