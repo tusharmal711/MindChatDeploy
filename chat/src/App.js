@@ -13,9 +13,9 @@ function HomeRedirect() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const mobile = Cookies.get("mobile");
+   const phone = sessionStorage.getItem("phone") || Cookies.get("mobile");
 
-    if (mobile) {
+    if (phone) {
       navigate("/chatboard");
     } else {
       navigate("/login");
