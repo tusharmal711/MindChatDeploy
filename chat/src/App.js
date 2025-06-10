@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, useNavigate , Navigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { useEffect } from "react";
 
@@ -50,7 +50,12 @@ const MainRoutes = () => {
         <Route exact path="/signup" element={<Signup />} />
         <Route exact path="/login" element={<Login />} />
         <Route exact path="/dash" element={<Dash />} />
-        <Route exact path="/chatboard" element={<Chatboard />} />
+       <Route
+  path="/chatboard"
+  element={
+    Cookies.get("mobile") ? <Chatboard /> : <Navigate to="/login" />
+  }
+/>
         <Route exact path="/navbar" element={<Navbar />} />
       </Routes>
     </>
