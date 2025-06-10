@@ -1,5 +1,5 @@
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-
+import { BrowserRouter, Routes, Route, useLocation,useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import Home from './Pages/Home.js';
 import Signup from './Pages/Signup.js';
 import Login from './Pages/Login.js';
@@ -18,7 +18,22 @@ const App = () => {
     </BrowserRouter>
   );
 };
+function HomeRedirect() {
+  const navigate = useNavigate();
 
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const phone = localStorage.getItem("phone");
+
+    if (token && phone) {
+      navigate("/chatboard");
+    } else {
+      navigate("/login"); // or show home/landing page
+    }
+  }, [navigate]);
+
+  return null; // or a loader component
+}
 const MainRoutes = () => {
   const location = useLocation();
 
@@ -33,7 +48,7 @@ const MainRoutes = () => {
 
       <Routes>
         {/* Routes without Navbar */}
-        <Route exact path="/" element={<Home />} />
+        <Route exact path="/" element={<HomeRedirect />} />
         <Route exact path="/signup" element={<Signup />} />
         <Route exact path="/login" element={<Login />} />
         <Route exact path="/dash" element={<Dash />} />

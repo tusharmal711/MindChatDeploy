@@ -31,6 +31,7 @@ import "../CSS/Signup.css";
 import { PiMicrosoftWordLogoFill } from "react-icons/pi";
 import { FaPlay } from "react-icons/fa";
 import EmojiPicker from 'emoji-picker-react';
+import {Navigate,Route} from "react-router-dom";
 const backendUrl = process.env.REACT_APP_BACKEND_URL; 
 const socket = io("https://mindchatdeploy-2.onrender.com/", {
   transports: ["websocket"], // Forces WebSocket connection
@@ -76,6 +77,19 @@ const [joined, setJoined] = useState(false);
 const [room, setRoom] = useState("");
 const [imageBuffer, setImageBuffer] = useState([]);
 const messagesEndRef = useRef(null);
+
+
+function ProtectedRoute({ children }) {
+  const token = localStorage.getItem("token");
+  return token ? children : <Navigate to="/login" />;
+}
+
+// In routes
+<Route path="/chatboard" element={<ProtectedRoute><Chatboard /></ProtectedRoute>} />
+
+
+
+
 
 
 
