@@ -50,34 +50,59 @@ const Navbar = ()=>{
 
 
 
-    const reducer = (state) => state + 1;
-     const [update, forceUpdate] = useReducer(reducer, 0);
-    useEffect(() => {
-       const fetchContacts = async () => {
-       
-         try {
-           const phone = sessionStorage.getItem("phone");
-           const res = await fetch(`${backendUrl}api/fetchYou`, {
-             method: "POST",
-             headers: { "Content-Type": "application/json" },
-             body: JSON.stringify({ phone }),
-           });
-   
-           if (!res.ok) throw new Error("Failed to fetch contacts");
-           const data = await res.json();
-           setYou(data);
-         } catch (error) {
-           console.error("Error fetching contacts:", error);
-         }
-       };
-   
-       fetchContacts();
-       const interval = setInterval(() => {
-        forceUpdate(); // Triggers re-render to fetch new data
-      }, 100);
-  
-      return () => clearInterval(interval); 
-     }, [update]);
+
+
+const reducer = (state) => state + 1;
+const [update, forceUpdate] = useReducer(reducer, 0);
+
+useEffect(() => {
+  const fetchContacts = async () => {
+    try {
+      // ✅ Use sessionStorage first, then fallback to cookies
+      const phone = sessionStorage.getItem("phone") || Cookies.get("mobile");
+
+      if (!phone) {
+        console.warn("No phone number found in sessionStorage or cookies.");
+        return;
+      }
+
+      const res = await fetch(`${backendUrl}api/fetchYou`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone }),
+      });
+
+      if (!res.ok) throw new Error("Failed to fetch your profile");
+
+      const data = await res.json();
+      setYou(data);
+    } catch (error) {
+      console.error("Error fetching your profile:", error);
+    }
+  };
+
+  fetchContacts();
+
+  const interval = setInterval(() => {
+    forceUpdate(); // Triggers refetch
+  }, 100);
+
+  return () => clearInterval(interval);
+}, [update]);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
      const profilePic = document.querySelector(".profile-pic");
      const uploadPopup = document.querySelector(".upload-popup");
@@ -935,7 +960,7 @@ you.map((profile)=>(
               <button type="button" id="logoutCancel" onClick={() => setIsOpen(false)}>
                 Cancel
               </button>
-              <button id="logoutBtn" onClick={() => navigate("/login")}>
+              <button id="logoutBtn" onClick={handleLogout}>
                 Logout
               </button>
             </div>
