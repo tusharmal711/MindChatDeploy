@@ -79,14 +79,6 @@ const [imageBuffer, setImageBuffer] = useState([]);
 const messagesEndRef = useRef(null);
 
 
-// function ProtectedRoute({ children }) {
-//   const token = localStorage.getItem("token");
-//   return token ? children : <Navigate to="/login" />;
-// }
-
-// // In routes
-// <Route path="/chatboard" element={<ProtectedRoute><Chatboard /></ProtectedRoute>} />
-
 
 
 
