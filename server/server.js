@@ -308,9 +308,41 @@ app.post('/api/deleteChats', async (req, res) => {
   }
 });
 
+import admin from "firebase-admin";
+import serviceAccount from "./firebase-service-account.json" assert { type: "json" };
 
 
 
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
+
+// 🔔 FCM Send Function
+const sendFCM = async (token, title, body) => {
+  const message = {
+    token,
+    notification: {
+      title,
+      body,
+    },
+  };
+
+  return await admin.messaging().send(message);
+};
+
+// 🧩 API Endpoint for Notification
+app.post("/notify", async (req, res) => {
+  const { token, title, body } = req.body;
+
+  try {
+    await sendFCM(token, title, body);
+    res.status(200).send("Notification sent!");
+  } catch (error) {
+    console.error("FCM Error:", error);
+    res.status(500).send("Failed to send notification");
+  }
+});
 
 // Start the server
 server.listen(PORT, () => {

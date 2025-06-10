@@ -31,7 +31,7 @@ import "../CSS/Signup.css";
 import { PiMicrosoftWordLogoFill } from "react-icons/pi";
 import { FaPlay } from "react-icons/fa";
 import EmojiPicker from 'emoji-picker-react';
-
+import {getFCMToken} from "./firebase-config.js";
 const backendUrl = process.env.REACT_APP_BACKEND_URL; 
 const socket = io("https://mindchatdeploy-2.onrender.com/", {
   transports: ["websocket"], // Forces WebSocket connection
@@ -77,8 +77,16 @@ const [joined, setJoined] = useState(false);
 const [room, setRoom] = useState("");
 const [imageBuffer, setImageBuffer] = useState([]);
 const messagesEndRef = useRef(null);
+ const [fcmToken, setFcmToken] = useState(null);
 
-
+  useEffect(() => {
+    getFCMToken().then((token) => {
+      if (token) {
+        setFcmToken(token);
+        console.log("🔥 Token:", token);
+      }
+    });
+  }, []);
 
 
 
@@ -107,6 +115,41 @@ useEffect(() => {
     Notification.requestPermission();
   }
 }, []);
+
+
+
+
+
+
+
+
+
+async function notifyUser() {
+  const token = fcmToken; // Get this from Firebase Messaging
+  const title = "New Message!";
+  const body = "You have a new message on Mind Chat.";
+
+  try {
+    const response = await fetch(`${backendUrl}notify`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ token, title, body }),
+    });
+
+    const result = await response.text();
+    console.log(result);
+  } catch (error) {
+    console.error("Notification Error:", error);
+  }
+}
+
+
+
+
+
+
 
 
 useEffect(() => {
@@ -158,27 +201,7 @@ useEffect(() => {
 
     // ✅ Notify other users
     if (!isSender && (!isSameRoom || !isTabActive)) {
-      // Try Notification API
-      if (Notification.permission === "granted") {
-        try {
-          new Notification(`Message from ${data.userName}`, {
-            body: data.text.includes("http") ? "📷 Sent an image" : data.text,
-            icon: "/Images/app.png",
-          });
-        } catch (e) {
-          console.warn("Notification error:", e);
-        }
-      } else {
-        // 🔁 Fallback for mobile: Use alert as temporary notification
-        alert(`📩 Message from ${data.userName}: ${data.text}`);
-      }
-
-      // 🔔 Change title to attract attention
-      document.title = "(1) New message - Mind Chat";
-
-      // 🔉 Play sound (mobile requires interaction)
-      const audio = new Audio("/Sounds/notifications.mp3");
-      audio.play().catch((e) => console.log("Sound error:", e));
+      notifyUser();
     }
   });
 

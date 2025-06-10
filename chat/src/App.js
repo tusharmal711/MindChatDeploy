@@ -8,6 +8,7 @@ import Login from './Pages/Login.js';
 import Dash from "./Pages/Dashboard.js";
 import Chatboard from "./Pages/Chatboard.js";
 import Navbar from "./Pages/Navbar.js";
+import { getFCMToken } from './Pages/firebase-config.js';
 
 function HomeRedirect() {
   const navigate = useNavigate();
@@ -27,6 +28,10 @@ function HomeRedirect() {
 }
 
 const App = () => {
+  useEffect(() => {
+  getFCMToken();
+}, []);
+
   return (
     <BrowserRouter>
       <MainRoutes />
