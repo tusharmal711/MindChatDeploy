@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, useLocation, useNavigate , Navigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { useEffect } from "react";
-
+import PrivateRoute from "./Pages/PrivateRoute";
 import Home from './Pages/Home.js';
 import Signup from './Pages/Signup.js';
 import Login from './Pages/Login.js';
@@ -51,10 +51,12 @@ const MainRoutes = () => {
         <Route exact path="/signup" element={<Signup />} />
         <Route exact path="/login" element={<Login />} />
         <Route exact path="/dash" element={<Dash />} />
-       <Route
+     <Route
   path="/chatboard"
   element={
-    Cookies.get("mobile") ? <Chatboard /> : <Navigate to="/login" />
+    <PrivateRoute>
+      <Chatboard />
+    </PrivateRoute>
   }
 />
         <Route exact path="/navbar" element={<Navbar />} />
