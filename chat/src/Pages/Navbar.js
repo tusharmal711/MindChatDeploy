@@ -11,7 +11,7 @@ import { TbInfoSquareRoundedFilled } from "react-icons/tb";
 import { IoSettingsSharp } from "react-icons/io5";
 import { FaEdit } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
-
+import Cookies from "js-cookie";
 import { MdChat } from "react-icons/md";
 import { HiOutlineEye } from "react-icons/hi";
 import { MdOutlinePhotoCamera } from "react-icons/md";
@@ -341,8 +341,10 @@ const deleteDp = async(req,res)=>{
   }
 }
 
-
-
+const handleLogout = () => {
+  Cookies.remove("mobile");
+  navigate("/login");
+};
 
 
 
@@ -509,7 +511,7 @@ you.map((profile)=>(
               <button type="button" id="logoutCancel" onClick={() => setIsOpen(false)}>
                 Cancel
               </button>
-              <button id="logoutBtn" onClick={() => navigate("/login")}>
+              <button id="logoutBtn" onClick={handleLogout}>
                 Logout
               </button>
             </div>
