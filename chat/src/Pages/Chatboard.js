@@ -116,7 +116,7 @@ useEffect(() => {
 
   socket.emit("join_room", room); // Join current room
 
-  const phone = sessionStorage.getItem("phone");
+  const phone = sessionStorage.getItem("phone") || Cookies.get("mobile");
 
   const fetchHistory = async () => {
     try {
