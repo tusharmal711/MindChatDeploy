@@ -553,7 +553,8 @@ const addContact = async (e) => {
 };
 
 
- // Fetch contacts from the backend with sessionStorage caching
+
+
 const reducer = (state) => state + 1;
 const [update, forceUpdate] = useReducer(reducer, 0);
 
@@ -562,11 +563,18 @@ useEffect(() => {
     const cachedContacts = sessionStorage.getItem("contacts");
 
     if (cachedContacts) {
-      // Use cached contacts
+      // ✅ Use cached contacts
       setContacts(JSON.parse(cachedContacts));
     } else {
       try {
-        const phone = sessionStorage.getItem("phone");
+        // ✅ Use sessionStorage first, fallback to cookie
+        const phone = sessionStorage.getItem("phone") || Cookies.get("mobile");
+
+        if (!phone) {
+          console.warn("No phone number found in session or cookies.");
+          return;
+        }
+
         const res = await fetch(`${backendUrl}api/fetch`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -578,7 +586,7 @@ useEffect(() => {
         const data = await res.json();
         setContacts(data);
 
-        // Store in sessionStorage
+        // ✅ Store fresh data to sessionStorage
         sessionStorage.setItem("contacts", JSON.stringify(data));
       } catch (error) {
         console.error("Error fetching contacts:", error);
@@ -591,13 +599,12 @@ useEffect(() => {
   const interval = setInterval(() => {
     const cachedContacts = sessionStorage.getItem("contacts");
     if (!cachedContacts) {
-      forceUpdate(); // Only refetch if not cached
+      forceUpdate(); // ✅ Force re-fetch if cache is cleared
     }
   }, 1000);
 
   return () => clearInterval(interval);
 }, [update]);
-
 
 
 

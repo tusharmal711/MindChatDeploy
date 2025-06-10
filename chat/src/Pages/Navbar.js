@@ -342,7 +342,10 @@ const deleteDp = async(req,res)=>{
 }
 
 const handleLogout = () => {
-  Cookies.remove("mobile");
+ Cookies.remove("mobile");
+sessionStorage.removeItem("phone");
+sessionStorage.removeItem("contacts");
+
   navigate("/login");
 };
 

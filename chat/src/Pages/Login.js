@@ -61,7 +61,9 @@ const isLogin = async (e) => {
     if(response!==400 || response!==401 || response!==500){
       sessionStorage.setItem("phone",phone);
       toast.success("Successfully logged in!", { position: "top-right" });
-      Cookies.set("mobile", phone, { expires: 7 }); // expires in 7 days
+      // Cookies.set("mobile", phone, { expires: 7 }); // expires in 7 days
+      Cookies.set("mobile", phone); // Persist login
+      sessionStorage.setItem("phone", phone);
      navigate("/chatboard");
     }
    
