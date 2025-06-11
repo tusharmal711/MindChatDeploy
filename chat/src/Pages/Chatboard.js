@@ -149,7 +149,7 @@ async function notifyUser() {
   const body = "You have a new message on Mind Chat.";
 
   try {
-    const response = await fetch("http://localhost:3001/notify", {
+    const response = await fetch(`${backendUrl}notify`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
