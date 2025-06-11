@@ -340,6 +340,13 @@ const sendFCM = async (token, title, body) => {
       title,
       body,
     },
+  webpush: {
+    fcmOptions: {
+      link: "https://mindchat-one.vercel.app/chatboard",  // Your web app link
+    },
+  },
+
+
   };
 
   return await admin.messaging().send(message);
