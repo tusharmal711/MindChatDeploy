@@ -149,7 +149,7 @@ async function notifyUser() {
   const body = "You have a new message on Mind Chat.";
 
   try {
-    const response = await fetch("https://mindchatdeploy-2.onrender.com/notify", {
+    const response = await fetch("http://localhost:3001/notify", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -159,6 +159,7 @@ async function notifyUser() {
      
     const result = await response.text();
     console.log(result);
+    alert(`This is notification : ${result}`);
   } catch (error) {
     console.error("Notification Error:", error);
   }
