@@ -342,7 +342,7 @@ const sendFCM = async (token, title, body) => {
     },
   webpush: {
     fcmOptions: {
-      link: "https://mindchat-one.vercel.app/",  // Your web app link
+      link: "https://mindchat-one.vercel.app/chatboard",  // Your web app link
     },
   },
 
