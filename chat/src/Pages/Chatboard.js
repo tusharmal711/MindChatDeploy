@@ -170,12 +170,13 @@ async function notifyUser() {
 
 
 useEffect(() => {
-  if (Notification.permission !== "granted") {
+  if ("Notification" in window && Notification.permission !== "granted") {
     Notification.requestPermission().then((permission) => {
-      console.log("Notification permission:", permission);
+      console.log("Notification permission status:", permission);
     });
   }
 }, []);
+
 
 
 useEffect(() => {
@@ -226,24 +227,26 @@ useEffect(() => {
     }
 
     // ✅ Notify other users
-    if (!isSender && (!isSameRoom || !isTabActive)) {
-      document.title="New notification (1)";
-      if (Notification.permission === "granted") {
-        try {
-          new Notification("MindChat", {
-       body: `Message from ${data.userName}: ${data.text.includes("http") ? "📷 Sent an image" : data.text}`,
-       icon: "/Images/app.png",
-       });
-        } catch (e) {
-          console.warn("Notification error:", e);
-        }
-      } else {
-        // 🔁 Fallback for mobile: Use alert as temporary notification
-        alert(`📩 Message from ${data.userName}: ${data.text}`);
-      }
-       const audio = new Audio("/Sounds/notifications.mp3");
-      audio.play().catch((e) => console.log("Sound error:", e));
+   if (!isSender && (!isSameRoom || document.hidden)) {
+  if ("Notification" in window && Notification.permission === "granted") {
+    try {
+      new Notification(`Message from ${data.userName}`, {
+        body: data.text.includes("http") ? "📷 Sent an image" : data.text,
+        icon: "/Images/app.png",
+      });
+
+      const audio = new Audio("/Sounds/notifications.mp3");
+      audio.play().catch(e => console.log("Sound error:", e));
+      
+      document.title = "(1) New message - Mind Chat";
+    } catch (err) {
+      console.warn("Notification failed:", err);
     }
+  } else {
+    console.warn("Notification not shown: permission not granted");
+  }
+}
+
   });
 
   return () => {
