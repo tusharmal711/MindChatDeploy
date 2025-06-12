@@ -169,7 +169,13 @@ async function notifyUser() {
 
 
 
-
+useEffect(() => {
+  if (Notification.permission !== "granted") {
+    Notification.requestPermission().then((permission) => {
+      console.log("Notification permission:", permission);
+    });
+  }
+}, []);
 
 
 useEffect(() => {
