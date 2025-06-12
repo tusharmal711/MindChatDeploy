@@ -2821,6 +2821,7 @@ width:100%;
 .typing-text{
     display: none;
 }
+
 .row{
     overflow-y: auto;
     box-shadow: none;
@@ -2829,7 +2830,7 @@ width:100%;
 
 .messages{
     height:calc(100vh - 15rem);
-   
+ 
     padding-bottom: 93px;
 }
 iframe{
@@ -2850,7 +2851,22 @@ iframe{
     gap:0.3rem;
 }
 .type-msg{
-    height:5rem;
+    bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    height:4rem;
+    border-radius: none;
+    justify-content: center;
+    background-color: black;
+    border-radius: 0.5rem;
+    width:99%;
+}
+#emoji{
+    color:white;
+}
+
+#plus{
+    color:white;
 }
 .searchClass{
     margin-top: -11px;
@@ -2870,7 +2886,7 @@ iframe{
   #send-arrow{
     padding-left: 0.2rem;
     font-size: 1.35rem;
-    color:#003d4e;
+    color:white;
   }
   .contact-icon-left{
     font-size: 1.4rem;
@@ -2950,16 +2966,7 @@ iframe{
 .chat-header p{
     font-size: 1.06rem;
 }
-.type-msg{
-   
-     width:97%;
 
-    margin:0.3rem;
-    
-  border-radius: 0.7rem;
-  padding-bottom: 2rem;
-  
-}
 
 }
   
