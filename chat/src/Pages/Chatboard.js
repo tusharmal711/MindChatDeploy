@@ -1066,6 +1066,32 @@ const removeSticker =()=>{
       typemsg.classList.remove("extra");
     }
   }, [isFocused]);
+
+
+
+
+
+function useBackButton(callback) {
+  useEffect(() => {
+    const handlePopState = () => {
+      callback(); // this runs when back button is pressed
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [callback]);
+}
+
+useBackButton(() => {
+ setIsFocused(false);
+  // Optional: navigate("/your-route") or show a confirmation
+});
+
+
+
 const handleEmojiClick = (emoji) => {
   setChat((prevInput) => prevInput + emoji.emoji);
  setShowIcon(true);
