@@ -2838,7 +2838,7 @@ iframe{
    
 }
 .extra{
-    margin-bottom: 30%;
+    padding-bottom: 3rem;
 }
 .own{
     width:auto;
@@ -2861,7 +2861,8 @@ iframe{
     border-radius: none;
     justify-content: center;
     background-color: black;
-   
+  
+  
   
 }
 html,

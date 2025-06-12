@@ -1005,7 +1005,7 @@ const fileAni=()=>{
   removeSticker();
 }
 const secondDiv=()=>{
-  const messages=document.getElementById("chat-body");
+  const messages=document.querySelector(".type-msg");
  
   messages.classList.add("extra");
   if(viewUpload===false){
