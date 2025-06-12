@@ -2992,7 +2992,10 @@ body {
  
     padding-bottom: 130px;
 }
-
+.chat-part ul li:hover{
+    background-color: white;
+    border-radius: 0.5rem;
+}
 }
   
 .second-nav{
@@ -3010,6 +3013,3 @@ body {
 }
 
 
-input, textarea {
-  touch-action: manipulation;
-}

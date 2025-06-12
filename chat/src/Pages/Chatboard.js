@@ -117,7 +117,7 @@ useEffect(() => {
   window.history.pushState(null, "", window.location.href);
 
   const handleBackButton = () => {
-    setSecond(false);
+     setSecond(false);
   setActiveContact(null);
    setSelectedContact(null);
    setRoom("");
@@ -181,7 +181,7 @@ useEffect(() => {
 }, []);
 
 
- const chatInputRef = useRef(null);
+  const chatInputRef = useRef(null);
 useEffect(() => {
   if (!room){
     // alert("You are not in any room");
