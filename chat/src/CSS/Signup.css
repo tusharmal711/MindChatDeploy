@@ -2544,7 +2544,7 @@ width:100%;
     bottom: 0;
     left: 0;
     right: 0;
-    height: 80px;
+    height: 65px;
     background-color: #fff;
     display: flex;
     justify-content: space-around;
@@ -2571,15 +2571,15 @@ width:100%;
     font-family: sans-serif;
   }
   .nav-chat span{
-    font-size: 0.9rem;
+    font-size: 0.85rem;
   }
   .mob{
     text-decoration: none;
    
   }
   .mob-icon{
-    font-size: 1.5rem;
-    padding : 4px 16px;
+    font-size: 1.4rem;
+    padding : 4px 12px;
     margin-bottom: 3px;
     border-radius: 1rem;
   }
