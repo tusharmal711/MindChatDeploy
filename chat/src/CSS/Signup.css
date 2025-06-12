@@ -2845,7 +2845,10 @@ iframe{
    
 }
 .extra{
-    padding-bottom: 3.1rem;
+    padding-bottom: 3.2rem;
+}
+.remove-extra{
+     padding-bottom: 0rem;
 }
 .own{
     width:auto;
@@ -2985,8 +2988,8 @@ body {
     font-size: 1.06rem;
 }
 .messages{
-   height:calc(100vh - 16.5rem);
-  
+   height:calc(100vh - 17rem);
+ 
     padding-bottom: 130px;
 }
 
