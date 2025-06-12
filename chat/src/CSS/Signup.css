@@ -2851,15 +2851,15 @@ iframe{
     gap:0.3rem;
 }
 .type-msg{
-    bottom: 0.5rem;
+   
     display: flex;
     align-items: center;
     height:4rem;
     border-radius: none;
     justify-content: center;
     background-color: black;
-    border-radius: 0.5rem;
-    width:99%;
+   
+  
 }
 #emoji{
     color:white;

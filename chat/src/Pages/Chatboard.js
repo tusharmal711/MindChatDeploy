@@ -1056,6 +1056,12 @@ const handleEmojiClick = (emoji) => {
 
 
 
+useEffect(() => {
+  const input = document.querySelector("input");
+  input?.addEventListener("focus", () => {
+    window.scrollTo(0, document.body.scrollHeight);
+  });
+}, []);
 
 
 
