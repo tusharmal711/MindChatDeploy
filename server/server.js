@@ -139,11 +139,24 @@ const messageSchema = new mongoose.Schema({
 const Messages = mongoose.model("Messages", messageSchema);
 export default Messages;
 // Socket.io connection
+const roomUsers = {};
 io.on("connection", async (socket) => {
   console.log("User connected:", socket.id);
 
   socket.on("join_room", async (room) => {
     socket.join(room);
+   socket.room = room;
+  
+
+    const clients = await io.in(room).fetchSockets();
+   
+    // If more than 1 user is in the room, notify everyone they're online
+    if (clients.length > 1) {
+      console.log("bc");
+      io.to(room).emit("show_online", "Online");
+    } else {
+      socket.emit("show_online", "Offline"); // Only user in room
+    }
 
     // Fetch and send previous messages for the room
     const messages = await Messages.find({ room }).sort({ timeStamp: 1 }).limit(50);
@@ -165,15 +178,39 @@ io.on("connection", async (socket) => {
     socket.to(room).emit("show_typing", userName);
   });
 
+
+
+  
   socket.on("stop_typing", ({ room }) => {
     socket.to(room).emit("hide_typing");
   });
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
 // Handle delete for everyone event
 socket.on('delete_for_everyone', ({ room }) => {
   socket.to(room).emit('chats_deleted', { room });
 });
-  socket.on("disconnect", () => {
+  socket.on("disconnect", async() => {
     console.log("User Disconnected:", socket.id);
+     const room = socket.room;
+    if (room) {
+      const clients = await io.in(room).fetchSockets();
+      if (clients.length <= 1) {
+        io.to(room).emit("show_online", "Offline");
+      }
+    }
   });
 });
 

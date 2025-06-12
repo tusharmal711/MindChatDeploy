@@ -181,13 +181,44 @@ useEffect(() => {
 }, []);
 
 
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+const [online,setOnline]=useState("offline");
+
   const chatInputRef = useRef(null);
 useEffect(() => {
-  if (!room){
-    // alert("You are not in any room");
+  if (!room ){
+    return ; 
+    
   }
+ console.log("Joining room:", room); // ✅ Make sure this logs
+  socket.emit("join_room", room);     // ✅ Emit the correct room name
 
-  socket.emit("join_room", room); // Join current room
+  socket.on("show_online", (status) => {
+    console.log("Online status received:", status); // ✅ Should log Online/Offline
+    setOnline(status);
+  });
+
+
+
+
+
+
+
+
   chatInputRef.current?.blur();
   const phone = sessionStorage.getItem("phone") || Cookies.get("mobile");
 
@@ -270,6 +301,7 @@ const fetchHistory = async () => {
 
   return () => {
     socket.off("receive_message");
+     socket.off("show_online");
   };
 }, [room]);
 
@@ -866,6 +898,7 @@ const newRoom = [phone, data.mobile].sort().join("_");
       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     };
   }, [room]);
+
  useEffect(() => {
   socket.on("hide_typing", () => {
     setTypingUser(""); // Remove "Typing..." immediately
@@ -899,6 +932,43 @@ const newRoom = [phone, data.mobile].sort().join("_");
     // Auto-scroll to the latest message when chats change
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chats]); // Runs when 'chats' updates (new message added)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1590,8 +1660,10 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
                 <FaArrowLeft  onClick={sec} className="second-nav-arrow"/>
               <div className="chat-header" onClick={()=>{setThird(true)}}>
               <img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${dpMap[selectedContact.mobile]}`} id="chat-header-img" alt="Profile" />
-              <p>{selectedContact.username}<br/>{typingUser && <span className="typing-indicator">{typingUser}</span>}</p>
-             
+              <p>{selectedContact.username}<br/>{typingUser && <span className="typing-indicator">{typingUser}</span>}<br/>{online && <span className="typing-indicator">{online}</span>}</p>
+             <div className="contact-list">
+    
+    </div>
               {/* {typingUser && } */}
               
                
