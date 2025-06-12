@@ -188,22 +188,38 @@ useEffect(() => {
 
   const phone = sessionStorage.getItem("phone") || Cookies.get("mobile");
 
-  const fetchHistory = async () => {
-    try {
-      const res = await fetch(`${backendUrl}api/fetchHistory`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ room, userId: phone }),
-      });
-      const data = await res.json();
-      if (data.length > 0) {
-        setChats(data);
-        setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "instant" }), 0);
-      }
-    } catch (error) {
-      console.error("Error fetching chat history:", error);
+const fetchHistory = async () => {
+  try {
+    // Try loading from localStorage first
+    const cachedChats = localStorage.getItem(`chats_${room}`);
+    if (cachedChats) {
+      const parsedChats = JSON.parse(cachedChats);
+      setChats(parsedChats);
+      setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "instant" }), 0);
+      return; //  Skip backend fetch if cached
     }
-  };
+
+    // Fetch from backend
+    const res = await fetch(`${backendUrl}api/fetchHistory`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ room, userId: phone }),
+    });
+
+    const data = await res.json();
+    if (data.length > 0) {
+     setChats(data.slice(-5));
+
+      //  Save to localStorage
+      localStorage.setItem(`chats_${room}`, JSON.stringify(data));
+
+      setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "instant" }), 0);
+    }
+  } catch (error) {
+    console.error("Error fetching chat history:", error);
+  }
+};
+
 
   fetchHistory();
 
@@ -542,17 +558,17 @@ const [aboutMap, setAboutMap] = useState({});
 
 useEffect(() => {
   const fetchDps = async () => {
-    // Check if cached in cookies
-    const cachedDpMap = Cookies.get("dpMap");
-    const cachedAboutMap = Cookies.get("aboutMap");
+    // ✅ Check if cached in localStorage
+    const cachedDpMap = localStorage.getItem("dpMap");
+    const cachedAboutMap = localStorage.getItem("aboutMap");
 
     if (cachedDpMap && cachedAboutMap) {
       try {
         setDpMap(JSON.parse(cachedDpMap));
         setAboutMap(JSON.parse(cachedAboutMap));
-        return; // Skip fetching from backend
+        return; // ✅ Skip fetching from backend
       } catch (e) {
-        console.error("Failed to parse cookie data", e);
+        console.error("Failed to parse localStorage data", e);
         // Fallback to fetching if JSON parsing fails
       }
     }
@@ -573,25 +589,27 @@ useEffect(() => {
         newDpMap[contact.mobile] = dpData.dp || "./Images/image.png";
         newAboutMap[contact.mobile] = dpData.about;
       } catch (error) {
-        newDpMap[contact.mobile] = "https://res.cloudinary.com/dnd9qzxws/image/upload/v1743764088/image_dp_uwfq2g.png";
+        newDpMap[contact.mobile] =
+          "https://res.cloudinary.com/dnd9qzxws/image/upload/v1743764088/image_dp_uwfq2g.png";
         newAboutMap[contact.mobile] = "Hello ! I am not in MindChat !";
       }
     }
 
-    // Update state
+    // ✅ Update state
     setDpMap(newDpMap);
     setAboutMap(newAboutMap);
 
-    // Save to cookies (expire in 7 days)
-    Cookies.set("dpMap", JSON.stringify(newDpMap), { expires: 7 });
-    Cookies.set("aboutMap", JSON.stringify(newAboutMap), { expires: 7 });
+    // ✅ Save to localStorage
+    localStorage.setItem("dpMap", JSON.stringify(newDpMap));
+    localStorage.setItem("aboutMap", JSON.stringify(newAboutMap));
   };
 
-  // Prevent running if contacts haven't loaded yet
+  // ✅ Prevent running if contacts haven't loaded yet
   if (filteredContacts.length > 0) {
     fetchDps();
   }
 }, [filteredContacts]);
+
 
 
 
@@ -638,11 +656,11 @@ useEffect(() => {
     const cachedContacts = sessionStorage.getItem("contacts");
 
     if (cachedContacts) {
-      // ✅ Use cached contacts
+      //  Use cached contacts
       setContacts(JSON.parse(cachedContacts));
     } else {
       try {
-        // ✅ Use sessionStorage first, fallback to cookie
+        //  Use sessionStorage first, fallback to cookie
         const phone = sessionStorage.getItem("phone") || Cookies.get("mobile");
 
         if (!phone) {
@@ -689,8 +707,10 @@ useEffect(() => {
   // Handle joining the chat room and fetching chat history
  
   const sec=()=>{
-    window.location.reload();
-   
+    setSecond(false);
+  setActiveContact(null);
+   setSelectedContact(null);
+   setRoom("");
    }
   // Fetch selected contact details
   const handleContactClick = async (contactId) => {
