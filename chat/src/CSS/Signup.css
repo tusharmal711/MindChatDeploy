@@ -2737,6 +2737,13 @@ width:100%;
     color:#007bff;
     padding-right: 0.3rem;
   }
+  .messages{
+    height:calc(100vh - 15rem);
+   
+    padding-bottom: 93px;
+  
+}
+
   @media (max-width: 675px) {
     #profile-default{
         height:45px;
@@ -2838,13 +2845,15 @@ iframe{
    
 }
 .extra{
-    padding-bottom: 3rem;
+    padding-bottom: 3.1rem;
 }
 .own{
     width:auto;
     max-width: 80%;
     font-size: 1rem;
+   
 }
+
 .other{
     width:auto;
     max-width: 80%;
@@ -2975,7 +2984,11 @@ body {
 .chat-header p{
     font-size: 1.06rem;
 }
-
+.messages{
+   height:calc(100vh - 16.5rem);
+  
+    padding-bottom: 130px;
+}
 
 }
   
@@ -2992,12 +3005,5 @@ body {
 .photo-overlay2{
     z-index: 99999999999999999999;
 }
-.chat-body{
-   
-}
-.messages{
-    height:calc(100vh - 15rem);
-   
-    padding-bottom: 93px;
-  
-}
+
+
