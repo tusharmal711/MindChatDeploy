@@ -11,14 +11,8 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-messaging.onBackgroundMessage(function (payload) {
-  console.log("FCM background message: ", payload);
-
-  const notificationTitle = payload.notification.title;
-  const notificationOptions = {
+messaging.onBackgroundMessage(function(payload) {
+  self.registration.showNotification(payload.notification.title, {
     body: payload.notification.body,
-    icon: "/Images/app.png",
-  };
-
-  self.registration.showNotification(notificationTitle, notificationOptions);
+  });
 });

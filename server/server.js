@@ -308,60 +308,53 @@ app.post('/api/deleteChats', async (req, res) => {
   }
 });
 
-import admin from "firebase-admin";
 
 
 
 
 
 
-admin.initializeApp({
-  credential: admin.credential.cert({
-    type: process.env.FIREBASE_TYPE,
-    project_id: process.env.FIREBASE_PROJECT_ID,
-    private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
-    private_key: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
-    client_email: process.env.FIREBASE_CLIENT_EMAIL,
-    client_id: process.env.FIREBASE_CLIENT_ID,
-    auth_uri: process.env.FIREBASE_AUTH_URI,
-    token_uri: process.env.FIREBASE_TOKEN_URI,
-    auth_provider_x509_cert_url: process.env.FIREBASE_AUTH_PROVIDER_CERT_URL,
-    client_x509_cert_url: process.env.FIREBASE_CLIENT_CERT_URL,
-    universe_domain: process.env.FIREBASE_UNIVERSE_DOMAIN,
-  }),
+
+
+
+// Load mock database
+let db = JSON.parse(fs.readFileSync('./db.json'));
+
+// Save FCM token by mobile number
+app.post('/save-token', (req, res) => {
+  const { mobile, token } = req.body;
+  db[mobile] = token;
+  fs.writeFileSync('./db.json', JSON.stringify(db));
+  res.send({ success: true });
 });
 
+// Send notification to a mobile number
+app.post('/send-notification', async (req, res) => {
+  const { mobile, title, body } = req.body;
+  const token = db[mobile];
 
-// 🔔 FCM Send Function
-const sendFCM = async (token, title, body) => {
-  const message = {
-    token,
-    notification: {
-      title,
-      body,
-    },
-  webpush: {
-    fcmOptions: {
-      link: "https://mindchat-one.vercel.app/chatboard",  // Your web app link
-    },
-  },
-
-
-  };
-
-  return await admin.messaging().send(message);
-};
-
-// 🧩 API Endpoint for Notification
-app.post("/notify", async (req, res) => {
-  const { token, title, body } = req.body;
+  if (!token) return res.status(404).send({ error: "Token not found for this number" });
 
   try {
-    await sendFCM(token, title, body);
-    res.status(200).send("Notification sent!");
-  } catch (error) {
-    console.error("FCM Error:", error);
-    res.status(500).send("Failed to send notification");
+    const response = await fetch('https://fcm.googleapis.com/fcm/send', {
+      method: 'POST',
+      headers: {
+        Authorization: `key=YOUR_SERVER_KEY_HERE`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        to: token,
+        notification: {
+          title,
+          body,
+        },
+      }),
+    });
+
+    const data = await response.json();
+    res.send(data);
+  } catch (err) {
+    res.status(500).send({ error: 'FCM Error', details: err.message });
   }
 });
 

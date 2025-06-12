@@ -31,9 +31,7 @@ import "../CSS/Signup.css";
 import { PiMicrosoftWordLogoFill } from "react-icons/pi";
 import { FaPlay } from "react-icons/fa";
 import EmojiPicker from 'emoji-picker-react';
-import {getFCMToken} from "./firebase-config.js";
-import { onMessage } from "firebase/messaging";
-import { messaging } from "./firebase-config"; // adjust path if needed
+import NotificationPermission from "./NotificationPermission.js";
 const backendUrl = process.env.REACT_APP_BACKEND_URL; 
 const socket = io("https://mindchatdeploy-2.onrender.com/", {
   transports: ["websocket"], // Forces WebSocket connection
@@ -79,34 +77,8 @@ const [joined, setJoined] = useState(false);
 const [room, setRoom] = useState("");
 const [imageBuffer, setImageBuffer] = useState([]);
 const messagesEndRef = useRef(null);
- const [fcmToken, setFcmToken] = useState(null);
-
-  useEffect(() => {
-    getFCMToken().then((token) => {
-      if (token) {
-        setFcmToken(token);
-        console.log("🔥 Token:", token);
-      }
-    });
-  }, []);
 
 
-useEffect(() => {
-  const unsubscribe = onMessage(messaging, (payload) => {
-    console.log("📩 Message received in foreground:", payload);
-
-    const { title, body } = payload.notification;
-
-    if (Notification.permission === "granted") {
-      new Notification(title, {
-        body,
-       
-      });
-    }
-  });
-
-  return () => unsubscribe(); // Clean up
-}, []);
 
 
 
@@ -127,12 +99,6 @@ useEffect(() => {
   };
 }, []);
 
-// navigation back is ending here
-useEffect(() => {
-  if (Notification.permission !== "granted") {
-    Notification.requestPermission();
-  }
-}, []);
 
 
 
@@ -142,32 +108,21 @@ useEffect(() => {
 
 
 
-async function notifyUser() {
- 
-  const token = fcmToken; // Get this from Firebase Messaging
-  const title = "New Message!";
-  const body = "You have a new message on Mind Chat.";
-
-  try {
-    const response = await fetch("http://localhost:3001/notify", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ token, title, body }),
-    });
-     
-    const result = await response.text();
-    console.log(result);
-    alert(`This is notification : ${result}`);
-  } catch (error) {
-    console.error("Notification Error:", error);
-  }
-}
 
 
 
-
+<NotificationPermission mobile={mobile} />
+const sendNotification = async () => {
+  await fetch('http://localhost:3001/send-notification', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      mobile: '9641539527',  // Target mobile
+      title: 'New Message!',
+      body: 'You received a new message on Mind Chat',
+    }),
+  });
+};
 
 
 
@@ -222,7 +177,7 @@ useEffect(() => {
     // ✅ Notify other users
     if (!isSender && (!isSameRoom || !isTabActive)) {
       document.title="New notification (1)";
-      notifyUser();
+     sendNotification();
     }
   });
 
