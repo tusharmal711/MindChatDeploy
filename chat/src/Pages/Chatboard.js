@@ -2143,7 +2143,7 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
 <FaArrowLeft id="edit-arrow" onClick={hideEditProfile}/><h2 id="eph">Edit Contact</h2>
 <form onSubmit={updateContacts}>
   <div className="input-sec">
-  <input type="text" placeholder="First name" id="first-name" autoFocus value={firstName} onChange={(e)=>{setFirstName(e.target.value)}} required/>
+  <input type="text" placeholder="First name" id="first-name"  value={firstName} onChange={(e)=>{setFirstName(e.target.value)}} required/>
   <input type="text" placeholder="Last name" id="last-name" value={lastName} onChange={(e)=>{setLastName(e.target.value)}}/>
   </div>
 
