@@ -2544,7 +2544,7 @@ width:100%;
     bottom: 0;
     left: 0;
     right: 0;
-    height: 65px;
+    height: 60px;
     background-color: #fff;
     display: flex;
     justify-content: space-around;
@@ -2557,8 +2557,8 @@ width:100%;
   }
   
   #mobile-default{
-    height:45px;
-    width:45px;
+    height:42px;
+    width:42px;
     border-radius: 50%;
   }
 
@@ -2571,14 +2571,14 @@ width:100%;
     font-family: sans-serif;
   }
   .nav-chat span{
-    font-size: 0.85rem;
+    font-size: 0.83rem;
   }
   .mob{
     text-decoration: none;
    
   }
   .mob-icon{
-    font-size: 1.4rem;
+    font-size: 1.3rem;
     padding : 4px 12px;
     margin-bottom: 3px;
     border-radius: 1rem;
