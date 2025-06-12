@@ -1005,6 +1005,9 @@ const fileAni=()=>{
   removeSticker();
 }
 const secondDiv=()=>{
+  const messages=document.getElementById("chat-body");
+ 
+  messages.classList.add("extra");
   if(viewUpload===false){
     plus.classList.remove("rotate-plus");
     plus.classList.add("rotate-minus");
@@ -1057,10 +1060,10 @@ const handleEmojiClick = (emoji) => {
 
 
 useEffect(() => {
-  const input = document.querySelector("input");
-  input?.addEventListener("focus", () => {
-    window.scrollTo(0, document.body.scrollHeight);
-  });
+  const input = document.querySelector("#entered-msg");
+  const chatbody = document.querySelector("#chat-body");
+  const  messages= document.querySelector("#messages");
+ 
 }, []);
 
 
@@ -1599,7 +1602,7 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
              
     
     
-              <div className="chat-body" style={{ backgroundImage: `url(${" ./Images/bg.png"})` }}>
+              <div className="chat-body" id="chat-body" style={{ backgroundImage: `url(${" ./Images/bg.png"})` }}>
               
 
 
@@ -1654,8 +1657,8 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
   
     {selectedContact && joined &&(
     
-      <div className="chat-box" onClick={secondDiv}>
-        <div   className="messages"  onClick={removeSticker}>
+      <div className="chat-box" id="chat-box" onClick={secondDiv}>
+        <div   className="messages" id="messages" onClick={removeSticker}>
           {chats.map((msg, index) => (
             
             <div

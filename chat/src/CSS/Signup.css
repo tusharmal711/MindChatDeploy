@@ -2837,6 +2837,9 @@ iframe{
     height:220px;
    
 }
+.extra{
+    margin-bottom: 30%;
+}
 .own{
     width:auto;
     max-width: 80%;
@@ -2860,6 +2863,11 @@ iframe{
     background-color: black;
    
   
+}
+html,
+body {
+  height: 100%;
+  overflow: hidden;
 }
 #emoji{
     color:white;
@@ -2983,9 +2991,12 @@ iframe{
 .photo-overlay2{
     z-index: 99999999999999999999;
 }
-
+.chat-body{
+   
+}
 .messages{
     height:calc(100vh - 15rem);
    
     padding-bottom: 93px;
+  
 }
