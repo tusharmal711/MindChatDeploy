@@ -178,14 +178,14 @@ useEffect(() => {
 }, []);
 
 
-
+ const chatInputRef = useRef(null);
 useEffect(() => {
   if (!room){
     // alert("You are not in any room");
   }
 
   socket.emit("join_room", room); // Join current room
-
+  chatInputRef.current?.blur();
   const phone = sessionStorage.getItem("phone") || Cookies.get("mobile");
 
 const fetchHistory = async () => {
@@ -2020,7 +2020,7 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
                          <input type="file" id="audio-send" name="image" onChange={imageSet} accept=".mp3, .wav, .ogg , .mpeg" />
                          <input type="file" id="camera-send" name="image" onChange={imageSet} capture="user" accept="image/*"/>
                          <input type="file" id="document-send" name="image" onChange={imageSet} accept=".pdf, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .txt"/>
-                         <LuSticker onClick={fileSticker} id="emoji"  /><input type="text" placeholder="Type a message..."  onKeyDown={handleKeyDown} id="entered-msg" value={chat} onChange={handleChange} onClick={secondDiv}  onFocus={() => setIsFocused(true)}  onBlur={() => setIsFocused(false)} />
+                         <LuSticker onClick={fileSticker} id="emoji"  /><input type="text" placeholder="Type a message..."  onKeyDown={handleKeyDown} id="entered-msg" value={chat} onChange={handleChange} onClick={secondDiv}   ref={chatInputRef} onFocus={() => setIsFocused(true)}  onBlur={() => setIsFocused(false)} />
                       
                     
                         {
