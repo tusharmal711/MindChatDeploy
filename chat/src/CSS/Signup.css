@@ -2993,9 +2993,17 @@ body {
     padding-bottom: 130px;
 }
 .chat-part ul li:hover{
-    background-color: white;
+    background-color:white;
     border-radius: 0.5rem;
 }
+.chat-part ul li:active{
+    background-color: rgb(237, 237, 237);
+    border-radius: 0.5rem;
+}
+
+
+
+
 }
   
 .second-nav{
