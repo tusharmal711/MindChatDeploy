@@ -35,7 +35,7 @@ import {getFCMToken} from "./firebase-config.js";
 import { onMessage } from "firebase/messaging";
 import { messaging } from "./firebase-config"; // adjust path if needed
 const backendUrl = process.env.REACT_APP_BACKEND_URL; 
-const socket = io("https://mindchatdeploy-2.onrender.com", {
+const socket = io("https://mindchatdeploy-2.onrender.com/", {
   transports: ["websocket"], // Forces WebSocket connection
   withCredentials: true, // Allows cross-origin credentials
   reconnection: true,
@@ -200,18 +200,18 @@ const [online,setOnline]=useState("offline");
 
   const chatInputRef = useRef(null);
 useEffect(() => {
-  if (!socket ){
+  if (!room ){
     return ; 
     
   }
-  // ✅ Check this logs correctly
-socket.emit("join_room", room);
+ console.log("Joining room:", room); // ✅ Make sure this logs
+  socket.emit("join_room", room);     // ✅ Emit the correct room name
 
-console.log("Joining room:", room);
-socket.on("show_online", (status) => {
-  console.log("Online status received:", status); 
-  setOnline(status);
-});
+  socket.on("show_online", (status) => {
+    console.log("Online status received:", status); // ✅ Should log Online/Offline
+    setOnline(status);
+  });
+
 
 
 
@@ -222,122 +222,88 @@ socket.on("show_online", (status) => {
   chatInputRef.current?.blur();
   const phone = sessionStorage.getItem("phone") || Cookies.get("mobile");
 
-const fetchHistory = async (forceRefresh = false) => {
+const fetchHistory = async () => {
   try {
-    // Check localStorage unless forced to refresh from backend
-    if (!forceRefresh) {
-      const cachedChats = localStorage.getItem(`chats_${room}`);
-      if (cachedChats) {
-        const parsedChats = JSON.parse(cachedChats);
-        setChats(parsedChats);
-
-        // Scroll to bottom after rendering
-        setTimeout(() => {
-          messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
-        }, 0);
-
-        return; // Skip backend fetch if cache exists
-      }
+    // Try loading from localStorage first
+    const cachedChats = localStorage.getItem(`chats_${room}`);
+    if (cachedChats) {
+      const parsedChats = JSON.parse(cachedChats);
+      setChats(parsedChats);
+      setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "instant" }), 0);
+      return; //  Skip backend fetch if cached
     }
 
     // Fetch from backend
     const res = await fetch(`${backendUrl}api/fetchHistory`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ room, userId: phone }),
     });
 
-    if (!res.ok) throw new Error("Failed to fetch chat history");
-
     const data = await res.json();
+    if (data.length > 0) {
+     setChats(data.slice(-5));
 
-    // Use the latest 5 messages
-   if (data.length === 0) {
-  localStorage.removeItem(`chats_${room}`); // clear stale cache
-  setChats([]);
-} else {
-  const latestChats = data.slice(-5);
-  setChats(latestChats);
-  localStorage.setItem(`chats_${room}`, JSON.stringify(data));
-}
+      //  Save to localStorage
+      localStorage.setItem(`chats_${room}`, JSON.stringify(data));
 
-    // Scroll to bottom after rendering
-    setTimeout(() => {
-      messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
-    }, 0);
+      setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "instant" }), 0);
+    }
   } catch (error) {
     console.error("Error fetching chat history:", error);
   }
 };
 
-// Call it initially
 
   fetchHistory();
 
-
- 
-
   // Receive message event
-socket.on("receive_message", (data) => {
-  const currentUserPhone = sessionStorage.getItem("phone") || Cookies.get("mobile");
-  const isSender = data.userId === currentUserPhone;
-  const isSameRoom = data.room === room;
+  socket.on("receive_message", (data) => {
+    const currentUserPhone = sessionStorage.getItem("phone") || Cookies.get("mobile");
+    const isSender = data.userId === currentUserPhone;
+    const isSameRoom = data.room === room;
+    const isTabActive = !document.hidden;
 
-  // ✅ Always update chat if it's the same room
-  if (isSameRoom) {
-    setChats((prevChats) => {
-      const updatedChats = [...prevChats, data];
-
-      // Cache updated messages to localStorage
-      localStorage.setItem(`chats_${room}`, JSON.stringify(updatedChats));
-
-      // Check if the message is an image
-      if (data.text.match(/\.(jpg|jpeg|png|gif)$/i)) {
-        setImageBuffer((prev) => [...prev, data.text]);
-      } else {
-        setImageBuffer([]);
-      }
-
-      return updatedChats;
-    });
-
-    // Scroll to latest message
-    setTimeout(() => {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, 100);
-  }
-
-  // ✅ Show notification if the message is from someone else and not visible
-  if (!isSender && (!isSameRoom || document.hidden)) {
-    if ("Notification" in window && Notification.permission === "granted") {
-      try {
-        new Notification(`Message from ${data.userName}`, {
-          body: data.text.includes("http") ? "📷 Sent an image" : data.text,
-          icon: "/Images/app.png",
-        });
-
-        const audio = new Audio("/Sounds/notifications.mp3");
-        audio.play().catch((e) => console.log("Sound error:", e));
-
-        // Flash title
-        document.title = "(1) New message - Mind Chat";
-      } catch (err) {
-        console.warn("Notification failed:", err);
-      }
-    } else {
-      console.warn("Notification not shown: permission not granted");
+    // ✅ Always update messages if same room
+    if (isSameRoom) {
+      setChats((prevChats) => {
+        if (data.text.match(/\.(jpg|jpeg|png|gif)$/)) {
+          setImageBuffer((prev) => [...prev, data.text]);
+        } else {
+          setImageBuffer([]);
+        }
+        return [...prevChats, data];
+      });
     }
-  }
-});
 
+    // ✅ Notify other users
+   if (!isSender && (!isSameRoom || document.hidden)) {
+  if ("Notification" in window && Notification.permission === "granted") {
+    try {
+      new Notification(`Message from ${data.userName}`, {
+        body: data.text.includes("http") ? "📷 Sent an image" : data.text,
+        icon: "/Images/app.png",
+      });
+
+      const audio = new Audio("/Sounds/notifications.mp3");
+      audio.play().catch(e => console.log("Sound error:", e));
+      
+      document.title = "(1) New message - Mind Chat";
+    } catch (err) {
+      console.warn("Notification failed:", err);
+    }
+  } else {
+    console.warn("Notification not shown: permission not granted");
+  }
+}
+
+  });
 
   return () => {
     socket.off("receive_message");
      socket.off("show_online");
   };
-}, [room,socket]);
+}, [room]);
 
 
 
@@ -346,42 +312,35 @@ socket.on("receive_message", (data) => {
 
 const [deleteOption, setDeleteOption] = useState("forMe");
 const [deleting, setDeleting] = useState(false);
-
 const deleteChats = async (deleteType = "forMe") => {
   try {
+    // Show loading state
     setDeleting(true);
-
-    const userId = sessionStorage.getItem("phone") || Cookies.get("mobile");
-
+    
+    // Call backend API to delete chats
     const res = await fetch(`${backendUrl}api/deleteChats`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ room, deleteType, userId }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ 
+        room, 
+        deleteType,
+        userId: sessionStorage.getItem("phone") || Cookies.get("mobile")
+      }),
     });
 
     if (!res.ok) throw new Error("Failed to delete chats");
 
-    // Clear chat UI and localStorage
-    setChats([]);
-    localStorage.removeItem(`chats_${room}`);
-
+    // Update UI based on delete type
     if (deleteType === "forEveryone") {
-       setChats([]);
-      localStorage.removeItem(`chats_${room}`);
+      // Clear chats for all participants
+      setChats([]);
       socket.emit("delete_for_everyone", { room });
-
-    }else{
-       localStorage.removeItem(`chats_${room}`);
-        setChats([]);
-     alert("Deleted for me is done");
+    } else {
+      // Just clear locally
+      setChats([]);
     }
-
-    // 🔁 Force refresh from backend to avoid refetching deleted data
     
-
-    setDchat(false);
+    setDchat(false); // Close the delete dialog
   } catch (error) {
     console.error("Error deleting chats:", error);
     alert("Failed to delete chats");

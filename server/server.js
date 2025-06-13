@@ -13,25 +13,21 @@ import Contact from "./Contact.js";
 dotenv.config();
 import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
-import debug from "debug";
-debug.enable("socket.io:*");
 const app = express();
 const server = http.createServer(app);
 const FRONTEND=process.env.FRONTEND;
+const allowedOrigins = [
+  "https://mindchat-one.vercel.app",
+  "http://localhost:3000"
+];
+
 const io = new Server(server, {
   cors: {
-    origin: ["https://mindchat-one.vercel.app","http://localhost:3000"],
+    origin: allowedOrigins,
     methods: ["GET", "POST"],
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"],
   },
-});
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "https://mindchat-one.vercel.app");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  res.header("Access-Control-Allow-Credentials", "true");
-  next();
 });
 
 const PORT = process.env.PORT || 7000;
@@ -39,9 +35,18 @@ const MONGOURL = process.env.MONGO_URL;
 
 app.use(express.json());
 app.use(cors({
-  origin: "https://mindchat-one.vercel.app", // ✅ match frontend exactly
-  methods: ["GET", "POST","PUT","DELETE"],
+  origin: function (origin, callback) {
+    // Allow requests with no origin like mobile apps or curl
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
 }));
 app.use("/api", route);
 app.use(express.static('public'));
@@ -145,11 +150,7 @@ const messageSchema = new mongoose.Schema({
 const Messages = mongoose.model("Messages", messageSchema);
 export default Messages;
 // Socket.io connection
-
-
-
-
-const activeUsers = new Map();
+const roomUsers = {};
 io.on("connection", async (socket) => {
   console.log("User connected:", socket.id);
 
@@ -159,13 +160,16 @@ io.on("connection", async (socket) => {
   
 
     const clients = await io.in(room).fetchSockets();
+   
+    // If more than 1 user is in the room, notify everyone they're online
+    if (clients.length < 1) {
+      socket.emit("show_online", "Offline"); // Only user in room
+    } else {
+       console.log("bc");
+      io.to(room).emit("show_online", "Online");
+     
+    }
 
-  if (clients.length > 1) {
-    console.log("bc"); //  for debugging
-    io.to(room).emit("show_online", "Online");
-  } else {
-    socket.emit("show_online", "Offline");
-  }
     // Fetch and send previous messages for the room
     const messages = await Messages.find({ room }).sort({ timeStamp: 1 }).limit(50);
     socket.emit("chat_history", messages);
