@@ -36,7 +36,7 @@ import {getFCMToken} from "./firebase-config.js";
 import { onMessage } from "firebase/messaging";
 import { messaging } from "./firebase-config"; // adjust path if needed
 const backendUrl = process.env.REACT_APP_BACKEND_URL; 
-const socket = io("https://mindchatdeploy-2.onrender.com/", {
+const socket = io("http://localhost:3001", {
   transports: ["websocket"], // Forces WebSocket connection
   withCredentials: true, // Allows cross-origin credentials
   reconnection: true,
@@ -130,6 +130,28 @@ useEffect(() => {
     window.removeEventListener("popstate", handleBackButton);
   };
 }, []);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // navigation back is ending here
 useEffect(() => {
@@ -1130,16 +1152,16 @@ const removeSticker =()=>{
  const [isFocused, setIsFocused] = useState(false);
  const inputRef = useRef(null);
 
-  useEffect(() => {
-    const typemsg = inputRef.current;
-    if (!typemsg) return;
+  const handleFocus = () => {
+    setTimeout(() => {
+      window.scrollTo(0, document.body.scrollHeight);
+    }, 300);
+  };
 
-    if (isFocused) {
-      typemsg.classList.add("extra");
-    } else {
-      typemsg.classList.remove("extra");
-    }
-  }, [isFocused]);
+  const handleBlur = () => {
+    // Optional: Scroll to top or some default
+    window.scrollTo(0, 0);
+  };
 
 
 
@@ -2121,7 +2143,7 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
                          <input type="file" id="audio-send" name="image" onChange={imageSet} accept=".mp3, .wav, .ogg , .mpeg" />
                          <input type="file" id="camera-send" name="image" onChange={imageSet} capture="user" accept="image/*"/>
                          <input type="file" id="document-send" name="image" onChange={imageSet} accept=".pdf, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .txt"/>
-                         <LuSticker onClick={fileSticker} id="emoji"  /><input type="text" placeholder="Type a message..."  onKeyDown={handleKeyDown} id="entered-msg" value={chat} onChange={handleChange} onClick={secondDiv}   ref={chatInputRef} onFocus={() => setIsFocused(true)}  onBlur={() => setIsFocused(false)} />
+                         <LuSticker onClick={fileSticker} id="emoji"  /><input type="text" placeholder="Type a message..."  onKeyDown={handleKeyDown} id="entered-msg" value={chat} onChange={handleChange} onClick={secondDiv}    ref={inputRef}  onFocus={handleFocus}   onBlur={handleBlur} />
                       
                     
                         {
