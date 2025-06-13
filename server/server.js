@@ -13,12 +13,14 @@ import Contact from "./Contact.js";
 dotenv.config();
 import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import debug from "debug";
+debug.enable("socket.io:*");
 const app = express();
 const server = http.createServer(app);
 const FRONTEND=process.env.FRONTEND;
 const io = new Server(server, {
   cors: {
-    origin: "https://mindchat-one.vercel.app/",
+    origin: "https://mindchat-one.vercel.app",
     methods: ["GET", "POST"],
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -36,7 +38,11 @@ const PORT = process.env.PORT || 7000;
 const MONGOURL = process.env.MONGO_URL;
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: "https://mindchat-one.vercel.app", // ✅ match frontend exactly
+  methods: ["GET", "POST"],
+  credentials: true,
+}));
 app.use("/api", route);
 app.use(express.static('public'));
 
@@ -149,15 +155,13 @@ io.on("connection", async (socket) => {
   
 
     const clients = await io.in(room).fetchSockets();
-   
-    // If more than 1 user is in the room, notify everyone they're online
-    if (clients.length > 1) {
-      console.log("bc");
-      io.to(room).emit("show_online", "Online");
-    } else {
-      socket.emit("show_online", "Offline"); // Only user in room
-    }
 
+  if (clients.length > 1) {
+    console.log("bc"); // ✅ for debugging
+    io.to(room).emit("show_online", "Online");
+  } else {
+    socket.emit("show_online", "Offline");
+  }
     // Fetch and send previous messages for the room
     const messages = await Messages.find({ room }).sort({ timeStamp: 1 }).limit(50);
     socket.emit("chat_history", messages);

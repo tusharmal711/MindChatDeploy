@@ -36,7 +36,7 @@ import { onMessage } from "firebase/messaging";
 import { messaging } from "./firebase-config"; // adjust path if needed
 const backendUrl = process.env.REACT_APP_BACKEND_URL; 
 const socket = io("https://mindchatdeploy-2.onrender.com/", {
-  transports: ["websocket"], // Forces WebSocket connection
+  transports: ["polling","websocket"], // Forces WebSocket connection
   withCredentials: true, // Allows cross-origin credentials
   reconnection: true,
   reconnectionAttempts: 5,
@@ -200,18 +200,17 @@ const [online,setOnline]=useState("offline");
 
   const chatInputRef = useRef(null);
 useEffect(() => {
-  if (!room ){
+  if (!socket ){
     return ; 
     
   }
- console.log("Joining room:", room); // ✅ Make sure this logs
-  socket.emit("join_room", room);     // ✅ Emit the correct room name
+ console.log("Joining room:", room); // ✅ Check this logs correctly
+socket.emit("join_room", room);
 
-  socket.on("show_online", (status) => {
-    console.log("Online status received:", status); // ✅ Should log Online/Offline
-    setOnline(status);
-  });
-
+socket.on("show_online", (status) => {
+  console.log("Online status received:", status); // 🔴 NOT firing
+  setOnline(status);
+});
 
 
 
@@ -337,7 +336,7 @@ socket.on("receive_message", (data) => {
     socket.off("receive_message");
      socket.off("show_online");
   };
-}, [room]);
+}, [room,socket]);
 
 
 
