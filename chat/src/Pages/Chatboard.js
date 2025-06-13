@@ -1153,14 +1153,28 @@ const removeSticker =()=>{
  const inputRef = useRef(null);
 
   useEffect(() => {
+    const handleBackButton = (event) => {
+   setIsFocused(false);
+   typemsg.classList.remove("extra");
+  };
+
     const typemsg = inputRef.current;
     if (!typemsg) return;
 
     if (isFocused) {
       typemsg.classList.add("extra");
+      window.history.pushState({ page: 1 }, "", "");
+       window.addEventListener("popstate", handleBackButton);
+
+  // Push a dummy state so there's something to go back to
+  
     } else {
       typemsg.classList.remove("extra");
     }
+
+     return () => {
+    window.removeEventListener("popstate", handleBackButton);
+  };
   }, [isFocused]);
 
 
@@ -1802,7 +1816,7 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
     {selectedContact && joined &&(
     
       <div className="chat-box" id="chat-box" onClick={secondDiv}>
-        <div   className="messages" id="messages" onClick={removeSticker}  ref={inputRef}>
+        <div   className="messages" id="messages" onClick={removeSticker}>
           {chats.map((msg, index) => (
             
             <div
@@ -2122,7 +2136,7 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
   
   
   
-              <div className="type-msg">
+              <div className="type-msg"  ref={inputRef}>
               
               
                 

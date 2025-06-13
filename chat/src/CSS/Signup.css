@@ -2845,7 +2845,7 @@ iframe{
    
 }
 .extra{
-  height:calc(100vh - 25rem);
+    padding-bottom: 3.2rem;
 }
 .remove-extra{
      padding-bottom: 0rem;
