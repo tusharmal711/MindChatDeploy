@@ -2866,7 +2866,7 @@ iframe{
     gap:0.3rem;
 }
 .type-msg{
-   
+    position: absolute;
     display: flex;
     align-items: center;
     height:4rem;

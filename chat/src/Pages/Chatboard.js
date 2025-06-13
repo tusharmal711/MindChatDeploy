@@ -526,6 +526,7 @@ const [imageLoading,setImageLoading]=useState(false);
 
 const sendMessage = async (req, res) => {
   setShowIcon(false);
+  setIsFocused(true);
   setViewUpload(false);
   if(file){
     setImageLoading(true);
