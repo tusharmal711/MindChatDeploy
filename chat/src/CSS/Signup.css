@@ -2989,7 +2989,7 @@ body {
 }
 .messages{
    height:calc(100vh - 17rem);
- 
+
     padding-bottom: 130px;
 }
 .chat-part ul li:hover{
@@ -3032,4 +3032,13 @@ body {
     display: flex;
     color:rgb(237, 166, 0);
     align-items: center;
+}
+
+
+#chatContainer {
+  transition: padding-bottom 0.3s ease;
+}
+
+input:focus {
+  outline: none;
 }
