@@ -162,7 +162,7 @@ io.on("connection", async (socket) => {
     const clients = await io.in(room).fetchSockets();
    
     // If more than 1 user is in the room, notify everyone they're online
-    if (clients.length < 1) {
+    if (clients.length > 1) {
      console.log("bc");
       io.to(room).emit("show_online", "Online");
     } else {
