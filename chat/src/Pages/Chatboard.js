@@ -35,7 +35,7 @@ import {getFCMToken} from "./firebase-config.js";
 import { onMessage } from "firebase/messaging";
 import { messaging } from "./firebase-config"; // adjust path if needed
 const backendUrl = process.env.REACT_APP_BACKEND_URL; 
-const socket = io("https://mindchatdeploy-2.onrender.com/", {
+const socket = io("http://localhost:3001", {
   transports: ["websocket"], // Forces WebSocket connection
   withCredentials: true, // Allows cross-origin credentials
   reconnection: true,
@@ -204,20 +204,16 @@ useEffect(() => {
     return ; 
     
   }
-   let count1;
-socket.on("room_user_count", (count) => {
-  try {
-    console.log(`Users in room: ${count}`);
-    setOnline(count > 1 ? "Online" : "Offline");
-  } catch (error) {
-    console.error("Error handling room count:", error);
-  }
-});
  console.log("Joining room:", room); // ✅ Make sure this logs
-
   socket.emit("join_room", room);     // ✅ Emit the correct room name
 
-alert(`Users in room: ${count1}`)
+  socket.on("show_online", (status) => {
+    console.log("Online status received:", status); // ✅ Should log Online/Offline
+    setOnline(status);
+  });
+
+
+
 
 
 
@@ -291,7 +287,6 @@ socket.on("receive_message", (data) => {
 
   // ✅ Always update chat if it's the same room
   if (isSameRoom) {
-  
     setChats((prevChats) => {
       const updatedChats = [...prevChats, data];
 
@@ -340,7 +335,7 @@ socket.on("receive_message", (data) => {
 
   return () => {
     socket.off("receive_message");
-     socket.off("room_user_count");
+     socket.off("show_online");
   };
 }, [room]);
 
