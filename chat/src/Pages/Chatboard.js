@@ -248,7 +248,7 @@ useEffect(() => {
 
 const fetchHistory = async (forceRefresh = false) => {
   try {
-    if (!forceRefresh && !chatDeletedRef.current) {
+    if (!forceRefresh) {
       const cachedChats = localStorage.getItem(`chats_${room}`);
       if (cachedChats) {
         const parsedChats = JSON.parse(cachedChats);
@@ -260,6 +260,7 @@ const fetchHistory = async (forceRefresh = false) => {
       }
     }
 
+    // Always fetch fresh history when forceRefresh is true
     const res = await fetch(`${backendUrl}api/fetchHistory`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -267,10 +268,13 @@ const fetchHistory = async (forceRefresh = false) => {
     });
 
     const data = await res.json();
-    const latestChats = data.slice(-5);
 
-    setChats(latestChats);
-    if (!chatDeletedRef.current) {
+    // If backend returns no chats (e.g., deleted), reflect that
+    if (data.length === 0) {
+      setChats([]);
+      localStorage.removeItem(`chats_${room}`); // Make sure cache is cleared
+    } else {
+      setChats(data.slice(-5));
       localStorage.setItem(`chats_${room}`, JSON.stringify(data));
     }
 
@@ -281,6 +285,7 @@ const fetchHistory = async (forceRefresh = false) => {
     console.error("Error fetching chat history:", error);
   }
 };
+
   fetchHistory();
 
   // Receive message event
@@ -341,28 +346,29 @@ const [deleting, setDeleting] = useState(false);
 const deleteChats = async (deleteType = "forMe") => {
   try {
     setDeleting(true);
+
     const userId = sessionStorage.getItem("phone") || Cookies.get("mobile");
 
     const res = await fetch(`${backendUrl}api/deleteChats`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({ room, deleteType, userId }),
     });
 
     if (!res.ok) throw new Error("Failed to delete chats");
 
+    // Clear chat UI and localStorage
     setChats([]);
     localStorage.removeItem(`chats_${room}`);
-    chatDeletedRef.current = true; // 👈 prevent re-caching temporarily
 
     if (deleteType === "forEveryone") {
       socket.emit("delete_for_everyone", { room });
     }
 
-    // Reset flag after 2 seconds
-    setTimeout(() => {
-      chatDeletedRef.current = false;
-    }, 2000);
+    // 🔁 Force refresh from backend to avoid refetching deleted data
+
 
     setDchat(false);
   } catch (error) {
@@ -372,7 +378,6 @@ const deleteChats = async (deleteType = "forMe") => {
     setDeleting(false);
   }
 };
-
 
 
 
