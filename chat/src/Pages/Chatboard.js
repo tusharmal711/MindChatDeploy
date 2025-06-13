@@ -10,6 +10,7 @@ import { FcDeleteDatabase } from "react-icons/fc";
 import { IoMdImages } from "react-icons/io";
 import { IoSendSharp } from "react-icons/io5";
 import Cookies from "js-cookie";
+import { GoDotFill } from "react-icons/go";
 import { RxCross1 } from "react-icons/rx";
 import io from "socket.io-client";
 import { LuSticker } from "react-icons/lu";
@@ -27,7 +28,6 @@ import { PiMicrosoftPowerpointLogoFill } from "react-icons/pi";
 import { MdAudioFile } from "react-icons/md";
 import { FaFileVideo } from "react-icons/fa";
 import { IoMdPhotos } from "react-icons/io";
-import { GoDotFill } from "react-icons/go";
 import "../CSS/Signup.css";
 import { PiMicrosoftWordLogoFill } from "react-icons/pi";
 import { FaPlay } from "react-icons/fa";
@@ -122,7 +122,6 @@ useEffect(() => {
   setActiveContact(null);
    setSelectedContact(null);
    setRoom("");
-   setIsFocused(false);
   };
 
   window.addEventListener("popstate", handleBackButton);
@@ -131,28 +130,6 @@ useEffect(() => {
     window.removeEventListener("popstate", handleBackButton);
   };
 }, []);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // navigation back is ending here
 useEffect(() => {
@@ -218,7 +195,7 @@ useEffect(() => {
 
 
 
-const chatDeletedRef = useRef(false); // NEW
+
 
 const [online,setOnline]=useState("offline");
 
@@ -248,36 +225,43 @@ useEffect(() => {
 
 const fetchHistory = async (forceRefresh = false) => {
   try {
+    // Check localStorage unless forced to refresh from backend
     if (!forceRefresh) {
       const cachedChats = localStorage.getItem(`chats_${room}`);
       if (cachedChats) {
         const parsedChats = JSON.parse(cachedChats);
         setChats(parsedChats);
+
+        // Scroll to bottom after rendering
         setTimeout(() => {
           messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
         }, 0);
-        return;
+
+        return; // Skip backend fetch if cache exists
       }
     }
 
-    // Always fetch fresh history when forceRefresh is true
+    // Fetch from backend
     const res = await fetch(`${backendUrl}api/fetchHistory`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({ room, userId: phone }),
     });
 
+    if (!res.ok) throw new Error("Failed to fetch chat history");
+
     const data = await res.json();
 
-    // If backend returns no chats (e.g., deleted), reflect that
-    if (data.length === 0) {
-      setChats([]);
-      localStorage.removeItem(`chats_${room}`); // Make sure cache is cleared
-    } else {
-      setChats(data.slice(-5));
-      localStorage.setItem(`chats_${room}`, JSON.stringify(data));
-    }
+    // Use the latest 5 messages
+    const latestChats = data.slice(-5);
+    setChats(latestChats);
 
+    // Save to localStorage
+    localStorage.setItem(`chats_${room}`, JSON.stringify(data));
+
+    // Scroll to bottom after rendering
     setTimeout(() => {
       messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
     }, 0);
@@ -285,6 +269,7 @@ const fetchHistory = async (forceRefresh = false) => {
     console.error("Error fetching chat history:", error);
   }
 };
+
 
   fetchHistory();
 
@@ -296,16 +281,28 @@ const fetchHistory = async (forceRefresh = false) => {
     const isTabActive = !document.hidden;
 
     // ✅ Always update messages if same room
-    if (isSameRoom) {
-      setChats((prevChats) => {
-        if (data.text.match(/\.(jpg|jpeg|png|gif)$/)) {
-          setImageBuffer((prev) => [...prev, data.text]);
-        } else {
-          setImageBuffer([]);
-        }
-        return [...prevChats, data];
-      });
-    }
+   if (isSameRoom) {
+    setChats((prevChats) => {
+      const updatedChats = [...prevChats, data];
+
+      // Cache updated messages to localStorage
+      localStorage.setItem(`chats_${room}`, JSON.stringify(updatedChats));
+
+      // Check if the message is an image
+      if (data.text.match(/\.(jpg|jpeg|png|gif)$/i)) {
+        setImageBuffer((prev) => [...prev, data.text]);
+      } else {
+        setImageBuffer([]);
+      }
+
+      return updatedChats;
+    });
+
+    // Scroll to latest message
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 100);
+  }
 
     // ✅ Notify other users
    if (!isSender && (!isSameRoom || document.hidden)) {
@@ -359,17 +356,18 @@ const deleteChats = async (deleteType = "forMe") => {
 
     if (!res.ok) throw new Error("Failed to delete chats");
 
-    // Clear chat UI and localStorage
-    setChats([]);
-    localStorage.removeItem(`chats_${room}`);
-
     if (deleteType === "forEveryone") {
+      // Clear UI and cache
+      setChats([]);
+      localStorage.removeItem(`chats_${room}`);
       socket.emit("delete_for_everyone", { room });
+    } else {
+      // Just clear locally for the current user
+      setChats([]);
+      localStorage.removeItem(`chats_${room}`); // Optional: clear only user's cache
     }
 
-    // 🔁 Force refresh from backend to avoid refetching deleted data
-
-
+    // Close delete dialog if any
     setDchat(false);
   } catch (error) {
     console.error("Error deleting chats:", error);
@@ -378,7 +376,6 @@ const deleteChats = async (deleteType = "forMe") => {
     setDeleting(false);
   }
 };
-
 
 
 
@@ -531,7 +528,6 @@ const [imageLoading,setImageLoading]=useState(false);
 
 const sendMessage = async (req, res) => {
   setShowIcon(false);
- 
   setViewUpload(false);
   if(file){
     setImageLoading(true);
@@ -1175,6 +1171,7 @@ const removeSticker =()=>{
 
 
 
+
 const handleEmojiClick = (emoji) => {
   setChat((prevInput) => prevInput + emoji.emoji);
  setShowIcon(true);
@@ -1690,11 +1687,7 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
               <div className="chat-header" onClick={()=>{setThird(true)}}>
               <img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${dpMap[selectedContact.mobile]}`} id="chat-header-img" alt="Profile" />
               <p>{selectedContact.username}<br/>
-              
-              
-              
-              
-             {typingUser ? (
+                       {typingUser ? (
   <span className="typing-indicator">{typingUser}</span>
 ) : online === "Online" ? (
   <span className="typing-indicator online" id="online">
@@ -1706,15 +1699,7 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
   </span>
 )}
 
-               
-               </p>
-             
-             
-             
-             
-             
-             
-             
+              </p>
              <div className="contact-list">
     
     </div>
