@@ -36,7 +36,7 @@ import {getFCMToken} from "./firebase-config.js";
 import { onMessage } from "firebase/messaging";
 import { messaging } from "./firebase-config"; // adjust path if needed
 const backendUrl = process.env.REACT_APP_BACKEND_URL; 
-const socket = io("http://localhost:3001", {
+const socket = io("https://mindchatdeploy-2.onrender.com/", {
   transports: ["websocket"], // Forces WebSocket connection
   withCredentials: true, // Allows cross-origin credentials
   reconnection: true,
@@ -122,6 +122,7 @@ useEffect(() => {
   setActiveContact(null);
    setSelectedContact(null);
    setRoom("");
+   setIsFocused(false);
   };
 
   window.addEventListener("popstate", handleBackButton);
@@ -1152,31 +1153,16 @@ const removeSticker =()=>{
  const [isFocused, setIsFocused] = useState(false);
  const inputRef = useRef(null);
 
-  // useEffect(() => {
-  //   const handleBackButton = (event) => {
-  //  setIsFocused(false);
-  //  typemsg.classList.remove("extra");
-  // };
+  useEffect(() => {
+    const typemsg = inputRef.current;
+    if (!typemsg) return;
 
-  //   const typemsg = inputRef.current;
-  //   if (!typemsg) return;
-
-  //   if (isFocused) {
-  //     typemsg.classList.add("extra");
-  //     window.history.pushState({ page: 1 }, "", "");
-  //      window.addEventListener("popstate", handleBackButton);
-
-  // // Push a dummy state so there's something to go back to
-  
-  //   } else {
-  //     typemsg.classList.remove("extra");
-  //   }
-
-  //    return () => {
-  //   window.removeEventListener("popstate", handleBackButton);
-  // };
-  // }, [isFocused]);
-
+    if (isFocused) {
+      typemsg.classList.add("extra");
+    } else {
+      typemsg.classList.remove("extra");
+    }
+  }, [isFocused]);
 
 
 
@@ -2136,7 +2122,7 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
   
   
   
-              <div className="type-msg" >
+              <div className="type-msg"  ref={inputRef}>
               
               
                 
@@ -2157,7 +2143,7 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
                          <input type="file" id="audio-send" name="image" onChange={imageSet} accept=".mp3, .wav, .ogg , .mpeg" />
                          <input type="file" id="camera-send" name="image" onChange={imageSet} capture="user" accept="image/*"/>
                          <input type="file" id="document-send" name="image" onChange={imageSet} accept=".pdf, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .txt"/>
-                         <LuSticker onClick={fileSticker} id="emoji"  /><input type="text" placeholder="Type a message..."  onKeyDown={handleKeyDown} id="entered-msg" value={chat} onChange={handleChange} onClick={secondDiv}    ref={inputRef}   onFocus={() => inputRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })} />
+                         <LuSticker onClick={fileSticker} id="emoji"  /><input type="text" placeholder="Type a message..."  onKeyDown={handleKeyDown} id="entered-msg" value={chat} onChange={handleChange} onClick={secondDiv}   ref={chatInputRef} onFocus={() => setIsFocused(true)}  onBlur={() => setIsFocused(false)} />
                       
                     
                         {
