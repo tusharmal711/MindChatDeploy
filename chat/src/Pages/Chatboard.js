@@ -35,7 +35,7 @@ import {getFCMToken} from "./firebase-config.js";
 import { onMessage } from "firebase/messaging";
 import { messaging } from "./firebase-config"; // adjust path if needed
 const backendUrl = process.env.REACT_APP_BACKEND_URL; 
-const socket = io("http://localhost:3001", {
+const socket = io("https://mindchatdeploy-2.onrender.com", {
   transports: ["websocket"], // Forces WebSocket connection
   withCredentials: true, // Allows cross-origin credentials
   reconnection: true,
