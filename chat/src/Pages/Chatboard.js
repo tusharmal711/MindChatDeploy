@@ -1149,26 +1149,21 @@ const removeSticker =()=>{
   seconddiv.classList.remove("scroll");
 }
 
-const chatRef = useRef(null);
-const inputRef = useRef(null);
+ const [isFocused, setIsFocused] = useState(false);
+ const inputRef = useRef(null);
 
-const scrollToBottom = () => {
-  setTimeout(() => {
-    const container = chatRef.current;
-    if (container) {
-      container.scrollTop = container.scrollHeight;
+  useEffect(() => {
+    const typemsg = inputRef.current;
+    if (!typemsg) return;
+
+    if (isFocused) {
+      typemsg.classList.add("extra");
+    } else {
+      typemsg.classList.remove("extra");
     }
-  }, 300); // Allow time for keyboard animation
-};
+  }, [isFocused]);
 
-const handleKeyboardOpen = () => {
-  scrollToBottom();
-  document.body.style.height = 'auto'; // Prevent body scroll on keyboard
-};
 
-const handleKeyboardClose = () => {
-  document.body.style.height = '100vh';
-};
 
 
 
@@ -1807,7 +1802,7 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
     {selectedContact && joined &&(
     
       <div className="chat-box" id="chat-box" onClick={secondDiv}>
-        <div   className="messages" id="messages" onClick={removeSticker} ref={chatRef} style={{ overflowY: 'auto', height: 'calc(100vh - 60px)' }}>
+        <div   className="messages" id="messages" onClick={removeSticker}  ref={inputRef}>
           {chats.map((msg, index) => (
             
             <div
@@ -2127,7 +2122,7 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
   
   
   
-              <div className="type-msg" >
+              <div className="type-msg">
               
               
                 
@@ -2148,7 +2143,7 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
                          <input type="file" id="audio-send" name="image" onChange={imageSet} accept=".mp3, .wav, .ogg , .mpeg" />
                          <input type="file" id="camera-send" name="image" onChange={imageSet} capture="user" accept="image/*"/>
                          <input type="file" id="document-send" name="image" onChange={imageSet} accept=".pdf, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .txt"/>
-                         <LuSticker onClick={fileSticker} id="emoji"  /><input type="text" placeholder="Type a message..."  onKeyDown={handleKeyDown} id="entered-msg" value={chat} onChange={handleChange} onClick={secondDiv}    ref={inputRef}   onFocus={handleKeyboardOpen}    onBlur={handleKeyboardClose} />
+                         <LuSticker onClick={fileSticker} id="emoji"  /><input type="text" placeholder="Type a message..."  onKeyDown={handleKeyDown} id="entered-msg" value={chat} onChange={handleChange} onClick={secondDiv}   ref={chatInputRef} onFocus={() => setIsFocused(true)}  onBlur={() => setIsFocused(false)} />
                       
                     
                         {

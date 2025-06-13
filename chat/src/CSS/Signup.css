@@ -2845,7 +2845,7 @@ iframe{
    
 }
 .extra{
-    padding-bottom: 3.2rem;
+  height:calc(100vh - 25rem);
 }
 .remove-extra{
      padding-bottom: 0rem;
@@ -3035,10 +3035,3 @@ body {
 }
 
 
-#chatContainer {
-  transition: padding-bottom 0.3s ease;
-}
-
-input:focus {
-  outline: none;
-}
