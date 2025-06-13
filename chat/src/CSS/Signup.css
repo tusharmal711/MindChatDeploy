@@ -3021,3 +3021,15 @@ body {
 }
 
 
+#online{
+   
+    display: flex;
+    
+    align-items: center;
+}
+#offline{
+   
+    display: flex;
+    color:rgb(237, 166, 0);
+    align-items: center;
+}

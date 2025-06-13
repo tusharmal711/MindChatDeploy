@@ -163,10 +163,11 @@ io.on("connection", async (socket) => {
    
     // If more than 1 user is in the room, notify everyone they're online
     if (clients.length < 1) {
-      socket.emit("show_online", "Offline"); // Only user in room
-    } else {
-       console.log("bc");
+     console.log("bc");
       io.to(room).emit("show_online", "Online");
+    } else {
+       socket.emit("show_online", "Offline"); // Only user in room
+       
      
     }
 

@@ -27,6 +27,7 @@ import { PiMicrosoftPowerpointLogoFill } from "react-icons/pi";
 import { MdAudioFile } from "react-icons/md";
 import { FaFileVideo } from "react-icons/fa";
 import { IoMdPhotos } from "react-icons/io";
+import { GoDotFill } from "react-icons/go";
 import "../CSS/Signup.css";
 import { PiMicrosoftWordLogoFill } from "react-icons/pi";
 import { FaPlay } from "react-icons/fa";
@@ -194,7 +195,7 @@ useEffect(() => {
 
 
 
-
+const chatDeletedRef = useRef(false); // NEW
 
 const [online,setOnline]=useState("offline");
 
@@ -222,18 +223,20 @@ useEffect(() => {
   chatInputRef.current?.blur();
   const phone = sessionStorage.getItem("phone") || Cookies.get("mobile");
 
-const fetchHistory = async () => {
+const fetchHistory = async (forceRefresh = false) => {
   try {
-    // Try loading from localStorage first
-    const cachedChats = localStorage.getItem(`chats_${room}`);
-    if (cachedChats) {
-      const parsedChats = JSON.parse(cachedChats);
-      setChats(parsedChats);
-      setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "instant" }), 0);
-      return; //  Skip backend fetch if cached
+    if (!forceRefresh && !chatDeletedRef.current) {
+      const cachedChats = localStorage.getItem(`chats_${room}`);
+      if (cachedChats) {
+        const parsedChats = JSON.parse(cachedChats);
+        setChats(parsedChats);
+        setTimeout(() => {
+          messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
+        }, 0);
+        return;
+      }
     }
 
-    // Fetch from backend
     const res = await fetch(`${backendUrl}api/fetchHistory`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -241,20 +244,20 @@ const fetchHistory = async () => {
     });
 
     const data = await res.json();
-    if (data.length > 0) {
-     setChats(data.slice(-5));
+    const latestChats = data.slice(-5);
 
-      //  Save to localStorage
+    setChats(latestChats);
+    if (!chatDeletedRef.current) {
       localStorage.setItem(`chats_${room}`, JSON.stringify(data));
-
-      setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "instant" }), 0);
     }
+
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
+    }, 0);
   } catch (error) {
     console.error("Error fetching chat history:", error);
   }
 };
-
-
   fetchHistory();
 
   // Receive message event
@@ -314,33 +317,31 @@ const [deleteOption, setDeleteOption] = useState("forMe");
 const [deleting, setDeleting] = useState(false);
 const deleteChats = async (deleteType = "forMe") => {
   try {
-    // Show loading state
     setDeleting(true);
-    
-    // Call backend API to delete chats
+    const userId = sessionStorage.getItem("phone") || Cookies.get("mobile");
+
     const res = await fetch(`${backendUrl}api/deleteChats`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ 
-        room, 
-        deleteType,
-        userId: sessionStorage.getItem("phone") || Cookies.get("mobile")
-      }),
+      body: JSON.stringify({ room, deleteType, userId }),
     });
 
     if (!res.ok) throw new Error("Failed to delete chats");
 
-    // Update UI based on delete type
+    setChats([]);
+    localStorage.removeItem(`chats_${room}`);
+    chatDeletedRef.current = true; // 👈 prevent re-caching temporarily
+
     if (deleteType === "forEveryone") {
-      // Clear chats for all participants
-      setChats([]);
       socket.emit("delete_for_everyone", { room });
-    } else {
-      // Just clear locally
-      setChats([]);
     }
-    
-    setDchat(false); // Close the delete dialog
+
+    // Reset flag after 2 seconds
+    setTimeout(() => {
+      chatDeletedRef.current = false;
+    }, 2000);
+
+    setDchat(false);
   } catch (error) {
     console.error("Error deleting chats:", error);
     alert("Failed to delete chats");
@@ -1660,7 +1661,32 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
                 <FaArrowLeft  onClick={sec} className="second-nav-arrow"/>
               <div className="chat-header" onClick={()=>{setThird(true)}}>
               <img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${dpMap[selectedContact.mobile]}`} id="chat-header-img" alt="Profile" />
-              <p>{selectedContact.username}<br/>{typingUser && <span className="typing-indicator">{typingUser}</span>}<br/>{online && <span className="typing-indicator">{online}</span>}</p>
+              <p>{selectedContact.username}<br/>
+              
+              
+              
+              
+             {typingUser ? (
+  <span className="typing-indicator">{typingUser}</span>
+) : online === "Online" ? (
+  <span className="typing-indicator online" id="online">
+    <GoDotFill /> Online
+  </span>
+) : (
+  <span className="typing-indicator offline" id="offline">
+    <GoDotFill /> Offline
+  </span>
+)}
+
+               
+               </p>
+             
+             
+             
+             
+             
+             
+             
              <div className="contact-list">
     
     </div>
