@@ -40,7 +40,7 @@ const MONGOURL = process.env.MONGO_URL;
 app.use(express.json());
 app.use(cors({
   origin: "https://mindchat-one.vercel.app", // ✅ match frontend exactly
-  methods: ["GET", "POST"],
+  methods: ["GET", "POST","PUT","DELETE"],
   credentials: true,
 }));
 app.use("/api", route);
@@ -353,55 +353,55 @@ app.post('/api/deleteChats', async (req, res) => {
   }
 });
 
-import admin from "firebase-admin";
+// import admin from "firebase-admin";
 
 
 
 
 
 
-admin.initializeApp({
-  credential: admin.credential.cert({
-    type: process.env.FIREBASE_TYPE,
-    project_id: process.env.FIREBASE_PROJECT_ID,
-    private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
-    private_key: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
-    client_email: process.env.FIREBASE_CLIENT_EMAIL,
-    client_id: process.env.FIREBASE_CLIENT_ID,
-    auth_uri: process.env.FIREBASE_AUTH_URI,
-    token_uri: process.env.FIREBASE_TOKEN_URI,
-    auth_provider_x509_cert_url: process.env.FIREBASE_AUTH_PROVIDER_CERT_URL,
-    client_x509_cert_url: process.env.FIREBASE_CLIENT_CERT_URL,
-    universe_domain: process.env.FIREBASE_UNIVERSE_DOMAIN,
-  }),
-});
+// admin.initializeApp({
+//   credential: admin.credential.cert({
+//     type: process.env.FIREBASE_TYPE,
+//     project_id: process.env.FIREBASE_PROJECT_ID,
+//     private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
+//     private_key: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+//     client_email: process.env.FIREBASE_CLIENT_EMAIL,
+//     client_id: process.env.FIREBASE_CLIENT_ID,
+//     auth_uri: process.env.FIREBASE_AUTH_URI,
+//     token_uri: process.env.FIREBASE_TOKEN_URI,
+//     auth_provider_x509_cert_url: process.env.FIREBASE_AUTH_PROVIDER_CERT_URL,
+//     client_x509_cert_url: process.env.FIREBASE_CLIENT_CERT_URL,
+//     universe_domain: process.env.FIREBASE_UNIVERSE_DOMAIN,
+//   }),
+// });
 
 
-// 🔔 FCM Send Function
-const sendFCM = async (token, title, body) => {
-  const message = {
-    token,
-    notification: {
-      title,
-      body,
-    },
-  };
+// // 🔔 FCM Send Function
+// const sendFCM = async (token, title, body) => {
+//   const message = {
+//     token,
+//     notification: {
+//       title,
+//       body,
+//     },
+//   };
 
-  return await admin.messaging().send(message);
-};
+//   return await admin.messaging().send(message);
+// };
 
-// 🧩 API Endpoint for Notification
-app.post("/notify", async (req, res) => {
-  const { token, title, body } = req.body;
+// // 🧩 API Endpoint for Notification
+// app.post("/notify", async (req, res) => {
+//   const { token, title, body } = req.body;
 
-  try {
-    await sendFCM(token, title, body);
-    res.status(200).send("Notification sent!");
-  } catch (error) {
-    console.error("FCM Error:", error);
-    res.status(500).send("Failed to send notification");
-  }
-});
+//   try {
+//     await sendFCM(token, title, body);
+//     res.status(200).send("Notification sent!");
+//   } catch (error) {
+//     console.error("FCM Error:", error);
+//     res.status(500).send("Failed to send notification");
+//   }
+// });
 
 // Start the server
 server.listen(PORT, () => {
