@@ -35,13 +35,24 @@ import {getFCMToken} from "./firebase-config.js";
 import { onMessage } from "firebase/messaging";
 import { messaging } from "./firebase-config"; // adjust path if needed
 const backendUrl = process.env.REACT_APP_BACKEND_URL; 
-const socket = io("https://mindchatdeploy-2.onrender.com/", {
-  transports: ["websocket"], // Forces WebSocket connection
-  withCredentials: true, // Allows cross-origin credentials
+
+const socket = io(
+  window.location.hostname === "localhost"
+    ? "http://localhost:3001"
+    : "https://mindchatdeploy-2.onrender.com",
+  {
+    transports: ["polling","websocket"],
+    withCredentials: true, // Allows cross-origin credentials
   reconnection: true,
   reconnectionAttempts: 5,
   reconnectionDelay: 2000
-});
+  }
+);
+
+// const socket = io("http://localhost:3001", {
+//   transports: ["websocket"], // Forces WebSocket connection
+ 
+// });
 
 const Chatboard = ({ user, contact , message ,src, alt, ...props}) => {
   const navigate = useNavigate();
@@ -204,11 +215,12 @@ useEffect(() => {
     return ; 
     
   }
- console.log("Joining room:", room); // ✅ Check this logs correctly
+  // ✅ Check this logs correctly
 socket.emit("join_room", room);
 
+console.log("Joining room:", room);
 socket.on("show_online", (status) => {
-  console.log("Online status received:", status); // 🔴 NOT firing
+  console.log("Online status received:", status); 
   setOnline(status);
 });
 

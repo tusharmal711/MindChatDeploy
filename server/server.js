@@ -20,7 +20,7 @@ const server = http.createServer(app);
 const FRONTEND=process.env.FRONTEND;
 const io = new Server(server, {
   cors: {
-    origin: "https://mindchat-one.vercel.app",
+    origin: ["https://mindchat-one.vercel.app","http://localhost:3000"],
     methods: ["GET", "POST"],
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -145,7 +145,11 @@ const messageSchema = new mongoose.Schema({
 const Messages = mongoose.model("Messages", messageSchema);
 export default Messages;
 // Socket.io connection
-const roomUsers = {};
+
+
+
+
+const activeUsers = new Map();
 io.on("connection", async (socket) => {
   console.log("User connected:", socket.id);
 
@@ -157,7 +161,7 @@ io.on("connection", async (socket) => {
     const clients = await io.in(room).fetchSockets();
 
   if (clients.length > 1) {
-    console.log("bc"); // ✅ for debugging
+    console.log("bc"); //  for debugging
     io.to(room).emit("show_online", "Online");
   } else {
     socket.emit("show_online", "Offline");
