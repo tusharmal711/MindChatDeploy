@@ -144,21 +144,15 @@ io.on("connection", async (socket) => {
   console.log("User connected:", socket.id);
 
   socket.on("join_room", async (room) => {
+     try {
+    socket.leave(socket.room); // Leave previous room if any
     socket.join(room);
-   socket.room = room;
-  
-
+    socket.room = room;
     const clients = await io.in(room).fetchSockets();
-   
-    // If more than 1 user is in the room, notify everyone they're online
-    if (clients.length > 1) {
-      console.log("bc");
-      io.to(room).emit("show_online", "Online");
-    } else {
-      socket.emit("show_online", "Offline"); // Only user in room
-    }
-
-    // Fetch and send previous messages for the room
+    io.to(room).emit("room_user_count", clients.length);
+  } catch (error) {
+    console.error("Error joining room:", error);
+  }
     const messages = await Messages.find({ room }).sort({ timeStamp: 1 }).limit(50);
     socket.emit("chat_history", messages);
   });
@@ -205,12 +199,10 @@ socket.on('delete_for_everyone', ({ room }) => {
   socket.on("disconnect", async() => {
     console.log("User Disconnected:", socket.id);
      const room = socket.room;
-    if (room) {
-      const clients = await io.in(room).fetchSockets();
-      if (clients.length <= 1) {
-        io.to(room).emit("show_online", "Offline");
-      }
-    }
+  if (room) {
+    const clients = await io.in(room).fetchSockets();
+    io.to(room).emit("room_user_count", clients.length);
+  }
   });
 });
 
