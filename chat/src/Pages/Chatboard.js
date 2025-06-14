@@ -220,7 +220,7 @@ useEffect(() => {
 
 
 
-  chatInputRef.current?.blur();
+ 
   const phone = sessionStorage.getItem("phone") || Cookies.get("mobile");
 
 const fetchHistory = async () => {
@@ -516,8 +516,26 @@ const contactNo = sessionStorage.getItem("phone") || Cookies.get("mobile");
 
 const [imageLoading,setImageLoading]=useState(false);
 
+
+
+
+
+  const [shouldFocus, setShouldFocus] = useState(false);
+
+  useEffect(() => {
+    if (shouldFocus && chatInputRef.current) {
+      chatInputRef.current.focus();
+
+    }
+  }, [shouldFocus]); // run when `shouldFocus` changes
+
+
+
+
+
 const sendMessage = async (req, res) => {
   setShowIcon(false);
+  setShouldFocus(true);
   setViewUpload(false);
   if(file){
     setImageLoading(true);
@@ -589,7 +607,7 @@ const sendMessage = async (req, res) => {
 
   setPlusview(false);
 
-  typemsg.classList.remove("extra");
+
   setImageLoading(false);
   secondBtn();
   setPreview(null);
@@ -1095,7 +1113,7 @@ const fileAni=()=>{
   removeSticker();
 }
 const secondDiv=()=>{
- 
+  typemsg.classList.remove("extra");
  
 
   if(viewUpload===false){
@@ -1152,7 +1170,7 @@ const removeSticker =()=>{
     if (isFocused) {
       typemsg.classList.add("extra");
     } else {
-     
+      
     }
   }, [isFocused]);
 
@@ -2124,7 +2142,7 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
                          <input type="file" id="audio-send" name="image" onChange={imageSet} accept=".mp3, .wav, .ogg , .mpeg" />
                          <input type="file" id="camera-send" name="image" onChange={imageSet} capture="user" accept="image/*"/>
                          <input type="file" id="document-send" name="image" onChange={imageSet} accept=".pdf, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .txt"/>
-                         <LuSticker onClick={fileSticker} id="emoji"  /><input type="text" placeholder="Type a message..."  onKeyDown={handleKeyDown} id="entered-msg" value={chat} onChange={handleChange} onClick={secondDiv}   ref={chatInputRef} onFocus={() => setIsFocused(true)}  onBlur={() => setIsFocused(false)} />
+                         <LuSticker onClick={fileSticker} id="emoji"  /><input type="text" placeholder="Type a message..."  onKeyDown={handleKeyDown} id="entered-msg" value={chat}  onChange={handleChange} onClick={secondDiv}   ref={chatInputRef} onFocus={() => setIsFocused(true)}  onBlur={() => setIsFocused(false)} />
                       
                     
                         {
