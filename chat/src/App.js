@@ -7,6 +7,11 @@ import Signup from './Pages/Signup.js';
 import Login from './Pages/Login.js';
 import Dash from "./Pages/Dashboard.js";
 import Chatboard from "./Pages/Chatboard.js";
+
+import Moments from './Pages/Moments.js';
+import Connect from "./Pages/Connect.js";
+import Calls from "./Pages/Calls.js";
+
 import Navbar from "./Pages/Navbar.js";
 import { getFCMToken } from './Pages/firebase-config.js';
 
@@ -56,6 +61,10 @@ const MainRoutes = () => {
         <Route exact path="/signup" element={<Signup />} />
         <Route exact path="/login" element={<Login />} />
         <Route exact path="/dash" element={<Dash />} />
+
+         <Route exact path="/moments" element={<Moments />} />
+        <Route exact path="/connect" element={<Connect />} />
+        <Route exact path="/calls" element={<Calls />} />
      <Route
   path="/chatboard"
   element={
