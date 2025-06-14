@@ -223,25 +223,17 @@ useEffect(() => {
   chatInputRef.current?.blur();
   const phone = sessionStorage.getItem("phone") || Cookies.get("mobile");
 
-const fetchHistory = async (forceRefresh = false) => {
+const fetchHistory = async () => {
   try {
-    // Check localStorage unless forced to refresh from backend
-    if (!forceRefresh) {
-      const cachedChats = localStorage.getItem(`chats_${room}`);
-      if (cachedChats) {
-        const parsedChats = JSON.parse(cachedChats);
-        setChats(parsedChats);
+    const cachedChats = localStorage.getItem(`chats_${room}`);
+    let parsedChats = [];
 
-        // Scroll to bottom after rendering
-        setTimeout(() => {
-          messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
-        }, 0);
-
-        return; // Skip backend fetch if cache exists
-      }
+    if (cachedChats) {
+      parsedChats = JSON.parse(cachedChats);
+      setChats(parsedChats);
     }
 
-    // Fetch from backend
+    // Always call backend too
     const res = await fetch(`${backendUrl}api/fetchHistory`, {
       method: "POST",
       headers: {
@@ -254,14 +246,12 @@ const fetchHistory = async (forceRefresh = false) => {
 
     const data = await res.json();
 
-    // Use the latest 5 messages
-    const latestChats = data.slice(-5);
-    setChats(latestChats);
+    // Merge only if new messages are found
+    if (JSON.stringify(parsedChats) !== JSON.stringify(data)) {
+      setChats(data);
+      localStorage.setItem(`chats_${room}`, JSON.stringify(data));
+    }
 
-    // Save to localStorage
-    localStorage.setItem(`chats_${room}`, JSON.stringify(data));
-
-    // Scroll to bottom after rendering
     setTimeout(() => {
       messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
     }, 0);
