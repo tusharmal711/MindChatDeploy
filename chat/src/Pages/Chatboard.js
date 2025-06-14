@@ -589,7 +589,7 @@ const sendMessage = async (req, res) => {
 
   setPlusview(false);
 
- 
+  typemsg.classList.remove("extra");
   setImageLoading(false);
   secondBtn();
   setPreview(null);
@@ -1144,15 +1144,15 @@ const removeSticker =()=>{
 
  const [isFocused, setIsFocused] = useState(false);
  const inputRef = useRef(null);
-
-  useEffect(() => {
     const typemsg = inputRef.current;
+  useEffect(() => {
+
     if (!typemsg) return;
 
     if (isFocused) {
       typemsg.classList.add("extra");
     } else {
-      typemsg.classList.remove("extra");
+     
     }
   }, [isFocused]);
 
