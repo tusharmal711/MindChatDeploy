@@ -1,9 +1,9 @@
-import SwipeNavigator from "./SwipeNavigator";
+import SwipeNavigator from './SwipeNavigator';
 const Moments = ()=>{
     return(
-        <SwipeNavigator>
-            <h1>Moments</h1>
-        </SwipeNavigator>
+      <SwipeNavigator>
+      <h1>Moments</h1>
+    </SwipeNavigator>
     )
 }
 export default Moments;

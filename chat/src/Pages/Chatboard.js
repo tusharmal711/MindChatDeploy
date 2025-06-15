@@ -34,7 +34,7 @@ import { FaPlay } from "react-icons/fa";
 import EmojiPicker from 'emoji-picker-react';
 import {getFCMToken} from "./firebase-config.js";
 import { onMessage } from "firebase/messaging";
-import SwipeNavigator from "./SwipeNavigator";
+import SwipeNavigator from './SwipeNavigator';
 import { messaging } from "./firebase-config"; // adjust path if needed
 const backendUrl = process.env.REACT_APP_BACKEND_URL; 
 const socket = io("https://mindchatdeploy-2.onrender.com/", {
@@ -1232,7 +1232,7 @@ const [dchat,setDchat]=useState(false);
 // }, [chats]); // Runs when `chats` updates
 
   return (
-     <SwipeNavigator>
+   <SwipeNavigator>
     <div className="chatContainer">
     
 
@@ -2326,7 +2326,7 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
 
 
     </div>
-    </SwipeNavigator>
+ </SwipeNavigator>
   );
 };
 

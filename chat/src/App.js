@@ -68,9 +68,9 @@ const MainRoutes = () => {
      <Route
   path="/chatboard"
   element={
-   
+    <PrivateRoute>
       <Chatboard />
-    
+    </PrivateRoute>
   }
 />
         <Route exact path="/navbar" element={<Navbar />} />

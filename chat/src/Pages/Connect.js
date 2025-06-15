@@ -1,9 +1,9 @@
-import SwipeNavigator from "./SwipeNavigator";
+import SwipeNavigator from './SwipeNavigator';
 const Connect = ()=>{
     return(
-        <SwipeNavigator>
-            <h1>Connect</h1>
-        </SwipeNavigator>
+         <SwipeNavigator>
+      <h1>Friends</h1>
+    </SwipeNavigator>
     )
 }
 export default Connect;
