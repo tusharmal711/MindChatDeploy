@@ -1,7 +1,7 @@
 import { useSwipeable } from 'react-swipeable';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-const routes = ['/', '/updates', '/communities', '/calls'];
+const routes = ['/chatboard', '/moments', '/connect', '/calls'];
 
 const SwipeNavigator = ({ children }) => {
   const navigate = useNavigate();
