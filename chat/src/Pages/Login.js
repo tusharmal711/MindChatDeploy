@@ -140,7 +140,7 @@ const verifyOTP = async () => {
     
       <button type="button" onClick={verifyOTP} className="login" >Login</button>
       <div className="al">
-          <Link to="/forgot" id="fp">Forgot password ?</Link>
+          <Link to="/forgotpassword" id="fp">Forgot password ?</Link>
       </div>
       <div className="line"></div>
       <button  className="signup" onClick={()=>{navigate("/signup")}}>Signup</button>

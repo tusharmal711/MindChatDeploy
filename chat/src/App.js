@@ -7,7 +7,7 @@ import Signup from './Pages/Signup.js';
 import Login from './Pages/Login.js';
 import Dash from "./Pages/Dashboard.js";
 import Chatboard from "./Pages/Chatboard.js";
-
+import ForgotPassword from "./Pages/ForgotPassword.js";
 import Moments from './Pages/Moments.js';
 import Connect from "./Pages/Connect.js";
 import Calls from "./Pages/Calls.js";
@@ -48,7 +48,7 @@ const MainRoutes = () => {
   const location = useLocation();
 
   // Define paths where Navbar should NOT be visible
-  const hideNavbarRoutes = ["/", "/signup", "/login", "/dash"];
+  const hideNavbarRoutes = ["/", "/signup", "/login", "/dash","/forgotpassword"];
   const shouldShowNavbar = !hideNavbarRoutes.includes(location.pathname);
 
   return (
@@ -65,6 +65,7 @@ const MainRoutes = () => {
          <Route exact path="/moments" element={<Moments />} />
         <Route exact path="/connect" element={<Connect />} />
         <Route exact path="/calls" element={<Calls />} />
+        <Route exact path="/forgotpassword" element={<ForgotPassword />} />
      <Route
   path="/chatboard"
   element={

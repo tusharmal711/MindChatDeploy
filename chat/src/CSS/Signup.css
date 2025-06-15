@@ -3035,3 +3035,22 @@ body {
 }
 
 
+/* forgot password page is starting from here  */
+.forgotPassword{
+    height:100vh;
+    width:100%;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+   
+}
+.remail, .fpbutton {
+  width: 100%;              /* Responsive width based on parent/container */
+  max-width: 400px;        /* Optional: limits width on larger screens */
+  min-width: 200px;        /* Optional: ensures it doesn't shrink too much */
+  box-sizing: border-box;  /* Includes padding/border in the width */
+  padding: 0.5rem;
+  margin: 0 auto;          /* Centers horizontally */
+  display: block;
+}
