@@ -521,22 +521,17 @@ const [imageLoading,setImageLoading]=useState(false);
 
 
 
-  const [shouldFocus, setShouldFocus] = useState(false);
-
-  useEffect(() => {
-    if (shouldFocus && chatInputRef.current) {
-      chatInputRef.current.focus();
-
-    }
-  }, [shouldFocus]); // run when `shouldFocus` changes
 
 
 
 
 
 const sendMessage = async (req, res) => {
+     setTimeout(() => {
+    chatInputRef.current?.focus();
+  }, 100); // 50–100ms is enough
   setShowIcon(false);
-  setShouldFocus(true);
+ 
   setViewUpload(false);
   if(file){
     setImageLoading(true);
@@ -608,7 +603,7 @@ const sendMessage = async (req, res) => {
 
   setPlusview(false);
 
-
+ 
   setImageLoading(false);
   secondBtn();
   setPreview(null);
@@ -1114,7 +1109,7 @@ const fileAni=()=>{
   removeSticker();
 }
 const secondDiv=()=>{
-  typemsg.classList.remove("extra");
+
  
 
   if(viewUpload===false){
@@ -1162,18 +1157,15 @@ const removeSticker =()=>{
 }
 
  const [isFocused, setIsFocused] = useState(false);
- const inputRef = useRef(null);
-    const typemsg = inputRef.current;
-  useEffect(() => {
+ 
 
-    if (!typemsg) return;
+  const handleFocus = () => {
+    setIsFocused(true);
+  };
 
-    if (isFocused) {
-      typemsg.classList.add("extra");
-    } else {
-      
-    }
-  }, [isFocused]);
+  const handleBlur = () => {
+    setIsFocused(false);
+  };
 
 
 
@@ -2123,7 +2115,7 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
   
   
   
-              <div className="type-msg"  ref={inputRef}>
+              <div className={isFocused ? 'type-msg extra' : 'type-msg'}>
               
               
                 
@@ -2144,12 +2136,12 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
                          <input type="file" id="audio-send" name="image" onChange={imageSet} accept=".mp3, .wav, .ogg , .mpeg" />
                          <input type="file" id="camera-send" name="image" onChange={imageSet} capture="user" accept="image/*"/>
                          <input type="file" id="document-send" name="image" onChange={imageSet} accept=".pdf, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .txt"/>
-                         <LuSticker onClick={fileSticker} id="emoji"  /><input type="text" placeholder="Type a message..."  onKeyDown={handleKeyDown} id="entered-msg" value={chat}  onChange={handleChange} onClick={secondDiv}   ref={chatInputRef} onFocus={() => setIsFocused(true)}  onBlur={() => setIsFocused(false)} />
+                         <LuSticker onClick={fileSticker} id="emoji"  /><input type="text" placeholder="Type a message..."  onKeyDown={handleKeyDown} id="entered-msg" value={chat}  onChange={handleChange} onClick={secondDiv}   ref={chatInputRef}  onFocus={handleFocus} onBlur={handleBlur} />
                       
                     
                         {
                           showIcon &&(
-                             <IoSendSharp onClick={sendMessage}  id="send-arrow"/>
+                             <IoSendSharp onClick={sendMessage}  onMouseDown={(e) => e.preventDefault()} id="send-arrow"/>
                           )
                         }
                       
