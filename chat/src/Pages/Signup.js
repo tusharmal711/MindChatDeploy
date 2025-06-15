@@ -4,7 +4,7 @@ import { useState} from "react";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import Cookies from "js-cookie";
 const Signup = () => {
   const backendUrl = process.env.REACT_APP_BACKEND_URL; 
   const [user, setUser] = useState({ username: "", email: "", phone: "", password: "" });
@@ -87,6 +87,9 @@ const Signup = () => {
         toast.success("Signup successful!", { position: "top-right" });
         sessionStorage.setItem("phone",user.phone);
         navigate("/chatboard");
+         Cookies.set("mobile", user.phone); // Persist login
+      sessionStorage.setItem("phone", user.phone);
+      localStorage.setItem("phone", user.phone);
       }
     } catch (error) {
       toast.error("Signup failed!", { position: "top-right" });
