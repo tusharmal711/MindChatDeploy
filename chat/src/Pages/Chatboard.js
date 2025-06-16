@@ -539,8 +539,9 @@ const [imageLoading,setImageLoading]=useState(false);
 
 
 
-
+ const messageId = Date.now().toString();
 const sendMessage = async (req, res) => {
+  
      setTimeout(() => {
     chatInputRef.current?.focus();
   }, 100); // 50–100ms is enough
@@ -582,6 +583,7 @@ const sendMessage = async (req, res) => {
     formData.append(
       "messageData",
       JSON.stringify({
+        id: messageId,
         userName: pro_uname,
         text: chat, // Send text as well if available
         room,
@@ -601,9 +603,8 @@ const sendMessage = async (req, res) => {
     }
   } else {
     // If there's no image, send a text message through Socket.io
-    const messageId = Date.now().toString();
+   
     const messageData = {
-      
       id: messageId,
       userName: pro_uname,
       text: chat,
