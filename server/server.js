@@ -178,10 +178,10 @@ io.on("connection", async (socket) => {
   });
 
   socket.on("send_message", async (data) => {
-    const { userName, text, room, timeStamp } = data;
+    const {messageId,userName, text, room, timeStamp } = data;
 
     // Save text message to MongoDB
-    const newMessage = new Messages({ userName, text, room, timeStamp });
+    const newMessage = new Messages({messageId, userName, text, room, timeStamp });
     await newMessage.save();
 
     // Broadcast to the room
@@ -256,6 +256,7 @@ app.post("/api/sendImageMessage", upload.fields([
 
     // Save message to MongoDB (all files stored in `text` field)
     const newMessage = new Messages({
+      messageId: messageData.messageId,
       userName: messageData.userName,
       text: filePath, // Store the file URL or the text
       room: messageData.room,
