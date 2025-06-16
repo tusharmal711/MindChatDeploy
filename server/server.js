@@ -142,7 +142,7 @@ connectDB();
 
 // Message schema and model
 const messageSchema = new mongoose.Schema({
-  id: String,
+  messageId: String,
   userName: String,
   text: String,
   room: String,

@@ -583,7 +583,7 @@ const sendMessage = async (req, res) => {
     formData.append(
       "messageData",
       JSON.stringify({
-        id: messageId,
+        messageId: messageId,
         userName: pro_uname,
         text: chat, // Send text as well if available
         room,
@@ -605,7 +605,7 @@ const sendMessage = async (req, res) => {
     // If there's no image, send a text message through Socket.io
    
     const messageData = {
-      id: messageId,
+      messageId: messageId,
       userName: pro_uname,
       text: chat,
       room,
