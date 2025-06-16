@@ -1774,11 +1774,7 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
 )}
 
 
-{
-  isSeen &&(
-   <span>Seen</span>
-  )
-}
+
 
               </p>
              <div className="contact-list">

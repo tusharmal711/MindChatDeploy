@@ -1,10 +1,11 @@
 import express from "express";
 
-import {Register,sendOTP,VerifyOtp,isLogin,deleteDp,sendLoginOTP,VerifyLoginOtp,editAbout,  fetch, fetchId, delContact, fetchYou, addNewContact,editContact, fetchDp , fetchOtherDp, fetchHistory} from "./userController.js";
+import {Register,sendOTP,VerifyOtp,isLogin,deleteDp,sendLoginOTP,VerifyLoginOtp,editAbout,sendFpOTP,  fetch, fetchId, delContact, fetchYou, addNewContact,editContact, fetchDp , fetchOtherDp, fetchHistory} from "./userController.js";
 
 const router = express.Router();
 router.post("/register",Register);
 router.post("/sendOTP",sendOTP);
+router.post("/sendFpOTP",sendFpOTP);
 router.post("/verifyOTP",VerifyOtp);
 router.post("/login",isLogin);
 router.post("/loginOTP",sendLoginOTP);

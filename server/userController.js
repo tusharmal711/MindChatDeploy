@@ -68,6 +68,8 @@ export const sendOTP = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to send OTP" });
   }
 };
+
+
 export const VerifyOtp = async (req, res) => {
   const { email, otp } = req.body;
 
@@ -113,6 +115,71 @@ export const Register = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+
+
+
+// forgot password is starting from here 
+export const sendFpOTP = async (req, res) => {
+  try {
+
+    const { email } = req.body;
+    const otp = generateSecureOTP();
+   const existUser=await User.findOne({email});
+   if(!existUser){
+    res.status(500).json({ success: false, message: "Failed to send OTP" });
+   }else{
+    await otpSend.sendMail({
+      from: sender,
+      to: email,
+      subject: "Mind Chat - OTP Verification",
+      html: `<div style="font-family: Arial, sans-serif; line-height: 1.5;">
+      <h2>Your OTP Code</h2>
+      <p>Please use the following OTP code to complete your verification:</p>
+      <div style="font-size: 24px; font-weight: bold; margin: 20px 0;">
+        ${otp}
+      </div>
+      <p>This code is valid for the next 10 minutes.</p>
+      <p>If you did not request this code, please ignore this email.</p>
+    </div>`,
+    });
+
+    otpStorage.set(email, otp);
+    setTimeout(() => otpStorage.delete(email), 300000); // OTP expires in 5 minutes
+
+     res.status(201).json({ success: true, message: "OTP sent successfully" });
+   }
+   
+  } catch (error) {
+    console.error("Error sending OTP:", error);
+    res.status(500).json({ success: false, message: "Failed to send OTP" });
+  }
+};
+
+// forgot password is ending here 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // login credential is starting from here 

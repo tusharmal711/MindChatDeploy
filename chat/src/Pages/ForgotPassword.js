@@ -5,7 +5,36 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Cookies from "js-cookie";
 const ForgotPassword = ()=>{
+    const [email,setEmail]=useState("");
     const navigate = useNavigate();
+ const [otp, setOtp] = useState("");
+ const backendUrl = process.env.REACT_APP_BACKEND_URL;
+const sendFpOTP = async (e) => {
+        e.preventDefault();
+  try {
+   console.log(email);
+    const res = await fetch(`https://mindchatdeploy-2.onrender.com/api/sendFpOTP`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({email:email}),
+    });
+
+    if (!res.ok) throw new Error("Failed to fetch contacts");
+ 
+  } catch (error) {
+    console.error("Error updating:", error);
+  }
+};
+
+
+
+
+
+
+
+
+
+
    return (
     <div>
           <div className="logo">
@@ -19,11 +48,11 @@ const ForgotPassword = ()=>{
 <div className="container fpass">
   <h2>Forgot Password ?</h2>
   <ToastContainer />
-  <form>
+  <form onSubmit={sendFpOTP}>
     
       <div className="input-field mobile">
           
-          <input type="email" placeholder="Enter your signed up email id..."required />
+          <input type="email" placeholder="Enter your signed up email id..." value={email} onChange={(e)=>{setEmail(e.target.value)}} required />
       </div>
      
       <div className="otp">
