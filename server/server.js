@@ -142,6 +142,7 @@ connectDB();
 
 // Message schema and model
 const messageSchema = new mongoose.Schema({
+  id: String,
   userName: String,
   text: String,
   room: String,
@@ -199,6 +200,16 @@ io.on("connection", async (socket) => {
   });
 
 
+
+
+
+  // You can update the database here if needed
+
+  // Notify others in the room
+socket.on("message_seen", ({ messageId, room }) => {
+  io.to(room).emit("message_seen_ack", { messageId });
+   console.log("Server got message_seen for:", messageId, "in room:", room);
+});
 
 
 

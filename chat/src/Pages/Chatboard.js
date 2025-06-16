@@ -64,7 +64,7 @@ const Chatboard = ({ user, contact , message ,src, alt, ...props}) => {
   const [welcome,setWelcome]=useState(true);
  const [editprofile,setEditprofile]=useState(false);
   // const [navProfile,setNavProfile]=useState(true);
-
+const [isSeen, setIsSeen] = useState(false);
 
     
     const [username, setUsername] = useState("");
@@ -82,6 +82,7 @@ const [room, setRoom] = useState("");
 const [imageBuffer, setImageBuffer] = useState([]);
 const messagesEndRef = useRef(null);
  const [fcmToken, setFcmToken] = useState(null);
+const currentViewedRoomRef = useRef(null);
 
   useEffect(() => {
     getFCMToken().then((token) => {
@@ -196,7 +197,7 @@ useEffect(() => {
 
 
 
-
+const [currentViewedRoom, setCurrentViewedRoom] = useState(null);
 
 const [online,setOnline]=useState("offline");
 
@@ -270,8 +271,8 @@ const fetchHistory = async () => {
     const isSender = data.userId === currentUserPhone;
     const isSameRoom = data.room === room;
     const isTabActive = !document.hidden;
-
-    // ✅ Always update messages if same room
+  
+    //  Always update messages if same room
    if (isSameRoom) {
     setChats((prevChats) => {
       const updatedChats = [...prevChats, data];
@@ -288,6 +289,19 @@ const fetchHistory = async () => {
 
       return updatedChats;
     });
+
+
+if (!isSender && isSameRoom && isTabActive) {
+  console.log("Emitting seen for:", data.id);
+  socket.emit("message_seen", {
+    messageId: data.id,
+    room: data.room
+  });
+}
+
+
+
+
 
     // Scroll to latest message
     setTimeout(() => {
@@ -322,7 +336,7 @@ const fetchHistory = async () => {
     socket.off("receive_message");
      socket.off("show_online");
   };
-}, [room]);
+}, [room,currentViewedRoom]);
 
 
 
@@ -587,14 +601,18 @@ const sendMessage = async (req, res) => {
     }
   } else {
     // If there's no image, send a text message through Socket.io
+    const messageId = Date.now().toString();
     const messageData = {
+      
+      id: messageId,
       userName: pro_uname,
       text: chat,
       room,
       timeStamp: istTime,
     };
-
+     console.log(messageId);
     socket.emit("send_message", messageData);
+     setIsSeen(false); 
     console.log("Text message sent successfully!");
   }
 
@@ -613,6 +631,41 @@ const sendMessage = async (req, res) => {
   }, 1);
 
 };
+
+
+
+
+
+useEffect(() => {
+  socket.on("message_seen_ack", ({ messageId }) => {
+     console.log("Seen ack received for:", messageId); 
+    setIsSeen(true); // mark the message as seen
+  });
+
+  return () => socket.off("message_seen_ack");
+}, []);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // chating part is ending here
 
  const filteredContacts = contacts.filter((contact) =>
@@ -674,7 +727,6 @@ useEffect(() => {
     fetchDps();
   }
 }, [filteredContacts]);
-
 
 
 
@@ -815,8 +867,9 @@ const newRoom = [phone, data.mobile].sort().join("_");
   
       // Set room and join
       setRoom(newRoom);
+        currentViewedRoomRef.current = newRoom;
       socket.emit("join_room", newRoom);
-  
+    
       // UI state updates
       setIsPopup(false);
       setSecond(true);
@@ -1700,6 +1753,13 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
     <GoDotFill /> Offline
   </span>
 )}
+
+
+{
+  isSeen &&(
+   <span>Seen</span>
+  )
+}
 
               </p>
              <div className="contact-list">
