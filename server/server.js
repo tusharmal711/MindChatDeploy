@@ -147,6 +147,7 @@ const messageSchema = new mongoose.Schema({
   text: String,
   room: String,
   timeStamp: String,
+ 
 });
 const Messages = mongoose.model("Messages", messageSchema);
 export default Messages;
@@ -261,8 +262,7 @@ app.post("/api/sendImageMessage", upload.fields([
       text: filePath, // Store the file URL or the text
       room: messageData.room,
       timeStamp: messageData.timeStamp,
-      userId: messageData.userId, // Sender's user ID
-      deletedFor: [],
+     
     });
 
     await newMessage.save();

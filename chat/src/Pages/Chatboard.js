@@ -203,140 +203,155 @@ const [online,setOnline]=useState("offline");
 
   const chatInputRef = useRef(null);
 useEffect(() => {
-  if (!room ){
-    return ; 
-    
-  }
- console.log("Joining room:", room); // ✅ Make sure this logs
-  socket.emit("join_room", room);     // ✅ Emit the correct room name
+  if (!room) return;
+
+  const phone = sessionStorage.getItem("phone") || Cookies.get("mobile");
+  console.log("Joining room:", room);
+  socket.emit("join_room", room);
 
   socket.on("show_online", (status) => {
-    console.log("Online status received:", status); // ✅ Should log Online/Offline
+    console.log("Online status received:", status);
     setOnline(status);
   });
 
+  // ✅ On receiving chat history, mark unseen messages as seen
+  socket.on("chat_history", (messages) => {
+    setChats(messages);
+    localStorage.setItem(`chats_${room}`, JSON.stringify(messages));
 
-
-
-
-
-
-
- 
-  const phone = sessionStorage.getItem("phone") || Cookies.get("mobile");
-
-const fetchHistory = async () => {
-  try {
-    const cachedChats = localStorage.getItem(`chats_${room}`);
-    let parsedChats = [];
-
-    if (cachedChats) {
-      parsedChats = JSON.parse(cachedChats);
-      setChats(parsedChats);
-    }
-
-    // Always call backend too
-    const res = await fetch(`${backendUrl}api/fetchHistory`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ room, userId: phone }),
+    // ✅ Emit seen for unseen messages from others
+    messages.forEach((msg) => {
+      if (msg.userId !== phone && !msg.seen) {
+        socket.emit("message_seen", {
+          messageId: msg.messageId,
+          room: msg.room,
+          userId: phone,
+        });
+      }
     });
-
-    if (!res.ok) throw new Error("Failed to fetch chat history");
-
-    const data = await res.json();
-
-    // Merge only if new messages are found
-    if (JSON.stringify(parsedChats) !== JSON.stringify(data)) {
-      setChats(data);
-      localStorage.setItem(`chats_${room}`, JSON.stringify(data));
-    }
 
     setTimeout(() => {
       messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
     }, 0);
-  } catch (error) {
-    console.error("Error fetching chat history:", error);
-  }
-};
+  });
 
+  const fetchHistory = async () => {
+    try {
+      const cachedChats = localStorage.getItem(`chats_${room}`);
+      let parsedChats = [];
+
+      if (cachedChats) {
+        parsedChats = JSON.parse(cachedChats);
+        setChats(parsedChats);
+      }
+
+      const res = await fetch(`${backendUrl}api/fetchHistory`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ room, userId: phone }),
+      });
+
+      if (!res.ok) throw new Error("Failed to fetch chat history");
+
+      const data = await res.json();
+
+      if (JSON.stringify(parsedChats) !== JSON.stringify(data)) {
+        setChats(data);
+        localStorage.setItem(`chats_${room}`, JSON.stringify(data));
+      }
+
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
+      }, 0);
+    } catch (error) {
+      console.error("Error fetching chat history:", error);
+    }
+  };
 
   fetchHistory();
 
-  // Receive message event
+  // ✅ When a new message arrives
   socket.on("receive_message", (data) => {
-    const currentUserPhone = sessionStorage.getItem("phone") || Cookies.get("mobile");
+    const currentUserPhone = phone;
     const isSender = data.userId === currentUserPhone;
     const isSameRoom = data.room === room;
     const isTabActive = !document.hidden;
-  
-    //  Always update messages if same room
-   if (isSameRoom) {
-    setChats((prevChats) => {
-      const updatedChats = [...prevChats, data];
 
-      // Cache updated messages to localStorage
-      localStorage.setItem(`chats_${room}`, JSON.stringify(updatedChats));
+    if (isSameRoom) {
+      setChats((prevChats) => {
+        const updatedChats = [...prevChats, data];
 
-      // Check if the message is an image
-      if (data.text.match(/\.(jpg|jpeg|png|gif)$/i)) {
-        setImageBuffer((prev) => [...prev, data.text]);
-      } else {
-        setImageBuffer([]);
-      }
+        // ✅ Emit seen if I’m the receiver and I’m viewing
+        if (!isSender && isTabActive && !data.seen) {
+          socket.emit("message_seen", {
+            messageId: data.messageId,
+            room: data.room,
+            userId: currentUserPhone,
+          });
+        }
 
-      return updatedChats;
-    });
+        const finalChats = updatedChats.map((msg) =>
+          msg.messageId === data.messageId && !isSender && isTabActive
+            ? { ...msg, seen: true }
+            : msg
+        );
 
+        localStorage.setItem(`chats_${room}`, JSON.stringify(finalChats));
 
-if (!isSender && isSameRoom && isTabActive) {
-  console.log("Emitting seen for:", data.id);
-  socket.emit("message_seen", {
-    messageId: data.id,
-    room: data.room
-  });
-}
+        if (data.text.match(/\.(jpg|jpeg|png|gif)$/i)) {
+          setImageBuffer((prev) => [...prev, data.text]);
+        } else {
+          setImageBuffer([]);
+        }
 
-
-
-
-
-    // Scroll to latest message
-    setTimeout(() => {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, 100);
-  }
-
-    // ✅ Notify other users
-   if (!isSender && (!isSameRoom || document.hidden)) {
-  if ("Notification" in window && Notification.permission === "granted") {
-    try {
-      new Notification(`Message from ${data.userName}`, {
-        body: data.text.includes("http") ? "📷 Sent an image" : data.text,
-        icon: "/Images/app.png",
+        return finalChats;
       });
 
-      const audio = new Audio("/Sounds/notifications.mp3");
-      audio.play().catch(e => console.log("Sound error:", e));
-      
-      document.title = "(1) New message - Mind Chat";
-    } catch (err) {
-      console.warn("Notification failed:", err);
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
     }
-  } else {
-    console.warn("Notification not shown: permission not granted");
-  }
-}
 
+    // ✅ Push notification if I'm not in the room
+    if (!isSender && (!isSameRoom || document.hidden)) {
+      if ("Notification" in window && Notification.permission === "granted") {
+        try {
+          new Notification(`Message from ${data.userName}`, {
+            body: data.text.includes("http") ? "📷 Sent an image" : data.text,
+            icon: "/Images/app.png",
+          });
+
+          const audio = new Audio("/Sounds/notifications.mp3");
+          audio.play().catch((e) => console.log("Sound error:", e));
+
+          document.title = "(1) New message - Mind Chat";
+        } catch (err) {
+          console.warn("Notification failed:", err);
+        }
+      } else {
+        console.warn("Notification not shown: permission not granted");
+      }
+    }
+  });
+
+  // ✅ Handle seen ack from server
+  socket.on("message_seen_ack", ({ messageId }) => {
+    setChats((prev) =>
+      prev.map((msg) =>
+        msg.messageId === messageId ? { ...msg, seen: true } : msg
+      )
+    );
   });
 
   return () => {
     socket.off("receive_message");
-     socket.off("show_online");
+    socket.off("show_online");
+    socket.off("chat_history");
+    socket.off("message_seen_ack");
   };
-}, [room,currentViewedRoom]);
+}, [room]);
 
 
 
@@ -588,6 +603,7 @@ const sendMessage = async (req, res) => {
         text: chat, // Send text as well if available
         room,
         timeStamp: istTime,
+        
       })
     );
 
@@ -613,7 +629,7 @@ const sendMessage = async (req, res) => {
     };
      console.log(messageId);
     socket.emit("send_message", messageData);
-     setIsSeen(false); 
+     
     console.log("Text message sent successfully!");
   }
 
@@ -636,15 +652,6 @@ const sendMessage = async (req, res) => {
 
 
 
-
-useEffect(() => {
-  socket.on("message_seen_ack", ({ messageId }) => {
-     console.log("Seen ack received for:", messageId); 
-    setIsSeen(true); // mark the message as seen
-  });
-
-  return () => socket.off("message_seen_ack");
-}, []);
 
 
 
@@ -1871,7 +1878,9 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
              
               {/* <span className="username">{msg.userName}</span> */}
              
-             
+              {msg.userName === pro_uname && msg.seen && (
+              <small className="text-blue-500">Seen</small>
+              )}
              
               {msg.text?.includes("uploads/") ? (
               <div>
@@ -2129,6 +2138,9 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
               </div>
             <div className="msg-time">
             <span id="msg-time">{msg.timeStamp}</span>
+            </div>
+             <div className="msg-time">
+            {msg.seen && <span>✅</span>}
             </div>
              
             </div>
