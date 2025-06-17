@@ -2147,18 +2147,15 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
              <div className="msg-time">
             {
            
-            msg.seen  && onlineNow ?(
-                  <span><FaCheckDouble className={`tick1 ${msg.userName === pro_uname ? "own-tick" : "other-tick"}`}/></span>
-            ) : msg.seen && !onlineNow ? ( 
-               <span><FaCheckDouble  className={`tick1 ${msg.userName === pro_uname ? "own-tick-offline" : "other-tick"}`}/></span>
-            ) : !msg.seen && !online ?(
+          isSeen ?(
+           <span><FaCheckDouble className={`tick1 ${msg.userName === pro_uname ? "own-tick" : "other-tick"}`}/></span>
+          ):(
            <span><FaCheckDouble  className={`tick1 ${msg.userName === pro_uname ? "own-tick-offline" : "other-tick"}`}/></span>
-            ):(
-             <span><FaCheckDouble className={`tick1 ${msg.userName === pro_uname ? "own-tick" : "other-tick"}`}/></span>
-            )
+          )
           }
             </div>
-             
+              
+           
             </div>
           )
           
