@@ -43,7 +43,7 @@ export const sendOTP = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to send OTP" });
    }else{
     await otpSend.sendMail({
-       from: `"MindChat" ${sender}`,
+      from: `"MindChat" <${sender}>`,
       to: email,
       subject: `MindChat - Code : ${otp}`,
       html: `<div style="font-family: Arial, sans-serif; line-height: 1.5;">
@@ -135,7 +135,7 @@ export const sendFpOTP = async (req, res) => {
    }else{
    
     await otpSend.sendMail({
-      from: `"MindChat"${sender}`,
+       from: `"MindChat" <${sender}>`,
       to: email,
       subject: `MindChat - OTP : ${otp}`,
       html: `<div style="font-family: Arial, sans-serif; line-height: 1.5;">
