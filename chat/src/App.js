@@ -14,12 +14,13 @@ import Calls from "./Pages/Calls.js";
 
 import Navbar from "./Pages/Navbar.js";
 import { getFCMToken } from './Pages/firebase-config.js';
+import ResetPassword from "./Pages/ResetPassword.js";
 
 function HomeRedirect() {
   const navigate = useNavigate();
 
   useEffect(() => {
-   const phone = sessionStorage.getItem("phone") || Cookies.get("mobile") || localStorage.getItem("phone");;
+   const phone = sessionStorage.getItem("phone") || Cookies.get("mobile") || localStorage.getItem("phone");
 
     if (phone) {
       sessionStorage.setItem("phone", phone);
@@ -48,7 +49,7 @@ const MainRoutes = () => {
   const location = useLocation();
 
   // Define paths where Navbar should NOT be visible
-  const hideNavbarRoutes = ["/", "/signup", "/login", "/dash","/forgotpassword"];
+  const hideNavbarRoutes = ["/", "/signup", "/login", "/dash","/forgotpassword","/reset"];
   const shouldShowNavbar = !hideNavbarRoutes.includes(location.pathname);
 
   return (
@@ -65,6 +66,7 @@ const MainRoutes = () => {
          <Route exact path="/moments" element={<Moments />} />
         <Route exact path="/connect" element={<Connect />} />
         <Route exact path="/calls" element={<Calls />} />
+        <Route exact path="/reset" element={<ResetPassword />} />
         <Route exact path="/forgotpassword" element={<ForgotPassword />} />
      <Route
   path="/chatboard"

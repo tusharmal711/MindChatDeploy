@@ -18,8 +18,11 @@
     
 }
 .fpass{
-    height:19.5rem;
+    height:14.5rem;
     
+}
+.rpass{
+     height:10.5rem;
 }
 img{
    
@@ -129,6 +132,21 @@ h2{
     padding:0.4rem;
     padding-left: 0.7rem;
     padding-right: 0.7rem;
+    
+   
+       
+}
+.otp input{
+ font-size: 1.5rem;
+ padding:0;
+ width:50%;
+ padding-left: 0.9rem;
+ letter-spacing: 0.5rem;
+  color:#024d62;
+}
+.otp input::placeholder{
+    
+    font-size: 1rem;
 }
 .otp button{
     padding:0.4rem;
@@ -137,13 +155,13 @@ h2{
     background-color: rgb(0, 165, 206);
     border:none;
 
-
+    width:50%;
 
     font-weight: 600;
     margin-left: 0.3rem;
     border:none;
     padding:0.65rem;
-    width:93.5%;
+   
     border-radius: 0.3rem;
    
     font-family: Arial, Helvetica, sans-serif;
@@ -2299,6 +2317,7 @@ width:100%;
     }
     #otp{
         padding:0.9rem;
+       
     }
     .img img{
         height:100px;

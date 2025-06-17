@@ -129,6 +129,7 @@ export const sendFpOTP = async (req, res) => {
    if(!existUser){
     res.status(500).json({ success: false, message: "Failed to send OTP" });
    }else{
+   
     await otpSend.sendMail({
       from: sender,
       to: email,
@@ -527,6 +528,22 @@ export const fetchHistory = async (req, res) => {
 
 
 
+
+export const ResetPassword = async (req, res) => {
+ 
+
+
+  try {
+    const { email, password } = req.body;
+  
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await User.updateOne({ email }, { $set: { password: hashedPassword } });
+  
+    res.status(201).json({ success: true, message: "Password successfully reset" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
 
 
