@@ -43,12 +43,12 @@ export const sendOTP = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to send OTP" });
    }else{
     await otpSend.sendMail({
-      from: sender,
+       from: `"Mind Chat Support" ${sender}`,
       to: email,
-      subject: "Mind Chat - OTP Verification",
+      subject: `Mind Chat - Code : ${otp}`,
       html: `<div style="font-family: Arial, sans-serif; line-height: 1.5;">
       <h2>Your OTP Code</h2>
-      <p>Please use the following OTP code to complete your verification:</p>
+      <p>Please use the following OTP code to complete your verification for signup in MindChat</p>
       <div style="font-size: 24px; font-weight: bold; margin: 20px 0;">
         ${otp}
       </div>
@@ -131,12 +131,12 @@ export const sendFpOTP = async (req, res) => {
    }else{
    
     await otpSend.sendMail({
-      from: sender,
+      from: `"Mind Chat Support" ${sender}`,
       to: email,
-      subject: "Mind Chat - OTP Verification",
+      subject: `Mind Chat - OTP : ${otp}`,
       html: `<div style="font-family: Arial, sans-serif; line-height: 1.5;">
       <h2>Your OTP Code</h2>
-      <p>Please use the following OTP code to complete your verification:</p>
+      <p>Please use the following OTP code to complete your verification for reset password</p>
       <div style="font-size: 24px; font-weight: bold; margin: 20px 0;">
         ${otp}
       </div>
