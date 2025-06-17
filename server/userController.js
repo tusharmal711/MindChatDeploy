@@ -45,8 +45,12 @@ export const sendOTP = async (req, res) => {
     await otpSend.sendMail({
        from: `"MindChat" ${sender}`,
       to: email,
-      subject: `MindChat - Signup Code : ${otp}`,
+      subject: `MindChat - Code : ${otp}`,
       html: `<div style="font-family: Arial, sans-serif; line-height: 1.5;">
+      <div style="padding: 20px; text-align: center;">
+      <img src="https://mindchat-one.vercel.app/Images/app.png" alt="Mind Chat Logo"
+           style="max-width: 150px; height: 110px; width: 110px;">
+    </div>
       <h2>Your Signup Code</h2>
       <p>Please use the following OTP code to complete your verification for signup in MindChat</p>
       <div style="font-size: 24px; font-weight: bold; margin: 20px 0;">
@@ -135,6 +139,10 @@ export const sendFpOTP = async (req, res) => {
       to: email,
       subject: `MindChat - OTP : ${otp}`,
       html: `<div style="font-family: Arial, sans-serif; line-height: 1.5;">
+      <div style="padding: 20px; text-align: center;">
+      <img src="https://mindchat-one.vercel.app/Images/app.png" alt="Mind Chat Logo"
+           style="max-width: 150px; height: 110px; width: 110px;">
+    </div>
       <h2>Your OTP Code</h2>
       <p>Please use the following OTP code to complete your verification for reset password.</p>
       <div style="font-size: 24px; font-weight: bold; margin: 20px 0;">
@@ -234,7 +242,7 @@ export const sendLoginOTP = async (req, res) => {
 await otpSend.sendMail({
   from: `"MindChat" <${sender}>`,
   to: user.email,
-  subject: `MindChat - Login Code : ${otp}`,
+  subject: `MindChat - Code : ${otp}`,
 
   html: `<div style="font-family: Arial, sans-serif; line-height: 1.5; max-width: 600px; margin: auto;">
     <div style="padding: 20px; text-align: center;">
@@ -242,7 +250,7 @@ await otpSend.sendMail({
            style="max-width: 150px; height: 110px; width: 110px;">
     </div>
     <div style="padding: 20px; box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;">
-      <h2 style="color: #333;">Your OTP Code</h2>
+      <h2 style="color: #333;">Your Login Code</h2>
       <p style="font-size: 15px; color: rgb(77, 77, 77);">
         Please use the following OTP code to complete your verification for login.
       </p>
