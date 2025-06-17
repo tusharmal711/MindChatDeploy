@@ -1248,11 +1248,17 @@ h2{
   .message {
     display: flex;
     flex-direction: column;
-   
+  
     margin: 5px;
     border-radius: 10px;
+    
    
   }
+  .selected{
+    background-color:#cbe3ea;
+    
+   
+}
   .delChat{
     display: none;
   }
@@ -1262,7 +1268,7 @@ h2{
     width:auto;
     max-width: 50%;
     padding:2.5px;
-  
+    float:right;
     border-radius: 6px;
     word-wrap: break-word; 
     /* overflow-wrap: break-word;  */
@@ -1286,6 +1292,9 @@ h2{
     padding:7px;
     padding-bottom: 0px;
     word-wrap: break-word; 
+  
+   
+    
     
  }
 
@@ -3096,8 +3105,25 @@ display: none;
 .own-tick-g{
      color:#ff2121;
 }
-
+.green-tick{
+      color:#6bff21;
+}
+.white-tick{
+    color:red;
+}
 
 .rotp{
     background-color: rgb(255, 196, 0);
+}
+
+.nav-share{
+   
+    font-size: 1.35rem;
+    float:right;
+    display: flex;
+   gap : 1rem;
+    position: absolute;
+    margin-left: 2.5rem;
+    right:4rem;
+    
 }

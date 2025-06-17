@@ -10,6 +10,7 @@ import { FcDeleteDatabase } from "react-icons/fc";
 import { IoMdImages } from "react-icons/io";
 import { IoSendSharp } from "react-icons/io5";
 import Cookies from "js-cookie";
+import { RiDeleteBin6Line } from "react-icons/ri";
 import { GoDotFill } from "react-icons/go";
 import { RxCross1 } from "react-icons/rx";
 import io from "socket.io-client";
@@ -29,6 +30,8 @@ import { MdAudioFile } from "react-icons/md";
 import { FaFileVideo } from "react-icons/fa";
 import { IoMdPhotos } from "react-icons/io";
 import "../CSS/Signup.css";
+import { FiCornerUpLeft } from "react-icons/fi";
+import { FiCornerUpRight } from "react-icons/fi";
 import { PiMicrosoftWordLogoFill } from "react-icons/pi";
 import { FaPlay } from "react-icons/fa";
 import EmojiPicker from 'emoji-picker-react';
@@ -84,7 +87,7 @@ const [imageBuffer, setImageBuffer] = useState([]);
 const messagesEndRef = useRef(null);
  const [fcmToken, setFcmToken] = useState(null);
 const currentViewedRoomRef = useRef(null);
-
+const [selectedTextMessage, setSelectedTextMessage] = useState(null);
   useEffect(() => {
     getFCMToken().then((token) => {
       if (token) {
@@ -112,9 +115,23 @@ useEffect(() => {
   return () => unsubscribe(); // Clean up
 }, []);
 
+ const intervalRef = useRef(null);
+const handleTextMessageClick = (msgId) => {
+    if (selectedTextMessage === msgId) {
+    setSelectedTextMessage(null); // unselect if already selected
+  } else {
+    setSelectedTextMessage(msgId);
+  }
+  };
+ const stopAction = () => {
+    clearInterval(intervalRef.current);
+    
+  };
+useEffect(()=>{
+    if(selectedTextMessage){
 
-
-
+    }
+},[selectedTextMessage]);
 // navigation back is starting from here
 useEffect(() => {
   // Push a new state to the history stack to prevent back navigation
@@ -1777,14 +1794,37 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
 
 
               </p>
-             <div className="contact-list">
-    
-    </div>
+
+
+
+{
+    selectedTextMessage &&(
+        <div className="nav-share">
+        <FiCornerUpLeft />
+        <RiDeleteBin6Line />
+        <FiCornerUpRight />
+        </div>
+    )
+
+
+
+
+}
+        
               {/* {typingUser && } */}
               
                
   
               </div>
+
+
+
+
+
+
+
+
+
   
               </div>
               )
@@ -1872,12 +1912,13 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
       <div className="chat-box" id="chat-box" onClick={secondDiv}>
         <div   className="messages" id="messages" onClick={removeSticker}>
           {chats.map((msg, index) => (
-            
+           <div  className={`message-container ${selectedTextMessage === msg._id ? "selected" : ""}`}>
             <div
               key={index}
               className={`message ${msg.userName === pro_uname ? "own" : "other"}`}
              
             >
+               
              {
                 sessionStorage.setItem("notUser",msg.userName)
              }
@@ -2137,7 +2178,23 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
                </div>
   
           ):(
-            <div id="chat-text">
+            <div id="chat-text" 
+
+
+            onMouseDown={() => handleTextMessageClick(msg._id)}
+             onTouchStart={() => handleTextMessageClick(msg._id)}
+            onMouseUp={stopAction}
+            onMouseLeave={stopAction} 
+            onTouchEnd={stopAction}
+            
+            
+            
+            
+            
+            
+            
+            // onClick={() => handleMessageClick(msg.text)}
+             onError={(e) => (e.target.style.display = "none")} >
               <div>
               <span className="chat-text">{msg.text}</span>
               </div>
@@ -2145,17 +2202,23 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
             <span id="msg-time">{msg.timeStamp}</span>
             </div>
              <div className="msg-time">
+
             {
            
-          isSeen ?(
-           <span><FaCheckDouble className={`tick1 ${msg.userName === pro_uname ? "own-tick" : "other-tick"}`}/></span>
-          ):(
+            msg.seen  && onlineNow ?(
+                  <span><FaCheckDouble className={`tick1 ${msg.userName === pro_uname ? "own-tick" : "other-tick"}`}/></span>
+            ) : msg.seen && !onlineNow ? ( 
+               <span>
+                <FaCheckDouble  className={`tick1 ${msg.userName === pro_uname ? "own-tick-offline" : "other-tick"}`}/></span>
+            ) : !msg.seen && !online ?(
            <span><FaCheckDouble  className={`tick1 ${msg.userName === pro_uname ? "own-tick-offline" : "other-tick"}`}/></span>
-          )
+            ):null
+            // :(
+            // //  <span><FaCheckDouble className={`tick1 ${msg.userName === pro_uname ? "own-tick" : "other-tick"}`}/></span>
+            // )
           }
             </div>
-              
-           
+             
             </div>
           )
           
@@ -2174,6 +2237,7 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
 
            
             </div>
+              </div>
           ))}
           <div ref={messagesEndRef}></div>
         </div>
