@@ -43,11 +43,11 @@ export const sendOTP = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to send OTP" });
    }else{
     await otpSend.sendMail({
-       from: `"Mind Chat Support" ${sender}`,
+       from: `"MindChat" ${sender}`,
       to: email,
-      subject: `Mind Chat - Code : ${otp}`,
+      subject: `MindChat - Signup Code : ${otp}`,
       html: `<div style="font-family: Arial, sans-serif; line-height: 1.5;">
-      <h2>Your OTP Code</h2>
+      <h2>Your Signup Code</h2>
       <p>Please use the following OTP code to complete your verification for signup in MindChat</p>
       <div style="font-size: 24px; font-weight: bold; margin: 20px 0;">
         ${otp}
@@ -131,12 +131,12 @@ export const sendFpOTP = async (req, res) => {
    }else{
    
     await otpSend.sendMail({
-      from: `"Mind Chat Support" ${sender}`,
+      from: `"MindChat"${sender}`,
       to: email,
-      subject: `Mind Chat - OTP : ${otp}`,
+      subject: `MindChat - OTP : ${otp}`,
       html: `<div style="font-family: Arial, sans-serif; line-height: 1.5;">
       <h2>Your OTP Code</h2>
-      <p>Please use the following OTP code to complete your verification for reset password</p>
+      <p>Please use the following OTP code to complete your verification for reset password.</p>
       <div style="font-size: 24px; font-weight: bold; margin: 20px 0;">
         ${otp}
       </div>
@@ -232,9 +232,9 @@ export const sendLoginOTP = async (req, res) => {
 
     // Send OTP via email
     await otpSend.sendMail({
-      from: sender,
+       from: `"MindChat"${sender}`,
       to: user.email,
-      subject: "Mind Chat - OTP Verification",
+       subject: `MindChat - Login Code : ${otp}`,
      
       html: `<div style="font-family: Arial, sans-serif; line-height: 1.5; max-width: 600px; margin: auto;   overflow: hidden;">
   <div style="padding: 20px; text-align: center;">
@@ -242,7 +242,7 @@ export const sendLoginOTP = async (req, res) => {
   </div>
   <div style="padding: 20px;box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;">
     <h2 style="color: #333;  font-family: sans-serif;">Your OTP Code</h2>
-    <p style="font-family: sans-serif; font-size : 15px;  color:rgb(77, 77, 77);">Please use the following OTP code to complete your verification:</p>
+    <p style="font-family: sans-serif; font-size : 15px;  color:rgb(77, 77, 77);">Please use the following OTP code to complete your verification for login.</p>
     <div style="font-size: 28px; font-weight: bold; margin: 20px 0; color: #007BFF;">
       ${otp}
     </div>
