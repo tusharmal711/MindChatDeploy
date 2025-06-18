@@ -2068,7 +2068,7 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
             <div
               key={index}
               className={`message ${msg.userName === pro_uname ? "own" : "other"}`}
-             
+             style={{ userSelect: "none" }}
             >
                
              {
