@@ -127,7 +127,8 @@ useEffect(() => {
      setSecond(false);
   setActiveContact(null);
    setSelectedContact(null);
-   setRoom("");
+   setRoom(null);
+    setSelectedTextMessage(null);
   };
 
   window.addEventListener("popstate", handleBackButton);
