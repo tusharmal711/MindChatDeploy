@@ -2332,7 +2332,7 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
           ):(
             <div id="chat-text" 
 
-
+             style={{ userSelect: "none" }}
             onMouseDown={() => handleTextMessageClick(msg.messageId)}
              onTouchStart={() => handleTextMessageClick(msg.messageId)}
             onMouseUp={stopAction}
