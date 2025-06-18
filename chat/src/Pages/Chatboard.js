@@ -145,7 +145,7 @@ useEffect(() => {
 }, []);
 
 
-
+const [status,setStatus]=useState("sent");
 
 
 
@@ -219,8 +219,10 @@ useEffect(() => {
     setOnline(status);
     if(status==="Online"){
       setOnlineNow(true);
+      setStatus("seen");
     }else{
        setOnlineNow(false);
+       setStatus("sent");
     }
   });
 
@@ -363,6 +365,33 @@ const messageWithId = {
 }, [room]);
 
 
+
+useEffect(() => {
+  if(onlineNow && room){
+    const updateSeen = async()=>{
+        try {
+    const response = await fetch(`${backendUrl}api/updateSeen`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({room}),
+    });
+     
+    const result = await response.text();
+    console.log(result);
+   
+  } catch (error) {
+    console.error("Notification Error:", error);
+  }
+    }
+
+    updateSeen();
+
+
+  }
+ 
+}, [room,onlineNow]);
 
 
 
@@ -696,7 +725,7 @@ const sendMessage = async (req, res) => {
         userName: pro_uname,
         text: chat, // Send text as well if available
         room,
-        msgStatus : "sent" ,
+        msgStatus : status ,
         timeStamp: istTime,
         
       })
@@ -720,7 +749,7 @@ const sendMessage = async (req, res) => {
       userName: pro_uname,
       text: chat,
       room,
-      msgStatus : "sent",
+      msgStatus : status,
       timeStamp: istTime,
     };
      console.log(messageId);
@@ -2366,17 +2395,14 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
 
             {
            
-            msg.seen  && onlineNow ?(
-                  <span><FaCheckDouble className={`tick1 ${msg.userName === pro_uname ? "own-tick" : "other-tick"}`}/></span>
-            ) : msg.seen && !onlineNow ? ( 
-               <span>
-                <FaCheckDouble  className={`tick1 ${msg.userName === pro_uname ? "own-tick-offline" : "other-tick"}`}/></span>
-            ) : !msg.seen && !online ?(
-           <span><FaCheckDouble  className={`tick1 ${msg.userName === pro_uname ? "own-tick-offline" : "other-tick"}`}/></span>
-            ):null
-            // :(
-            // //  <span><FaCheckDouble className={`tick1 ${msg.userName === pro_uname ? "own-tick" : "other-tick"}`}/></span>
-            // )
+            msg.msgStatus==="seen" ?(
+                <span><FaCheckDouble  className={`tick1 ${msg.userName === pro_uname ? "own-tick" : "other-tick"}`}/></span>
+                
+                 
+            ) : ( 
+               <span><FaCheckDouble  className={`tick1 ${msg.userName === pro_uname ? "own-tick-offline" : "other-tick"}`}/></span>
+               
+            )
           }
             </div>
              

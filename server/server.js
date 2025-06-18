@@ -405,6 +405,55 @@ app.post('/api/deleteMsg', async (req, res) => {
   }
 });
 
+
+
+
+
+
+
+
+app.post('/api/updateSeen', async (req, res) => {
+  try {
+    const { room } = req.body;
+
+    if (!room) {
+      return res.status(400).json({ success: false, message: "Room ID missing" });
+    }
+
+    await Messages.updateMany({ room }, { $set: { msgStatus: "seen" } });
+
+    res.status(200).json({ success: true, message: "Message status updated to seen" });
+  } catch (error) {
+    console.error("Update Seen Error:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // import admin from "firebase-admin";
 
 
