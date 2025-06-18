@@ -2405,7 +2405,7 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
              </div>
 
            
-          ) : msg.text?.match(/https?:\/\/(www\.)?(facebook\.com\/(?:watch\/\?v=\d+|[^\/]+\/videos\/\d+|reel\/\d+)|fb\.watch\/[a-zA-Z0-9]+)/i) ? (
+          ) :  msg.text?.match(/https?:\/\/(www\.)?(facebook\.com\/(?:watch\/\?v=\d+|[^\/]+\/videos\/\d+|reel\/\d+)|fb\.watch\/[a-zA-Z0-9]+)/i) ? (
             <div
              style={{ userSelect: "none" }}
             onMouseDown={() => handleTextMessageClick(msg.messageId)}
@@ -2418,15 +2418,18 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
 }}
         onError={(e) => (e.target.style.display = "none")}
             >
-<iframe
-  src={`https://www.facebook.com/plugins/video.php?href=${encodeURIComponent("https://www.facebook.com/watch/?v=16G9t6e5GQ")}&show_text=false&width=250&height=200`}
-  id="link"
-  width="250"
-  height="200"
-  frameBorder="0"
-  allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-  allowFullScreen
-/>
+ <iframe
+      src={`https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(
+        msg.text
+      )}&show_text=false&width=250&height=200`}
+      width="250"
+      height="200"
+      style={{ border: "none", overflow: "hidden" }}
+      scrolling="no"
+      frameBorder="0"
+      allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+      allowFullScreen
+    />
             <a
               href={msg.text.startsWith('http') ? msg.text : `https://${msg.text}`}
               target="_blank"
@@ -2465,11 +2468,13 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
 
 
 
+
             </div>
               </span>
             </div>
              
           </div>
+          
           ):msg.text?.match(/https?:\/\/(www\.)?(youtube\.com\/(watch\?v=|shorts\/)|youtu\.be\/)[^\s]+/i) ? (
             <div
              style={{ userSelect: "none" }}

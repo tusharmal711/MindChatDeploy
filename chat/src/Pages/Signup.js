@@ -5,6 +5,8 @@ import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Cookies from "js-cookie";
+import { FaRegEye } from "react-icons/fa";
+import { FaRegEyeSlash } from "react-icons/fa";
 const Signup = () => {
   const backendUrl = process.env.REACT_APP_BACKEND_URL; 
   const [user, setUser] = useState({ username: "", email: "", phone: "", password: "" });
@@ -12,7 +14,7 @@ const Signup = () => {
 
   
   const navigate = useNavigate();
-
+ const [showPassword,setShowPassword]=useState(false);
 
   const handleChange = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value });
@@ -75,6 +77,10 @@ const Signup = () => {
     }
   }
   };
+   const togglePassword = () => {
+    setShowPassword(prev => !prev);
+  };
+
 
   // Register user after OTP verification
   const isRegister = async () => {
@@ -118,7 +124,12 @@ const Signup = () => {
             <input type="number" placeholder="Mobile No" name="phone" onChange={handleChange} required />
           </div>
           <div className="input-field password">
-            <input type="password" placeholder="Password" name="password" onChange={handleChange} required />
+            <input type={showPassword ? "text" : "password"} placeholder="Password" name="password" onChange={handleChange} required />
+         
+           <div className="eye" onClick={togglePassword}>
+                    {showPassword ? <FaRegEye /> : <FaRegEyeSlash />}
+                   </div>
+         
           </div>
           <div className="otp">
             <input type="number" onChange={(e)=>setOtp(e.target.value)} id="otp" placeholder="# Code" /><button type="submit"  id="sc">Send Code</button>

@@ -4,6 +4,8 @@ import { toast, ToastContainer } from "react-toastify";
 import { useLocation,useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
+import { FaRegEye } from "react-icons/fa";
+import { FaRegEyeSlash } from "react-icons/fa";
 const ResetPassword=()=>{
     const navigate=useNavigate();
  const location = useLocation();
@@ -11,7 +13,7 @@ const ResetPassword=()=>{
 
      const [password,setPassword]=useState("");
      const [reset,setReset]=useState(false);
-    
+     const [showPassword,setShowPassword]=useState(false);
  const backendUrl = process.env.REACT_APP_BACKEND_URL;
  const Reset= async (e) => {
     e.preventDefault();
@@ -41,6 +43,9 @@ const ResetPassword=()=>{
     }
   }, [reset]);
 
+  const togglePassword = () => {
+    setShowPassword(prev => !prev);
+  };
 
 
     return(
@@ -57,7 +62,10 @@ const ResetPassword=()=>{
   <ToastContainer />
   <form onSubmit={Reset}>
       <div className="input-field mobile">    
-          <input type="password" placeholder="Enter new password..." value={password} onChange={(e)=>{setPassword(e.target.value)}} required />
+          <input type={showPassword ? "text" : "password"} placeholder="Enter new password..." value={password} onChange={(e)=>{setPassword(e.target.value)}} required />
+       <div className="eye" onClick={togglePassword}>
+                    {showPassword ? <FaRegEye /> : <FaRegEyeSlash />}
+                   </div>
       </div>
       <button type="submit"  className="login" >Reset Password</button> 
   </form>
