@@ -2119,7 +2119,15 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
       <video
         src={`${msg.text}`}
         id="image-view"
-        onClick={() => handleMessageClick(msg.text)}
+        style={{ userSelect: "none" }}
+            onMouseDown={() => handleTextMessageClick(msg.messageId)}
+             onTouchStart={() => handleTextMessageClick(msg.messageId)}
+            onMouseUp={stopAction}
+            onMouseLeave={stopAction} 
+          onClick={() => {
+  handleMessageClick(msg.text);
+  stopAction(msg.messageId);
+}}
         onError={(e) => (e.target.style.display = "none")}
        
         alt="User Video"
@@ -2131,7 +2139,16 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
      return (
       <div className="audio-view">
       <audio controls  id="audio-view">
-        <source src={`${msg.text}`} id="audio-view-child"  onClick={() => handleMessageClick(msg.text)}
+        <source src={`${msg.text}`} id="audio-view-child"   style={{ userSelect: "none" }}
+            onMouseDown={() => handleTextMessageClick(msg.messageId)}
+             onTouchStart={() => handleTextMessageClick(msg.messageId)}
+            onMouseUp={stopAction}
+            onMouseLeave={stopAction} 
+          onClick={() => {
+  handleMessageClick(msg.text);
+  stopAction(msg.messageId);
+}}
+        onError={(e) => (e.target.style.display = "none")}
         />
          
       </audio>
@@ -2194,6 +2211,7 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
       </button>
       </div>
       <span id="ppt-time">{msg.timeStamp}</span>
+      
     </div>
     
     )
@@ -2229,6 +2247,7 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
     
     )
   }
+  
   // }  else if (imageBuffer.length >= 4) {
    
   //   return (
@@ -2256,16 +2275,57 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
       <img
        src={`${msg.text}`}
         id="image-view"
-        onClick={() => handleMessageClick(msg.text)}
+       
+           style={{ userSelect: "none" }}
+            onMouseDown={() => handleTextMessageClick(msg.messageId)}
+             onTouchStart={() => handleTextMessageClick(msg.messageId)}
+            onMouseUp={stopAction}
+            onMouseLeave={stopAction} 
+          onClick={() => {
+  handleMessageClick(msg.text);
+  stopAction(msg.messageId);
+}}
         onError={(e) => (e.target.style.display = "none")}
         alt="User Image"
       />
-      <span id="img-msg-time" >{msg.timeStamp}</span>
+      <span id="img-msg-time" >{msg.timeStamp}
+         <div className="msg-time">
+
+            {
+
+           
+            msg.msgStatus==="seen"?(
+             
+                <span><FaCheckDouble  className={`tick1 ${msg.userName === pro_uname ? "own-tick" : "other-tick"}`}/></span>
+                
+                 
+            )  : onlineNow ?(
+                 <span><FaCheckDouble  className={`tick1 ${msg.userName === pro_uname ? "own-tick" : "other-tick"}`}/></span>
+                 
+            ) :(
+             <span><FaCheckDouble  className={`tick1 ${msg.userName === pro_uname ? "own-tick-offline" : "other-tick"}`}/></span>
+            )
+            // :(
+            // //  <span><FaCheckDouble className={`tick1 ${msg.userName === pro_uname ? "own-tick" : "other-tick"}`}/></span>
+            // )
+          }
+
+              
+
+
+
+
+
+
+            </div>
+
+      </span>
+      
       </div>
+      
     );
   }
 })()}
-
 
               </div>
 
@@ -2297,13 +2357,43 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
           {msg.text}
         </a>
        <div className="msg-time">
-       <span id="msg-time">{msg.timeStamp}</span>
+       <span id="msg-time">{msg.timeStamp}
+         <div className="msg-time">
+
+            {
+
+           
+            msg.msgStatus==="seen"?(
+             
+                <span><FaCheckDouble  className={`tick1 ${msg.userName === pro_uname ? "own-tick" : "other-tick"}`}/></span>
+                
+                 
+            )  : onlineNow ?(
+                 <span><FaCheckDouble  className={`tick1 ${msg.userName === pro_uname ? "own-tick" : "other-tick"}`}/></span>
+                 
+            ) :(
+             <span><FaCheckDouble  className={`tick1 ${msg.userName === pro_uname ? "own-tick-offline" : "other-tick"}`}/></span>
+            )
+            // :(
+            // //  <span><FaCheckDouble className={`tick1 ${msg.userName === pro_uname ? "own-tick" : "other-tick"}`}/></span>
+            // )
+          }
+
+              
+
+
+
+
+
+
+            </div>
+       </span>
         </div>
         
              </div>
 
            
-          ) : msg.text?.match(/https?:\/\/(www\.)?facebook\.com\/(watch\/\?v=\d+|[^\/]+\/videos\/\d+|share\/v\/[a-zA-Z0-9]+)/i) ? (
+          ) : msg.text?.match(/https?:\/\/(www\.)?(facebook\.com\/(?:watch\/\?v=\d+|[^\/]+\/videos\/\d+|reel\/\d+)|fb\.watch\/[a-zA-Z0-9]+)/i) ? (
             <div>
 <iframe
   src={`https://www.facebook.com/plugins/video.php?href=${encodeURIComponent("https://www.facebook.com/watch/?v=16G9t6e5GQ")}&show_text=false&width=250&height=200`}
@@ -2323,8 +2413,39 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
               {msg.text}
             </a>
             <div className="msg-time">
-              <span id="msg-time">{msg.timeStamp}</span>
+              <span id="msg-time">{msg.timeStamp}
+                <div className="msg-time">
+
+            {
+
+           
+            msg.msgStatus==="seen"?(
+             
+                <span><FaCheckDouble  className={`tick1 ${msg.userName === pro_uname ? "own-tick" : "other-tick"}`}/></span>
+                
+                 
+            )  : onlineNow ?(
+                 <span><FaCheckDouble  className={`tick1 ${msg.userName === pro_uname ? "own-tick" : "other-tick"}`}/></span>
+                 
+            ) :(
+             <span><FaCheckDouble  className={`tick1 ${msg.userName === pro_uname ? "own-tick-offline" : "other-tick"}`}/></span>
+            )
+            // :(
+            // //  <span><FaCheckDouble className={`tick1 ${msg.userName === pro_uname ? "own-tick" : "other-tick"}`}/></span>
+            // )
+          }
+
+              
+
+
+
+
+
+
             </div>
+              </span>
+            </div>
+             
           </div>
           ):msg.text?.match(/https?:\/\/(www\.)?(youtube\.com\/(watch\?v=|shorts\/)|youtu\.be\/)[^\s]+/i) ? (
             <div>
@@ -2349,7 +2470,37 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
             {msg.text}
           </a>
          <div className="msg-time">
-         <span id="msg-time">{msg.timeStamp}</span>
+         <span id="msg-time">{msg.timeStamp}
+           <div className="msg-time">
+
+            {
+
+           
+            msg.msgStatus==="seen"?(
+             
+                <span><FaCheckDouble  className={`tick1 ${msg.userName === pro_uname ? "own-tick" : "other-tick"}`}/></span>
+                
+                 
+            )  : onlineNow ?(
+                 <span><FaCheckDouble  className={`tick1 ${msg.userName === pro_uname ? "own-tick" : "other-tick"}`}/></span>
+                 
+            ) :(
+             <span><FaCheckDouble  className={`tick1 ${msg.userName === pro_uname ? "own-tick-offline" : "other-tick"}`}/></span>
+            )
+            // :(
+            // //  <span><FaCheckDouble className={`tick1 ${msg.userName === pro_uname ? "own-tick" : "other-tick"}`}/></span>
+            // )
+          }
+
+              
+
+
+
+
+
+
+            </div>
+         </span>
           </div>
           
                </div>
