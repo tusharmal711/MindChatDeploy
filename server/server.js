@@ -421,11 +421,10 @@ app.post('/api/updateSeen', async (req, res) => {
     }
 
     await Messages.updateMany({ room }, { $set: { msgStatus: "seen" } });
- io.to(room).emit("message_seen_update", {
-        room,
-        msgStatus: "seen"
-      });
-
+io.to(room).emit("message_updated", {
+ 
+  msgStatus: "seen"
+});
     res.status(200).json({ success: true, message: "Message status updated to seen" });
   } catch (error) {
     console.error("Update Seen Error:", error);

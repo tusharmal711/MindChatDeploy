@@ -236,7 +236,7 @@ useEffect(() => {
     console.error("Notification Error:", error);
   }
     }else{
-       setOnlineNow(false);
+      //  setOnlineNow(false);
        setStatus("sent");
     }
   });
@@ -2386,22 +2386,31 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
              <div className="msg-time">
 
             {
+
            
-            msg.msgStatus==="seen" ?(
+            msg.msgStatus==="seen"?(
+             
                 <span><FaCheckDouble  className={`tick1 ${msg.userName === pro_uname ? "own-tick" : "other-tick"}`}/></span>
                 
                  
-            ) : onlineNow ?( 
+            )  : onlineNow ?(
               <span><FaCheckDouble  className={`tick1 ${msg.userName === pro_uname ? "own-tick" : "other-tick"}`}/></span>
-              
+            ):(
                
-            ) : (
-               <span><FaCheckDouble  className={`tick1 ${msg.userName === pro_uname ? "own-tick-offline" : "other-tick"}`}/></span>
+                 <span><FaCheckDouble  className={`tick1 ${msg.userName === pro_uname ? "own-tick-offline" : "other-tick"}`}/></span>
             )
             // :(
             // //  <span><FaCheckDouble className={`tick1 ${msg.userName === pro_uname ? "own-tick" : "other-tick"}`}/></span>
             // )
           }
+
+              
+
+
+
+
+
+
             </div>
              
             </div>
