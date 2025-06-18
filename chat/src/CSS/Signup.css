@@ -954,7 +954,7 @@ ul{
     height: calc(100dvh - 4rem);
     background-size: cover;
     background-position: center;
-   
+   overflow-y: scroll;
 }
 .chat-body::before{
     content: "";
