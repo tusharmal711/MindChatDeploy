@@ -2126,7 +2126,7 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
             onMouseLeave={stopAction} 
           onClick={() => {
   handleMessageClick(msg.text);
-  stopAction(msg.messageId);
+ 
 }}
         onError={(e) => (e.target.style.display = "none")}
        
@@ -2145,7 +2145,7 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
             onMouseUp={stopAction}
             onMouseLeave={stopAction} 
           onClick={() => {
-  handleMessageClick(msg.text);
+  
   stopAction(msg.messageId);
 }}
         onError={(e) => (e.target.style.display = "none")}
@@ -2283,7 +2283,7 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
             onMouseLeave={stopAction} 
           onClick={() => {
   handleMessageClick(msg.text);
-  stopAction(msg.messageId);
+ 
 }}
         onError={(e) => (e.target.style.display = "none")}
         alt="User Image"
@@ -2334,12 +2334,24 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
         ):(
 
                
-          <div>
+          <div
+          >
 
 
             
           {msg.text?.match(/https?:\/\/(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[^\s]+/i) ? (
-          <div>
+          <div
+           style={{ userSelect: "none" }}
+            onMouseDown={() => handleTextMessageClick(msg.messageId)}
+             onTouchStart={() => handleTextMessageClick(msg.messageId)}
+            onMouseUp={stopAction}
+            onMouseLeave={stopAction} 
+          onClick={() => {
+  handleMessageClick(msg.text);
+ 
+}}
+        onError={(e) => (e.target.style.display = "none")}
+          >
           <iframe
             src={`https://www.youtube.com/embed/${msg.text.split('v=')[1]?.split('&')[0] || msg.text.split('/').pop()}`}
             id="link"
@@ -2394,7 +2406,18 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
 
            
           ) : msg.text?.match(/https?:\/\/(www\.)?(facebook\.com\/(?:watch\/\?v=\d+|[^\/]+\/videos\/\d+|reel\/\d+)|fb\.watch\/[a-zA-Z0-9]+)/i) ? (
-            <div>
+            <div
+             style={{ userSelect: "none" }}
+            onMouseDown={() => handleTextMessageClick(msg.messageId)}
+             onTouchStart={() => handleTextMessageClick(msg.messageId)}
+            onMouseUp={stopAction}
+            onMouseLeave={stopAction} 
+          onClick={() => {
+  handleMessageClick(msg.text);
+ 
+}}
+        onError={(e) => (e.target.style.display = "none")}
+            >
 <iframe
   src={`https://www.facebook.com/plugins/video.php?href=${encodeURIComponent("https://www.facebook.com/watch/?v=16G9t6e5GQ")}&show_text=false&width=250&height=200`}
   id="link"
@@ -2448,7 +2471,18 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
              
           </div>
           ):msg.text?.match(/https?:\/\/(www\.)?(youtube\.com\/(watch\?v=|shorts\/)|youtu\.be\/)[^\s]+/i) ? (
-            <div>
+            <div
+             style={{ userSelect: "none" }}
+            onMouseDown={() => handleTextMessageClick(msg.messageId)}
+             onTouchStart={() => handleTextMessageClick(msg.messageId)}
+            onMouseUp={stopAction}
+            onMouseLeave={stopAction} 
+          onClick={() => {
+  handleMessageClick(msg.text);
+ 
+}}
+        onError={(e) => (e.target.style.display = "none")}
+            >
             <iframe
       src={`https://www.youtube.com/embed/${
         msg.text.includes("shorts/")
