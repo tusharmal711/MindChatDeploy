@@ -2061,14 +2061,28 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
       <div className="chat-box" id="chat-box" onClick={secondDiv}>
         <div   className="messages" id="messages" onClick={removeSticker}>
           {chats.map((msg, index) => (
-           <div  style={{ userSelect: "none" }}
+           <div   style={{
+    WebkitTouchCallout: "none",
+    WebkitUserSelect: "none",
+    KhtmlUserSelect: "none",
+    MozUserSelect: "none",
+    msUserSelect: "none",
+    userSelect: "none"
+  }}
             key={msg._id}
             onClick={()=>stopAction(msg.messageId)}
            className={`message-container ${selectedTextMessage === msg.messageId ? "selected" : ""}`}>
             <div
               key={index}
               className={`message ${msg.userName === pro_uname ? "own" : "other"}`}
-             style={{ userSelect: "none" }}
+              style={{
+    WebkitTouchCallout: "none",
+    WebkitUserSelect: "none",
+    KhtmlUserSelect: "none",
+    MozUserSelect: "none",
+    msUserSelect: "none",
+    userSelect: "none"
+  }}
             >
                
              {
@@ -2348,10 +2362,24 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
             // onClick={() => handleMessageClick(msg.text)}
              onError={(e) => (e.target.style.display = "none")} >
               <div>
-              <span className="chat-text"  style={{ userSelect: "none" }}>{msg.text}</span>
+              <span className="chat-text"   style={{
+    WebkitTouchCallout: "none",
+    WebkitUserSelect: "none",
+    KhtmlUserSelect: "none",
+    MozUserSelect: "none",
+    msUserSelect: "none",
+    userSelect: "none"
+  }}>{msg.text}</span>
               </div>
             <div className="msg-time">
-            <span id="msg-time"  style={{ userSelect: "none" }}>{msg.timeStamp}</span>
+            <span id="msg-time"   style={{
+    WebkitTouchCallout: "none",
+    WebkitUserSelect: "none",
+    KhtmlUserSelect: "none",
+    MozUserSelect: "none",
+    msUserSelect: "none",
+    userSelect: "none"
+  }}>{msg.timeStamp}</span>
             </div>
              <div className="msg-time">
 
