@@ -902,12 +902,16 @@ ul{
 
 
 .second{
-    height:100dvh;
-    background-color: white;
-    width:55.1%;
-    margin-left: 44.8%;
-    position: fixed;
-    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+    height: 100vh; /* Use this instead of 100dvh */
+  background-color: white;
+  width: 55.1%;
+  margin-left: 44.8%;
+  position: fixed;
+  bottom: 0;  /* Ensure it always anchors to the bottom */
+  top: 0;
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px,
+              rgba(0, 0, 0, 0.24) 0px 1px 2px;
+  overflow: hidden;
   }
 .chat-header{
     width:100%;
@@ -1262,7 +1266,7 @@ h2{
    flex-direction:column;
    opacity: 1;
    scroll-behavior: smooth;
-
+overflow-y: scroll;
   
   }
 
@@ -3070,10 +3074,12 @@ body {
 
 
 }
-  
+ 
 .second-nav{
+    
     display: flex;
     align-items: center;
+   
   }
   .second-nav-arrow{
     color:rgb(62, 62, 62);

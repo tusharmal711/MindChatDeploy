@@ -232,12 +232,12 @@ useEffect(() => {
      
     const result = response.text();
     console.log(result);
-   
+     
   } catch (error) {
     console.error("Notification Error:", error);
   }
     }else{
-      //  setOnlineNow(false);
+       setOnlineNow(false);
        setStatus("sent");
     }
   });
@@ -375,6 +375,7 @@ const messageWithId = {
 
   });
 
+  
   return () => {
     socket.off("receive_message");
      socket.off("show_online");
@@ -2395,10 +2396,10 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
                 
                  
             )  : onlineNow ?(
-              <span><FaCheckDouble  className={`tick1 ${msg.userName === pro_uname ? "own-tick" : "other-tick"}`}/></span>
-            ):(
-               
-                 <span><FaCheckDouble  className={`tick1 ${msg.userName === pro_uname ? "own-tick-offline" : "other-tick"}`}/></span>
+                 <span><FaCheckDouble  className={`tick1 ${msg.userName === pro_uname ? "own-tick" : "other-tick"}`}/></span>
+                 
+            ) :(
+             <span><FaCheckDouble  className={`tick1 ${msg.userName === pro_uname ? "own-tick-offline" : "other-tick"}`}/></span>
             )
             // :(
             // //  <span><FaCheckDouble className={`tick1 ${msg.userName === pro_uname ? "own-tick" : "other-tick"}`}/></span>
