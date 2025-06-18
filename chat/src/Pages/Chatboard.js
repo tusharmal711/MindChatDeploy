@@ -115,23 +115,20 @@ useEffect(() => {
   return () => unsubscribe(); // Clean up
 }, []);
 
- const intervalRef = useRef(null);
+
 const handleTextMessageClick = (msgId) => {
-    if (selectedTextMessage === msgId) {
-    setSelectedTextMessage(null); // unselect if already selected
-  } else {
+    
     setSelectedTextMessage(msgId);
-  }
+  
   };
- const stopAction = () => {
-    clearInterval(intervalRef.current);
+
+ const stopAction = (msgId) => {
+   if(selectedTextMessage===msgId){
+    setSelectedTextMessage(null);
+   }
     
   };
-useEffect(()=>{
-    if(selectedTextMessage){
 
-    }
-},[selectedTextMessage]);
 // navigation back is starting from here
 useEffect(() => {
   // Push a new state to the history stack to prevent back navigation
@@ -2185,7 +2182,7 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
              onTouchStart={() => handleTextMessageClick(msg._id)}
             onMouseUp={stopAction}
             onMouseLeave={stopAction} 
-            onTouchEnd={stopAction}
+            onClick={()=>stopAction(msg._id)}
             
             
             
