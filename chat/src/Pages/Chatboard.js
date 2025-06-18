@@ -145,7 +145,7 @@ useEffect(() => {
 }, []);
 
 
-const [status,setStatus]=useState("sent");
+const [status,setStatus]=useState(null);
 
 
 
@@ -220,6 +220,21 @@ useEffect(() => {
     if(status==="Online"){
       setOnlineNow(true);
       setStatus("seen");
+              try {
+    const response = fetch(`${backendUrl}api/updateSeen`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({room}),
+    });
+     
+    const result = response.text();
+    console.log(result);
+   
+  } catch (error) {
+    console.error("Notification Error:", error);
+  }
     }else{
        setOnlineNow(false);
        setStatus("sent");
@@ -289,6 +304,7 @@ const messageWithId = {
 
   // Always update messages if it's the same room
   if (isSameRoom) {
+
     console.log("In same room ");
     setChats((prevChats) => {
       const updatedChats = [...prevChats, messageWithId];
@@ -361,37 +377,13 @@ const messageWithId = {
   return () => {
     socket.off("receive_message");
      socket.off("show_online");
+      socket.off("message_seen_update");
   };
 }, [room]);
 
 
 
-useEffect(() => {
-  if(onlineNow && room){
-    const updateSeen = async()=>{
-        try {
-    const response = await fetch(`${backendUrl}api/updateSeen`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({room}),
-    });
-     
-    const result = await response.text();
-    console.log(result);
-   
-  } catch (error) {
-    console.error("Notification Error:", error);
-  }
-    }
 
-    updateSeen();
-
-
-  }
- 
-}, [room,onlineNow]);
 
 
 
@@ -855,11 +847,11 @@ useEffect(() => {
       }
     }
 
-    // ✅ Update state
+    //  Update state
     setDpMap(newDpMap);
     setAboutMap(newAboutMap);
 
-    // ✅ Save to localStorage
+    //  Save to localStorage
     localStorage.setItem("dpMap", JSON.stringify(newDpMap));
     localStorage.setItem("aboutMap", JSON.stringify(newAboutMap));
   };
@@ -2399,10 +2391,16 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
                 <span><FaCheckDouble  className={`tick1 ${msg.userName === pro_uname ? "own-tick" : "other-tick"}`}/></span>
                 
                  
-            ) : ( 
-               <span><FaCheckDouble  className={`tick1 ${msg.userName === pro_uname ? "own-tick-offline" : "other-tick"}`}/></span>
+            ) : onlineNow ?( 
+              <span><FaCheckDouble  className={`tick1 ${msg.userName === pro_uname ? "own-tick" : "other-tick"}`}/></span>
+              
                
+            ) : (
+               <span><FaCheckDouble  className={`tick1 ${msg.userName === pro_uname ? "own-tick-offline" : "other-tick"}`}/></span>
             )
+            // :(
+            // //  <span><FaCheckDouble className={`tick1 ${msg.userName === pro_uname ? "own-tick" : "other-tick"}`}/></span>
+            // )
           }
             </div>
              
