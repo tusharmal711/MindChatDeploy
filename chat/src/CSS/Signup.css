@@ -1262,7 +1262,7 @@ h2{
 
   .messages {
     overflow-y: auto;
-   flex-grow: 1;
+   flex : 1;
     height:calc(100vh - 9.3rem);
    
     padding: 10px;
