@@ -146,6 +146,7 @@ const messageSchema = new mongoose.Schema({
   userName: String,
   text: String,
   room: String,
+  msgStatus : String,
   timeStamp: String,
  
 });
@@ -182,7 +183,7 @@ io.on("connection", async (socket) => {
     const {messageId,userName, text, room, timeStamp } = data;
 
     // Save text message to MongoDB
-    const newMessage = new Messages({messageId, userName, text, room, timeStamp });
+    const newMessage = new Messages({messageId, userName, text, room, msgStatus,timeStamp });
     await newMessage.save();
 
     // Broadcast to the room
