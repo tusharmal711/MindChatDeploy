@@ -62,14 +62,14 @@ const Chatboard = ({ user, contact , message ,src, alt, ...props}) => {
   const [showIcon,setShowIcon]=useState(false);
   const [second,setSecond]=useState(false);
   const [third,setThird]=useState(false);
-  
+  const [dMessage,setDMessage]=useState(false);
   const [activeContact, setActiveContact] = useState(null);
   const [showcontainer,setShowcontainer]=useState(true);
   const [welcome,setWelcome]=useState(true);
  const [editprofile,setEditprofile]=useState(false);
   // const [navProfile,setNavProfile]=useState(true);
 const [isSeen, setIsSeen] = useState(false);
-
+const [delMsg,setDelMsg]=useState(false);
     
     const [username, setUsername] = useState("");
     const [mobile, setMobile] = useState("");
@@ -116,18 +116,7 @@ useEffect(() => {
 }, []);
 
 
-const handleTextMessageClick = (msgId) => {
-    
-    setSelectedTextMessage(msgId);
-  
-  };
 
- const stopAction = (msgId) => {
-   if(selectedTextMessage===msgId){
-    setSelectedTextMessage(null);
-   }
-    
-  };
 
 // navigation back is starting from here
 useEffect(() => {
@@ -222,11 +211,11 @@ useEffect(() => {
     return ; 
     
   }
- console.log("Joining room:", room); // ✅ Make sure this logs
-  socket.emit("join_room", room);     // ✅ Emit the correct room name
+ console.log("Joining room:", room); // Make sure this logs
+  socket.emit("join_room", room);     //  Emit the correct room name
 
   socket.on("show_online", (status) => {
-    console.log("Online status received:", status); // ✅ Should log Online/Offline
+    console.log("Online status received:", status); // Should log Online/Offline
     setOnline(status);
     if(status==="Online"){
       setOnlineNow(true);
@@ -291,12 +280,16 @@ const fetchHistory = async () => {
   const isSender = data.userId === currentUserPhone;
   const isSameRoom = data.room === room;
   const isTabActive = !document.hidden;
+const messageWithId = {
+    ...data,
+    messageId: data._id || Date.now().toString() // Fallback to new ID if not present
+  };
 
-  // ✅ Always update messages if it's the same room
+  // Always update messages if it's the same room
   if (isSameRoom) {
     console.log("In same room ");
     setChats((prevChats) => {
-      const updatedChats = [...prevChats, data];
+      const updatedChats = [...prevChats, messageWithId];
 
       // 🔁 Update seen flag here if this user has seen it
       const finalChats = updatedChats.map((msg) =>
@@ -415,6 +408,91 @@ const deleteChats = async (deleteType = "forMe") => {
 
 
 
+
+const deleteMsg = async (deleteType = "forMe", selectedTextMessage) => {
+  try {
+    setDeleting(true);
+
+    const userId = sessionStorage.getItem("phone") || Cookies.get("mobile");
+
+    const res = await fetch(`${backendUrl}api/deleteMsg`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ 
+       room,
+        deleteType, 
+      
+        messageId: selectedTextMessage
+      }),
+    });
+
+    if (!res.ok) throw new Error("Failed to delete message");
+    setDelMsg(true);
+
+ setTimeout(() => {
+  setDelMsg(false);
+}, 2000);
+    // Update local state
+    setChats(prevChats => prevChats.filter(msg => msg.messageId !== selectedTextMessage));
+    
+    // Update localStorage
+    const updatedChats = chats.filter(msg => msg.messageId !== selectedTextMessage);
+    localStorage.setItem(`chats_${room}`, JSON.stringify(updatedChats));
+
+    if (deleteType === "forEveryone") {
+      // Notify other users in the room
+      socket.emit("delete_for_everyone", { 
+        room, 
+        messageId: selectedTextMessage 
+      });
+
+    }
+
+    // Reset selection
+    setSelectedTextMessage(null);
+   
+    setDMessage(false);
+  } catch (error) {
+    console.error("Error deleting message:", error);
+    alert("Failed to delete message");
+  } finally {
+    setDeleting(false);
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const handleTextMessageClick = (msgId) => {
+    
+    setSelectedTextMessage(msgId);
+
+  };
+
+ const stopAction = (msgId) => {
+   if(selectedTextMessage===msgId){
+    setSelectedTextMessage(null);
+   }
+    
+  };
 
 
 
@@ -614,7 +692,7 @@ const sendMessage = async (req, res) => {
     formData.append(
       "messageData",
       JSON.stringify({
-        messageId: messageId,
+       
         userName: pro_uname,
         text: chat, // Send text as well if available
         room,
@@ -849,7 +927,11 @@ useEffect(() => {
   return () => clearInterval(interval);
 }, [update]);
 
-
+const deleteMessage = ()=>{
+   setThird(false);
+  setDMessage(true);
+ 
+}
 
 
   
@@ -1315,7 +1397,6 @@ const [dchat,setDchat]=useState(false);
     
 
 
-
     {
   imageLoading &&(
     <div class="image-container1">
@@ -1457,6 +1538,67 @@ you.map((profile)=>(
 {/* delete chat is ending here */}
 
 
+{
+  dMessage && (
+    <div className="popup-overlay">
+      <div className="delete-chat-popup">
+        <div className="popup-header">
+          <h3>Delete messages</h3>
+          <RxCross2 id="close-delete" onClick={() => setDMessage(false)} />
+        </div>
+        
+        <div className="delete-options">
+          <div 
+            className={`option ${deleteOption === "forMe" ? "selected" : ""}`}
+            onClick={() => setDeleteOption("forMe")}
+          >
+            <input 
+              type="radio" 
+              checked={deleteOption === "forMe"}
+              onChange={() => {}}
+            />
+            <div className="option-text">
+              <span>Delete for me</span>
+              <p>Messages will be deleted from this device only</p>
+            </div>
+          </div>
+          
+          <div 
+            className={`option ${deleteOption === "forEveryone" ? "selected" : ""}`}
+            onClick={() => setDeleteOption("forEveryone")}
+          >
+            <input 
+              type="radio" 
+              checked={deleteOption === "forEveryone"}
+              onChange={() => {}}
+            />
+            <div className="option-text">
+              <span>Delete for everyone</span>
+              <p>Messages will be deleted for all participants</p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="popup-actions">
+          <button 
+            className="cancel-btn"
+            onClick={() => setDMessage(false)}
+            disabled={deleting}
+          >
+            Cancel
+          </button>
+          <button 
+            className={`delete-btn ${deleting ? "deleting" : ""}`}
+            onClick={() => deleteMsg(deleteOption,selectedTextMessage)}
+            disabled={deleting}
+          >
+            {deleting ? "Deleting..." : "Delete"}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 
 
@@ -1772,6 +1914,19 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
               selectedContact && (
                 <div className="second-nav">
                 <FaArrowLeft  onClick={sec} className="second-nav-arrow"/>
+       {         
+    selectedTextMessage &&(
+        <div className="nav-share">
+        <FiCornerUpLeft />
+        <RiDeleteBin6Line onClick={deleteMessage}/>
+        <FiCornerUpRight />
+        </div>
+    )
+  }
+
+
+
+
               <div className="chat-header" onClick={()=>{setThird(true)}}>
               <img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${dpMap[selectedContact.mobile]}`} id="chat-header-img" alt="Profile" />
               <p>{selectedContact.username}<br/>
@@ -1794,19 +1949,7 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
 
 
 
-{
-    selectedTextMessage &&(
-        <div className="nav-share">
-        <FiCornerUpLeft />
-        <RiDeleteBin6Line />
-        <FiCornerUpRight />
-        </div>
-    )
 
-
-
-
-}
         
               {/* {typingUser && } */}
               
@@ -1856,6 +1999,15 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
 
 
 
+  {
+    delMsg &&(
+      <div className="delMsg">
+        <span>
+          Message deleted successfully
+        </span>
+      </div>
+    )
+  }
 
 
 
@@ -1909,7 +2061,10 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
       <div className="chat-box" id="chat-box" onClick={secondDiv}>
         <div   className="messages" id="messages" onClick={removeSticker}>
           {chats.map((msg, index) => (
-           <div  className={`message-container ${selectedTextMessage === msg._id ? "selected" : ""}`}>
+           <div  style={{ userSelect: "none" }}
+            key={msg._id}
+            onClick={()=>stopAction(msg.messageId)}
+           className={`message-container ${selectedTextMessage === msg.messageId ? "selected" : ""}`}>
             <div
               key={index}
               className={`message ${msg.userName === pro_uname ? "own" : "other"}`}
@@ -2178,11 +2333,11 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
             <div id="chat-text" 
 
 
-            onMouseDown={() => handleTextMessageClick(msg._id)}
-             onTouchStart={() => handleTextMessageClick(msg._id)}
+            onMouseDown={() => handleTextMessageClick(msg.messageId)}
+             onTouchStart={() => handleTextMessageClick(msg.messageId)}
             onMouseUp={stopAction}
             onMouseLeave={stopAction} 
-            onClick={()=>stopAction(msg._id)}
+           onClick={()=>stopAction(msg.messageId)}
             
             
             

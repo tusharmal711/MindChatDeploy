@@ -17,7 +17,7 @@ const ResetPassword=()=>{
     e.preventDefault();
     try {
       
-     const response = await axios.post(`http://localhost:3001/api/reset`, {
+     const response = await axios.post(`${backendUrl}api/reset`, {
   email,
   password,
 });

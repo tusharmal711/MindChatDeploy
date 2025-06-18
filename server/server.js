@@ -370,6 +370,40 @@ app.post('/api/deleteChats', async (req, res) => {
   }
 });
 
+
+
+
+
+
+
+
+// Delete a single message
+app.post('/api/deleteMsg', async (req, res) => {
+  try {
+    const { room, deleteType, messageId } = req.body;
+
+    if (deleteType === "forEveryone") {
+      // Delete for everyone - remove from database
+      await Messages.findOneAndDelete({ 
+        messageId : messageId,
+        room: room 
+      });
+
+      // Notify all clients in the room
+      io.to(room).emit("message_deleted", { messageId });
+      
+    } else {
+      // Delete for me only - just update the frontend state
+      // (No database change needed)
+    }
+
+    res.status(200).json({ success: true });
+  } catch (error) {
+    console.error("Error deleting message:", error);
+    res.status(500).json({ error: "Failed to delete message" });
+  }
+});
+
 // import admin from "firebase-admin";
 
 
