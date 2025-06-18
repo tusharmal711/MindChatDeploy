@@ -433,7 +433,7 @@ const deleteMsg = async (deleteType = "forMe", selectedTextMessage) => {
 
  setTimeout(() => {
   setDelMsg(false);
-}, 2000);
+}, 3000);
     // Update local state
     setChats(prevChats => prevChats.filter(msg => msg.messageId !== selectedTextMessage));
     
@@ -2348,10 +2348,10 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
             // onClick={() => handleMessageClick(msg.text)}
              onError={(e) => (e.target.style.display = "none")} >
               <div>
-              <span className="chat-text">{msg.text}</span>
+              <span className="chat-text"  style={{ userSelect: "none" }}>{msg.text}</span>
               </div>
             <div className="msg-time">
-            <span id="msg-time">{msg.timeStamp}</span>
+            <span id="msg-time"  style={{ userSelect: "none" }}>{msg.timeStamp}</span>
             </div>
              <div className="msg-time">
 
