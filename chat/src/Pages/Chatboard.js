@@ -811,65 +811,52 @@ const [dpMap, setDpMap] = useState({});
 const [aboutMap, setAboutMap] = useState({});
 
 useEffect(() => {
-  const hasDpChanged = (cached = {}, fresh = {}) => {
-  const cachedKeys = Object.keys(cached);
-  const freshKeys = Object.keys(fresh);
-  if (cachedKeys.length !== freshKeys.length) return true;
+  const fetchDps = async () => {
+    // ✅ Check if cached in localStorage
+    const cachedDpMap = localStorage.getItem("dpMap");
+    const cachedAboutMap = localStorage.getItem("aboutMap");
 
-  for (let key of freshKeys) {
-    if (cached[key] !== fresh[key]) return true;
-  }
-
-  return false;
-};
-   const fetchDps = async () => {
-    const cachedDpMap = JSON.parse(localStorage.getItem("dpMap") || "{}");
-    const cachedAboutMap = JSON.parse(localStorage.getItem("aboutMap") || "{}");
-
-    // 1. Show cached data immediately
-    setDpMap(cachedDpMap);
-    setAboutMap(cachedAboutMap);
+    if (cachedDpMap && cachedAboutMap) {
+      try {
+        setDpMap(JSON.parse(cachedDpMap));
+        setAboutMap(JSON.parse(cachedAboutMap));
+        return; // ✅ Skip fetching from backend
+      } catch (e) {
+        console.error("Failed to parse localStorage data", e);
+        // Fallback to fetching if JSON parsing fails
+      }
+    }
 
     const newDpMap = {};
     const newAboutMap = {};
 
     for (const contact of filteredContacts) {
       try {
-        const res = await fetch(`${backendUrl}api/fetchDp`, {
+        const dpRes = await fetch(`${backendUrl}api/fetchDp`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ mobile: contact.mobile }),
         });
 
-        const data = await res.json();
+        const dpData = await dpRes.json();
 
-        newDpMap[contact.mobile] = data.dp?.startsWith("http")
-          ? data.dp
-          : data.dp
-          ? `https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${data.dp}`
-          : "https://res.cloudinary.com/dnd9qzxws/image/upload/v1743764088/image_dp_uwfq2g.png";
-
-        newAboutMap[contact.mobile] = data.about || "Hey there! I am using MindChat!";
-      } catch (err) {
+        newDpMap[contact.mobile] = dpData.dp || "./Images/image.png";
+        newAboutMap[contact.mobile] = dpData.about;
+      } catch (error) {
         newDpMap[contact.mobile] =
           "https://res.cloudinary.com/dnd9qzxws/image/upload/v1743764088/image_dp_uwfq2g.png";
         newAboutMap[contact.mobile] = "Hello ! I am not in MindChat !";
       }
     }
 
-    // 2. Compare with cached values
-    const isChanged = hasDpChanged(cachedDpMap, newDpMap) || hasDpChanged(cachedAboutMap, newAboutMap);
+    //  Update state
+    setDpMap(newDpMap);
+    setAboutMap(newAboutMap);
 
-    // 3. Update only if changes are detected
-    if (isChanged) {
-      setDpMap(newDpMap);
-      setAboutMap(newAboutMap);
-      localStorage.setItem("dpMap", JSON.stringify(newDpMap));
-      localStorage.setItem("aboutMap", JSON.stringify(newAboutMap));
-    }
+    //  Save to localStorage
+    localStorage.setItem("dpMap", JSON.stringify(newDpMap));
+    localStorage.setItem("aboutMap", JSON.stringify(newAboutMap));
   };
-
- 
 
   // ✅ Prevent running if contacts haven't loaded yet
   if (filteredContacts.length > 0) {
@@ -906,7 +893,6 @@ const addContact = async (e) => {
     socket.emit("join_room", newRoom);
     setUsername("");
     setMobile("");
-    setShowcontainer(true);
   } catch (error) {
     console.error("Error adding contact:", error);
   }
@@ -919,56 +905,40 @@ const reducer = (state) => state + 1;
 const [update, forceUpdate] = useReducer(reducer, 0);
 
 useEffect(() => {
-  const hasContactChanged = (cached, fresh) => {
-  if (cached.length !== fresh.length) return true;
+  const fetchContacts = async () => {
+    const cachedContacts = sessionStorage.getItem("contacts");
 
-  // Compare contact list by ID or phone (customize as per your schema)
-  const cachedIds = cached.map(c => c._id || c.phone).sort();
-  const freshIds = fresh.map(c => c._id || c.phone).sort();
+    // if (cachedContacts) {
+    //   //  Use cached contacts
+    //   setContacts(JSON.parse(cachedContacts));
+    // } else {
+      try {
+        //  Use sessionStorage first, fallback to cookie
+        const phone = sessionStorage.getItem("phone") || Cookies.get("mobile");
 
-  for (let i = 0; i < cachedIds.length; i++) {
-    if (cachedIds[i] !== freshIds[i]) return true;
-  }
+        if (!phone) {
+          console.warn("No phone number found in session or cookies.");
+          return;
+        }
 
-  return false;
-};
+        const res = await fetch(`${backendUrl}api/fetch`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ phone }),
+        });
 
- const fetchContacts = async () => {
-  // 1. Load cached contacts first
-  const cachedContacts = sessionStorage.getItem("contacts");
-  if (cachedContacts) {
-    setContacts(JSON.parse(cachedContacts));
-  }
+        if (!res.ok) throw new Error("Failed to fetch contacts");
 
-  try {
-    const phone = sessionStorage.getItem("phone") || Cookies.get("mobile");
-    if (!phone) {
-      console.warn("No phone number found in session or cookies.");
-      return;
-    }
+        const data = await res.json();
+        setContacts(data);
 
-    // 2. Always fetch fresh data in the background
-    const res = await fetch(`${backendUrl}api/fetch`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ phone }),
-    });
-
-    if (!res.ok) throw new Error("Failed to fetch contacts");
-
-    const freshContacts = await res.json();
-
-    // 3. Compare fresh contacts with cached contacts
-    if (!cachedContacts || hasContactChanged(JSON.parse(cachedContacts), freshContacts)) {
-      // Update state and cache if there's a change
-      setContacts(freshContacts);
-      sessionStorage.setItem("contacts", JSON.stringify(freshContacts));
-    }
-  } catch (error) {
-    console.error("Error fetching contacts:", error);
-  }
-};
-
+        // Store fresh data to sessionStorage
+        sessionStorage.setItem("contacts", JSON.stringify(data));
+      } catch (error) {
+        console.error("Error fetching contacts:", error);
+      }
+    // }
+  };
 
   fetchContacts();
 
