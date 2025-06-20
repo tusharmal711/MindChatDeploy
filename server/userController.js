@@ -394,7 +394,7 @@ export const fetchDp = async (req, res) => {
     const { mobile } = req.body;
     const user = await User.findOne({ phone: mobile });
 
-    if (!user) return res.status(404).json({ dp: null, about: "" });
+    if (!user) return res.status(404).json({ dp: "https://res.cloudinary.com/dnd9qzxws/image/upload/v1743764088/image_dp_uwfq2g.png", about: "Hey ! I am not in MindChat" });
 
     res.status(200).json({ dp: user.dp, about: user.about }); // Send DP and About
   } catch (error) {
