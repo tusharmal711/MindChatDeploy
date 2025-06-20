@@ -908,10 +908,10 @@ useEffect(() => {
   const fetchContacts = async () => {
     const cachedContacts = sessionStorage.getItem("contacts");
 
-    if (cachedContacts) {
-      //  Use cached contacts
-      setContacts(JSON.parse(cachedContacts));
-    } else {
+    // if (cachedContacts) {
+    //   //  Use cached contacts
+    //   setContacts(JSON.parse(cachedContacts));
+    // } else {
       try {
         //  Use sessionStorage first, fallback to cookie
         const phone = sessionStorage.getItem("phone") || Cookies.get("mobile");
@@ -932,12 +932,12 @@ useEffect(() => {
         const data = await res.json();
         setContacts(data);
 
-        // ✅ Store fresh data to sessionStorage
+        // Store fresh data to sessionStorage
         sessionStorage.setItem("contacts", JSON.stringify(data));
       } catch (error) {
         console.error("Error fetching contacts:", error);
       }
-    }
+    // }
   };
 
   fetchContacts();
