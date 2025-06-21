@@ -389,7 +389,7 @@ app.post('/api/deleteMsg', async (req, res) => {
     { messageId: messageId, room: room },
     {
       $set: {
-        text: "This message was deleted",
+        text: "🚫 This message was deleted",
       },
     }
   );

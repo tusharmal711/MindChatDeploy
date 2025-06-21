@@ -446,7 +446,7 @@ const deleteMsg = async (deleteType = "forMe", selectedTextMessage) => {
       body: JSON.stringify({ 
        room,
         deleteType, 
-      
+       
         messageId: selectedTextMessage
       }),
     });
@@ -507,7 +507,7 @@ const deleteMsg = async (deleteType = "forMe", selectedTextMessage) => {
 const handleTextMessageClick = (msgId) => {
     setTimeout(()=>{
  setSelectedTextMessage(msgId);
-    },3000);
+    },2000);
    
 
   };
@@ -2633,8 +2633,7 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
              style={{ userSelect: "none" }}
             onMouseDown={() => handleTextMessageClick(msg.messageId)}
              onTouchStart={() => handleTextMessageClick(msg.messageId)}
-            onMouseUp={stopAction}
-            onMouseLeave={stopAction} 
+           
            onClick={()=>stopAction(msg.messageId)}
             
             
