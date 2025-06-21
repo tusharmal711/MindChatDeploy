@@ -809,64 +809,94 @@ useEffect(() => {
   );
 const [dpMap, setDpMap] = useState({});
 const [aboutMap, setAboutMap] = useState({});
-
+  const prevFilteredContacts = useRef([]);
 useEffect(() => {
+  // Memoize the previous filteredContacts to avoid unnecessary re-fetches
+
+  
   const fetchDps = async () => {
+    // Skip if contacts haven't changed
+    if (JSON.stringify(filteredContacts) === JSON.stringify(prevFilteredContacts.current)) {
+      return;
+    }
+    prevFilteredContacts.current = filteredContacts;
+
     const cachedDpMap = JSON.parse(localStorage.getItem("dpMap") || "{}");
     const cachedAboutMap = JSON.parse(localStorage.getItem("aboutMap") || "{}");
 
+    // Create maps for faster lookup
     const updatedDpMap = { ...cachedDpMap };
     const updatedAboutMap = { ...cachedAboutMap };
     let hasChanged = false;
 
-    for (const contact of filteredContacts) {
-      try {
-        const dpRes = await fetch(`${backendUrl}api/fetchDp`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ mobile: contact.mobile }),
-        });
+    // Identify contacts that actually need updating
+    const contactsToUpdate = filteredContacts.filter(contact => {
+      return (
+        !cachedDpMap[contact.mobile] || 
+        !cachedAboutMap[contact.mobile] ||
+        cachedDpMap[contact.mobile].includes("image_dp_uwfq2g.png")
+      );
+    });
 
-        // Handle 404 (user not found)
-        if (dpRes.status === 404) {
-          updatedDpMap[contact.mobile] =
-            "https://res.cloudinary.com/dnd9qzxws/image/upload/v1743764088/image_dp_uwfq2g.png";
-          updatedAboutMap[contact.mobile] = "Hello ! I am not in MindChat !";
-          hasChanged = true;
-          continue; // Skip further processing for this contact
-        }
+    // Process in parallel with optimized batch size
+    const BATCH_SIZE = 8; // Increased from 5 for better throughput
+    const batchPromises = [];
+    
+    for (let i = 0; i < contactsToUpdate.length; i += BATCH_SIZE) {
+      const batch = contactsToUpdate.slice(i, i + BATCH_SIZE);
+      
+      batchPromises.push(
+        Promise.all(batch.map(async (contact) => {
+          try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
+            
+            const dpRes = await fetch(`${backendUrl}api/fetchDp`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ mobile: contact.mobile }),
+              signal: controller.signal
+            });
+            
+            clearTimeout(timeoutId);
 
-        const dpData = await dpRes.json();
+            if (dpRes.status === 404) {
+              updatedDpMap[contact.mobile] = "https://res.cloudinary.com/dnd9qzxws/image/upload/v1743764088/image_dp_uwfq2g.png";
+              updatedAboutMap[contact.mobile] = "Hello ! I am not in MindChat !";
+              hasChanged = true;
+              return;
+            }
 
-        const newDp = dpData.dp || "https://res.cloudinary.com/dnd9qzxws/image/upload/v1743764088/image_dp_uwfq2g.png";
-        const newAbout = dpData.about || "Hey there! I am using MindChat!";
+            const dpData = await dpRes.json();
+            const newDp = dpData.dp || "https://res.cloudinary.com/dnd9qzxws/image/upload/v1743764088/image_dp_uwfq2g.png";
+            const newAbout = dpData.about || "Hey there! I am using MindChat!";
 
-        // Only update if values have changed
-        if (
-          cachedDpMap[contact.mobile] !== newDp ||
-          cachedAboutMap[contact.mobile] !== newAbout
-        ) {
-          updatedDpMap[contact.mobile] = newDp;
-          updatedAboutMap[contact.mobile] = newAbout;
-          hasChanged = true;
-        }
-      } catch (error) {
-        // Handle network or server errors
-        updatedDpMap[contact.mobile] =
-          "https://res.cloudinary.com/dnd9qzxws/image/upload/v1743764088/image_dp_uwfq2g.png";
-        updatedAboutMap[contact.mobile] = "Hello ! I am not in MindChat !";
-        hasChanged = true;
-      }
+            if (cachedDpMap[contact.mobile] !== newDp || cachedAboutMap[contact.mobile] !== newAbout) {
+              updatedDpMap[contact.mobile] = newDp;
+              updatedAboutMap[contact.mobile] = newAbout;
+              hasChanged = true;
+            }
+          } catch (error) {
+            if (error.name !== 'AbortError') {
+              updatedDpMap[contact.mobile] = "https://res.cloudinary.com/dnd9qzxws/image/upload/v1743764088/image_dp_uwfq2g.png";
+              updatedAboutMap[contact.mobile] = "Hello ! I am not in MindChat !";
+              hasChanged = true;
+            }
+          }
+        }))
+      );
     }
 
-    // Update state and cache only if any change was detected
+    // Wait for all batches to complete
+    await Promise.all(batchPromises);
+
+    // Only update state and storage if changes occurred
     if (hasChanged) {
       setDpMap(updatedDpMap);
       setAboutMap(updatedAboutMap);
       localStorage.setItem("dpMap", JSON.stringify(updatedDpMap));
       localStorage.setItem("aboutMap", JSON.stringify(updatedAboutMap));
     } else {
-      // Even if no change, use the cached data to set state
       setDpMap(cachedDpMap);
       setAboutMap(cachedAboutMap);
     }
@@ -876,9 +906,6 @@ useEffect(() => {
     fetchDps();
   }
 }, [filteredContacts]);
-
-
-
 
 
 
@@ -1506,7 +1533,9 @@ const [dchat,setDchat]=useState(false);
 you.map((profile)=>(
 
 
-<img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${dpMap[selectedContact.mobile]}`}  alt="Profile" key={profile.id} />
+<img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${dpMap[selectedContact.mobile]}`}  alt="Profile" key={profile.id}  onError={(e) => {
+    e.target.src = "https://res.cloudinary.com/dnd9qzxws/image/upload/v1743764088/image_dp_uwfq2g.png";
+  }}/>
 
  
 ))
@@ -1526,7 +1555,9 @@ you.map((profile)=>(
 you.map((profile)=>(
 <div className="view-photo" key={profile.id}>
 
-<img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${dpMap[selectedContact.mobile]}`}  alt="Profile" />
+<img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${dpMap[selectedContact.mobile]}`}  onError={(e) => {
+    e.target.src = "https://res.cloudinary.com/dnd9qzxws/image/upload/v1743764088/image_dp_uwfq2g.png";
+  }} alt="Profile" />
 </div>
  
 ))
@@ -1866,6 +1897,9 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
     src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${dpMap[contact.mobile]}`}
     id="dp-default"
    onLoad={()=>{setLoading(false)}}
+    onError={(e) => {
+    e.target.src = "https://res.cloudinary.com/dnd9qzxws/image/upload/v1743764088/image_dp_uwfq2g.png";
+  }}
   />
   {
     loading &&(
@@ -1998,7 +2032,9 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
 
 
               <div className="chat-header" onClick={()=>{setThird(true)}}>
-              <img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${dpMap[selectedContact.mobile]}`} id="chat-header-img" alt="Profile" />
+              <img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${dpMap[selectedContact.mobile]}`} id="chat-header-img"  onError={(e) => {
+    e.target.src = "https://res.cloudinary.com/dnd9qzxws/image/upload/v1743764088/image_dp_uwfq2g.png";
+  }} alt="Profile" />
               <p>{selectedContact.username}<br/>
                        {typingUser ? (
   <span className="typing-indicator">{typingUser}</span>
@@ -2777,7 +2813,11 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
     <div className="contact-scroll2" onClick={()=>{setPopcontact(false)}}>
     {selectedContact && (
                <div className="contact-chat">
-                 <img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${dpMap[selectedContact.mobile]}`} id="dp-contact-default" alt="Profile" onClick={()=>{setViewContact(true)}}/>
+                 <img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${dpMap[selectedContact.mobile]}`} id="dp-contact-default" alt="Profile" 
+                  onError={(e) => {
+               e.target.src = "https://res.cloudinary.com/dnd9qzxws/image/upload/v1743764088/image_dp_uwfq2g.png";
+                   }}
+                 onClick={()=>{setViewContact(true)}}/>
                 
                  <h2>{selectedContact.username}</h2>
                  <p>
