@@ -505,8 +505,10 @@ const deleteMsg = async (deleteType = "forMe", selectedTextMessage) => {
 
 
 const handleTextMessageClick = (msgId) => {
-    
-    setSelectedTextMessage(msgId);
+    setTimeout(()=>{
+ setSelectedTextMessage(msgId);
+    },3000);
+   
 
   };
 
