@@ -385,10 +385,14 @@ app.post('/api/deleteMsg', async (req, res) => {
 
     if (deleteType === "forEveryone") {
       // Delete for everyone - remove from database
-      await Messages.findOneAndDelete({ 
-        messageId : messageId,
-        room: room 
-      });
+      await Messages.findOneAndUpdate(
+    { messageId: messageId, room: room },
+    {
+      $set: {
+        text: "This message was deleted",
+      },
+    }
+  );
 
       // Notify all clients in the room
       io.to(room).emit("message_deleted", { messageId });
