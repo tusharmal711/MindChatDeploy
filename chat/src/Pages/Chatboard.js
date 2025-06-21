@@ -385,6 +385,21 @@ const messageWithId = {
 
 
 
+const handleTextMessageClick = (msgId) => {
+    setTimeout(()=>{
+ setSelectedTextMessage(msgId);
+    },2000);
+   
+
+  };
+
+ const stopAction = (msgId) => {
+   if(selectedTextMessage===msgId){
+    setSelectedTextMessage(null);
+   }
+    
+  };
+
 
 
 
@@ -503,21 +518,6 @@ const deleteMsg = async (deleteType = "forMe", selectedTextMessage) => {
 
 
 
-
-const handleTextMessageClick = (msgId) => {
-    setTimeout(()=>{
- setSelectedTextMessage(msgId);
-    },2000);
-   
-
-  };
-
- const stopAction = (msgId) => {
-   if(selectedTextMessage===msgId){
-    setSelectedTextMessage(null);
-   }
-    
-  };
 
 
 
