@@ -88,14 +88,19 @@ const messagesEndRef = useRef(null);
  const [fcmToken, setFcmToken] = useState(null);
 const currentViewedRoomRef = useRef(null);
 const [selectedTextMessage, setSelectedTextMessage] = useState(null);
-  useEffect(() => {
-    getFCMToken().then((token) => {
-      if (token) {
-        setFcmToken(token);
-        console.log("🔥 Token:", token);
-      }
-    });
-  }, []);
+useEffect(() => {
+  getFCMToken().then((token) => {
+    if (token) {
+      const mobile = localStorage.getItem("mobileNumber"); // Assume you saved it on login
+      fetch("https://mindchatdeploy-2.onrender.com/register-token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mobile : 9641539527, token }),
+      });
+    }
+  });
+}, []);
+
 
 
 useEffect(() => {
@@ -153,28 +158,24 @@ const [status,setStatus]=useState(null);
 
 
 
-async function notifyUser() {
- 
-  const token = fcmToken; // Get this from Firebase Messaging
+async function notifyUser(mobileNumber) {
   const title = "New Message!";
   const body = "You have a new message on Mind Chat.";
 
   try {
-    const response = await fetch("http://localhost:3001/notify", {
+    const response = await fetch("https://mindchatdeploy-2.onrender.com/notify", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ token, title, body }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ mobile: mobileNumber, title, body }),
     });
-     
+
     const result = await response.text();
-    console.log(result);
-    alert(`This is notification : ${result}`);
+    alert(`🔔 ${result}`);
   } catch (error) {
     console.error("Notification Error:", error);
   }
 }
+
 
 
 
@@ -355,19 +356,7 @@ const messageWithId = {
     // ✅ Notify other users
    if (!isSender && (!isSameRoom || document.hidden)) {
   if ("Notification" in window && Notification.permission === "granted") {
-    try {
-      new Notification(`Message from ${data.userName}`, {
-        body: data.text.includes("http") ? "📷 Sent an image" : data.text,
-        icon: "/Images/app.png",
-      });
-
-      const audio = new Audio("/Sounds/notifications.mp3");
-      audio.play().catch(e => console.log("Sound error:", e));
-      
-      document.title = "(1) New message - Mind Chat";
-    } catch (err) {
-      console.warn("Notification failed:", err);
-    }
+   notifyUser(9641539527);
   } else {
     console.warn("Notification not shown: permission not granted");
   }
