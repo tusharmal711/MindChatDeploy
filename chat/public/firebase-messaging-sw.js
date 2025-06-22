@@ -17,9 +17,9 @@ messaging.onBackgroundMessage(function (payload) {
   const notificationTitle = payload.notification.title;
   const notificationOptions = {
     body: payload.notification.body,
-    icon: "./Images/app.png",
-    sound:"./Sounds/notifications.mp3"
+    icon: "/Images/app.png",
+  
   };
 
-  self.registration.showNotification(notificationTitle, notificationOptions);
+  // self.registration.showNotification(notificationTitle, notificationOptions);
 });
