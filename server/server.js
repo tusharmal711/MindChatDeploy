@@ -498,13 +498,13 @@ const sendFCM = async (token, title, body) => {
   return await admin.messaging().send(message);
 };
 
-const tokenMap = {}; // ⚠️ Stored in memory — resets when server restarts
+const tokenMap = {}; // Stored in memory — resets when server restarts
 
 app.post("/register-token", (req, res) => {
   const { mobile, token } = req.body;
   if (mobile && token) {
     tokenMap[mobile] = token;
-    console.log(`✅ Token registered for ${mobile}: ${token}`);
+    console.log(`Token registered for ${mobile}: ${token}`);
     res.send({ success: true });
   } else {
     res.status(400).send({ error: "Missing mobile or token" });
@@ -524,14 +524,14 @@ app.post("/notify", async (req, res) => {
 
   try {
     await admin.messaging().send(message);
-    res.send("✅ Notification sent to " + mobile);
+    res.send("Notification sent to " + mobile);
   } catch (err) {
-    console.error("❌ FCM Error:", err);
+    console.error("FCM Error:", err);
 
     // 💡 Automatically remove invalid token
     if (err.errorInfo?.code === 'messaging/registration-token-not-registered') {
       delete tokenMap[mobile];
-      console.log(`🧹 Removed invalid token for ${mobile}`);
+      console.log(`Removed invalid token for ${mobile}`);
     }
 
     res.status(500).send("Failed to send notification");

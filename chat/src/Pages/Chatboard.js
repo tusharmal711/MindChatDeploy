@@ -91,11 +91,11 @@ const [selectedTextMessage, setSelectedTextMessage] = useState(null);
 useEffect(() => {
   getFCMToken().then((token) => {
     if (token) {
-      const mobile = localStorage.getItem("mobileNumber"); // Assume you saved it on login
+      const selmobile = sessionStorage.getItem("mobileNumber"); // Assume you saved it on login
       fetch("https://mindchatdeploy-2.onrender.com/register-token", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mobile : 9641539527, token }),
+        body: JSON.stringify({ mobile : selmobile , token }),
       });
     }
   });
@@ -105,7 +105,7 @@ useEffect(() => {
 
 useEffect(() => {
   const unsubscribe = onMessage(messaging, (payload) => {
-    console.log("📩 Message received in foreground:", payload);
+    console.log("Message received in foreground:", payload);
 
     const { title, body } = payload.notification;
 
@@ -292,7 +292,13 @@ const fetchHistory = async () => {
 
 
   fetchHistory();
-
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    console.log("User left the tab - website is not open now.");
+  } else {
+    console.log("User returned - website is now active.");
+  }
+});
   // Receive message event
  socket.on("receive_message", (data) => {
   const currentUserPhone = sessionStorage.getItem("phone") || Cookies.get("mobile");
@@ -356,7 +362,7 @@ const messageWithId = {
     // ✅ Notify other users
    if (!isSender && (!isSameRoom || document.hidden)) {
   if ("Notification" in window && Notification.permission === "granted") {
-   notifyUser(9641539527);
+   notifyUser(selectedContact.mobile);
   } else {
     console.warn("Notification not shown: permission not granted");
   }
@@ -1059,7 +1065,7 @@ const deleteMessage = ()=>{
   
       const data = await res.json();
       setSelectedContact(data);
-      
+      sessionStorage.setItem("mobileNumber",data.mobile);
       // Generate unique room ID based on session phone and selected contact's mobile
      const phone = sessionStorage.getItem("phone") || Cookies.get("mobile");
 const newRoom = [phone, data.mobile].sort().join("_");
