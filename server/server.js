@@ -186,7 +186,7 @@ io.on("connection", async (socket) => {
     const newMessage = new Messages({messageId, userName, text, room, msgStatus,timeStamp });
     await newMessage.save();
 
-    // Broadcast to the room
+    // Broadcast to the roomd
     io.to(room).emit("receive_message", data);
   });
 
@@ -512,31 +512,60 @@ app.post("/register-token", (req, res) => {
 });
 
 app.post("/notify", async (req, res) => {
-  const { mobile, title, body } = req.body;
+  const { mobile, title, body, icon, sound } = req.body;
+
+  // 📍 Get the FCM token from in-memory map
   const token = tokenMap[mobile];
 
-  if (!token) return res.status(404).send("No token found for this number");
+  if (!token) {
+    return res.status(404).send("❌ No token found for this number");
+  }
 
+  // 📦 Compose full message payload
   const message = {
     token,
-    notification: { title, body },
+    notification: {
+      title,
+      body,
+      icon, // optional: will be undefined if not passed
+    },
+    android: {
+      notification: {
+        icon: icon || "default",
+        sound: sound || "default",
+      },
+    },
+    webpush: {
+      notification: {
+        icon: icon || "/Images/app.png",
+        sound: sound || "default",
+      },
+    },
+    apns: {
+      payload: {
+        aps: {
+          sound: sound || "default",
+        },
+      },
+    },
   };
 
   try {
     await admin.messaging().send(message);
-    res.send("Notification sent to " + mobile);
+    res.send("✅ Notification sent to " + mobile);
   } catch (err) {
-    console.error("FCM Error:", err);
+    console.error("❌ FCM Error:", err);
 
-    // 💡 Automatically remove invalid token
+    // 🧹 Clean up invalid token
     if (err.errorInfo?.code === 'messaging/registration-token-not-registered') {
       delete tokenMap[mobile];
-      console.log(`Removed invalid token for ${mobile}`);
+      console.log(`🧹 Removed invalid token for ${mobile}`);
     }
 
-    res.status(500).send("Failed to send notification");
+    res.status(500).send("❌ Failed to send notification");
   }
 });
+
 
 
 // Start the server

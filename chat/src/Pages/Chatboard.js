@@ -158,19 +158,20 @@ const [status,setStatus]=useState(null);
 
 
 
-async function notifyUser(mobileNumber) {
-  const title = "New Message!";
-  const body = "You have a new message on Mind Chat.";
-
+async function notifyUser(mobileNumber,senderName) {
+  const title = `${senderName}`;
+  const body = `Message from :${senderName}`;
+  const icon="./Images/app.png";
+  const sound="./Sounds/notifications.mp3";
   try {
     const response = await fetch("https://mindchatdeploy-2.onrender.com/notify", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ mobile: mobileNumber, title, body }),
+      body: JSON.stringify({ mobile: mobileNumber, title, body , icon , sound}),
     });
 
     const result = await response.text();
-    alert(`🔔 ${result}`);
+    alert(`${result}`);
   } catch (error) {
     console.error("Notification Error:", error);
   }
@@ -363,7 +364,8 @@ const messageWithId = {
     // ✅ Notify other users
    if (!isSender && (!isSameRoom || document.hidden)) {
   if ("Notification" in window && Notification.permission === "granted") {
-   notifyUser(selectedContact.mobile);
+   notifyUser(selectedContact.mobile,data.userName);
+   return;
   } else {
     console.warn("Notification not shown: permission not granted");
   }
