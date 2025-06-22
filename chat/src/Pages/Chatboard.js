@@ -171,7 +171,7 @@ async function notifyUser(mobileNumber,senderName,text) {
     });
 
     const result = await response.text();
-    alert(`${result}`);
+    // alert(`${result}`);
   } catch (error) {
     console.error("Notification Error:", error);
   }
