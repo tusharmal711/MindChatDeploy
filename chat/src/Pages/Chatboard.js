@@ -292,16 +292,20 @@ const fetchHistory = async () => {
 
 
   fetchHistory();
-document.addEventListener("visibilitychange", () => {
-  if (document.hidden) {
-    console.log("User left the tab - website is not open now.");
-  } else {
-    console.log("User returned - website is now active.");
-  }
-});
+// document.addEventListener("visibilitychange", () => {
+//   if (document.hidden) {
+//     console.log("User left the tab - website is not open now.");
+//   } else {
+//     console.log("User returned - website is now active.");
+//   }
+// });
   // Receive message event
+   if (phone) {
+    socket.emit("register", phone);
+  }
  socket.on("receive_message", (data) => {
   const currentUserPhone = sessionStorage.getItem("phone") || Cookies.get("mobile");
+  
   const isSender = data.userId === currentUserPhone;
   const isSameRoom = data.room === room;
   const isTabActive = !document.hidden;
@@ -337,7 +341,7 @@ const messageWithId = {
       return finalChats;
     });
 
-    // ✅ Emit message_seen if receiver
+    // Emit message_seen if receiver
     if (!isSender && isTabActive) {
       console.log("Emitting seen for:", data.messageId);
       socket.emit("message_seen", {
