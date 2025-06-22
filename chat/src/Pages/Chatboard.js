@@ -158,9 +158,9 @@ const [status,setStatus]=useState(null);
 
 
 
-async function notifyUser(mobileNumber,senderName) {
+async function notifyUser(mobileNumber,senderName,text) {
   const title = `${senderName}`;
-  const body = `Message from :${senderName}`;
+  const body = `${text}`;
   const icon="/Images/app.png";
  
   try {
@@ -364,7 +364,7 @@ const messageWithId = {
     // ✅ Notify other users
    if (!isSender && (!isSameRoom || document.hidden)) {
   if ("Notification" in window && Notification.permission === "granted") {
-   notifyUser(selectedContact.mobile,data.userName);
+   notifyUser(selectedContact.mobile,data.userName,data.text);
    return;
   } else {
     console.warn("Notification not shown: permission not granted");
