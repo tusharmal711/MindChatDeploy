@@ -300,9 +300,6 @@ const fetchHistory = async () => {
 //   }
 // });
   // Receive message event
-   if (phone) {
-    socket.emit("register", phone);
-  }
  socket.on("receive_message", (data) => {
   const currentUserPhone = sessionStorage.getItem("phone") || Cookies.get("mobile");
   

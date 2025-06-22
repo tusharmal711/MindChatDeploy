@@ -143,81 +143,53 @@ connectDB();
 // Message schema and model
 const messageSchema = new mongoose.Schema({
   messageId: String,
-  userName: String,     // sender
-  receiver: String,     // receiver mobile or username
+  userName: String,
   text: String,
   room: String,
-  msgStatus: String,
+  msgStatus : String,
   timeStamp: String,
-  delivered: { type: Boolean, default: false } // NEW
  
 });
 const Messages = mongoose.model("Messages", messageSchema);
 export default Messages;
 // Socket.io connection
 const roomUsers = {};
-const onlineUsers = new Map();
 io.on("connection", async (socket) => {
-console.log("✅ User connected:", socket.id);
+  console.log("User connected:", socket.id);
 
-  // Register mobile number to socket ID
-  socket.on("register", async (mobile) => {
-    onlineUsers.set(mobile, socket.id);
-    console.log(`🔗 Registered user: ${mobile} -> ${socket.id}`);
-
-    // 🔄 Send undelivered messages
-    const undelivered = await Messages.find({ receiver: mobile, delivered: false });
-
-    undelivered.forEach((msg) => {
-      socket.emit("receive_message", msg);
-    });
-
-    // ✅ Mark as delivered
-    await Messages.updateMany({ receiver: mobile, delivered: false }, { delivered: true });
-  });
-
-  // Join room
   socket.on("join_room", async (room) => {
     socket.join(room);
-    socket.room = room;
+   socket.room = room;
+  
 
     const clients = await io.in(room).fetchSockets();
+   
+    // If more than 1 user is in the room, notify everyone they're online
     if (clients.length > 1) {
+     console.log("bc");
       io.to(room).emit("show_online", "Online");
     } else {
-      socket.emit("show_online", "Offline");
+       socket.emit("show_online", "Offline"); // Only user in room
+       
+     
     }
 
-    // 🔁 Load past messages for room
+    // Fetch and send previous messages for the room
     const messages = await Messages.find({ room }).sort({ timeStamp: 1 }).limit(50);
     socket.emit("chat_history", messages);
   });
 
-  // Send message
   socket.on("send_message", async (data) => {
-    const { messageId, userName, receiver, text, room, msgStatus, timeStamp } = data;
+    const {messageId,userName, text, room, msgStatus, timeStamp } = data;
 
-    // Save to DB
-    const newMessage = new Messages({
-      messageId,
-      userName,
-      receiver,
-      text,
-      room,
-      msgStatus,
-      timeStamp,
-      delivered: false
-    });
-
+    // Save text message to MongoDB
+    const newMessage = new Messages({messageId, userName, text, room, msgStatus,timeStamp });
     await newMessage.save();
 
-    // Deliver to online receiver if available
-    const receiverSocketId = onlineUsers.get(receiver);
-    if (receiverSocketId) {
-      io.to(receiverSocketId).emit("receive_message", newMessage);
-      await Messages.updateOne({ messageId }, { delivered: true });
-    }
+    // Broadcast to the room
+    io.to(room).emit("receive_message", data);
   });
+
   socket.on("typing", ({ room, userName }) => {
     socket.to(room).emit("show_typing", userName);
   });
@@ -257,12 +229,6 @@ socket.on('delete_for_everyone', ({ room }) => {
   socket.to(room).emit('chats_deleted', { room });
 });
   socket.on("disconnect", async() => {
-    for (const [mobile, id] of onlineUsers.entries()) {
-      if (id === socket.id) {
-        onlineUsers.delete(mobile);
-        break;
-      }
-    }
     console.log("User Disconnected:", socket.id);
      const room = socket.room;
     if (room) {
