@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, useLocation, useNavigate , Navigate } from "react-router-dom";
 import Cookies from "js-cookie";
-import { useEffect } from "react";
+import { useEffect ,useState} from "react";
 import PrivateRoute from "./Pages/PrivateRoute";
 import Home from './Pages/Home.js';
 import Signup from './Pages/Signup.js';
@@ -18,19 +18,26 @@ import ResetPassword from "./Pages/ResetPassword.js";
 
 function HomeRedirect() {
   const navigate = useNavigate();
+  const [checked, setChecked] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => {
-   const phone = sessionStorage.getItem("phone") || Cookies.get("mobile") || localStorage.getItem("phone");
+    const phone = sessionStorage.getItem("phone") || Cookies.get("mobile") || localStorage.getItem("phone");
 
     if (phone) {
       sessionStorage.setItem("phone", phone);
+      setLoggedIn(true);
       navigate("/chatboard");
     } else {
-      navigate("/login");
+      setLoggedIn(false);
     }
+
+    setChecked(true);
   }, [navigate]);
 
-  return null;
+  if (!checked) return null; // wait until auth check is done
+
+  return loggedIn ? null : <Home />;
 }
 
 const App = () => {
@@ -59,6 +66,8 @@ const MainRoutes = () => {
 
       <Routes>
         <Route exact path="/" element={<HomeRedirect />} />
+       
+       
         <Route exact path="/signup" element={<Signup />} />
         <Route exact path="/login" element={<Login />} />
         <Route exact path="/dash" element={<Dash />} />
