@@ -210,139 +210,176 @@ const [online,setOnline]=useState("offline");
 
   const chatInputRef = useRef(null);
 useEffect(() => {
-  if (!room) return;
+  if (!room ){
+    return ; 
+    
+  }
+ console.log("Joining room:", room); // Make sure this logs
+  socket.emit("join_room", room);     //  Emit the correct room name
 
-  const currentUserPhone = sessionStorage.getItem("phone") || Cookies.get("mobile");
-  console.log("Joining room:", currentUserPhone);
-  socket.emit("join_room", currentUserPhone); // join own mobile number as room
-
-  // 👀 Track online/offline status
   socket.on("show_online", (status) => {
-    console.log("Online status received:", status);
+    console.log("Online status received:", status); // Should log Online/Offline
     setOnline(status);
-
-    if (status === "Online") {
+    if(status==="Online"){
       setOnlineNow(true);
       setStatus("seen");
-
-      try {
-        fetch(`${backendUrl}api/updateSeen`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ room }),
-        }).then((res) => res.text())
-          .then((result) => console.log(result));
-      } catch (error) {
-        console.error("Seen update error:", error);
-      }
-    } else {
-      setOnlineNow(false);
-      setStatus("sent");
+              try {
+    const response = fetch(`${backendUrl}api/updateSeen`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({room}),
+    });
+     
+    const result = response.text();
+    console.log(result);
+     
+  } catch (error) {
+    console.error("Notification Error:", error);
+  }
+    }else{
+       setOnlineNow(false);
+       setStatus("sent");
     }
   });
 
-  // 📦 Fetch previous chat history
-  const fetchHistory = async () => {
-    try {
-      const cachedChats = localStorage.getItem(`chats_${room}`);
-      let parsedChats = [];
 
-      if (cachedChats) {
-        parsedChats = JSON.parse(cachedChats);
-        setChats(parsedChats);
-      }
 
-      const res = await fetch(`${backendUrl}api/fetchHistory`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ room, userId: currentUserPhone }),
-      });
 
-      if (!res.ok) throw new Error("Failed to fetch chat history");
 
-      const data = await res.json();
-      if (JSON.stringify(parsedChats) !== JSON.stringify(data)) {
-        setChats(data);
-        localStorage.setItem(`chats_${room}`, JSON.stringify(data));
-      }
 
-      setTimeout(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
-      }, 0);
-    } catch (error) {
-      console.error("Error fetching chat history:", error);
+
+
+ 
+  const phone = sessionStorage.getItem("phone") || Cookies.get("mobile");
+
+const fetchHistory = async () => {
+  try {
+    const cachedChats = localStorage.getItem(`chats_${room}`);
+    let parsedChats = [];
+
+    if (cachedChats) {
+      parsedChats = JSON.parse(cachedChats);
+      setChats(parsedChats);
     }
-  };
+
+    // Always call backend too
+    const res = await fetch(`${backendUrl}api/fetchHistory`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ room, userId: phone }),
+    });
+
+    if (!res.ok) throw new Error("Failed to fetch chat history");
+
+    const data = await res.json();
+
+    // Merge only if new messages are found
+    if (JSON.stringify(parsedChats) !== JSON.stringify(data)) {
+      setChats(data);
+      localStorage.setItem(`chats_${room}`, JSON.stringify(data));
+    }
+
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
+    }, 0);
+  } catch (error) {
+    console.error("Error fetching chat history:", error);
+  }
+};
+
 
   fetchHistory();
+// document.addEventListener("visibilitychange", () => {
+//   if (document.hidden) {
+//     console.log("User left the tab - website is not open now.");
+//   } else {
+//     console.log("User returned - website is now active.");
+//   }
+// });
+  // Receive message event
+ socket.on("receive_message", (data) => {
+  const currentUserPhone = sessionStorage.getItem("phone") || Cookies.get("mobile");
+  
+  const isSender = data.userId === currentUserPhone;
+  const isSameRoom = data.room === room;
+  const isTabActive = !document.hidden;
+const messageWithId = {
+    ...data,
+    messageId: data._id || Date.now().toString() // Fallback to new ID if not present
+  };
 
-  // 📥 Handle incoming message
-  socket.on("receive_message", (data) => {
-    const isSender = data.userId === currentUserPhone;
-    const isSameRoom = data.room === room;
-    const isTabActive = !document.hidden;
+  // Always update messages if it's the same room
+  if (isSameRoom) {
 
-    if (isSender) return; // Don't process self-sent message
+    console.log("In same room ");
+    setChats((prevChats) => {
+      const updatedChats = [...prevChats, messageWithId];
 
-    const messageWithId = {
-      ...data,
-      messageId: data._id || Date.now().toString()
-    };
+      // 🔁 Update seen flag here if this user has seen it
+      const finalChats = updatedChats.map((msg) =>
+        msg.messageId === data.messageId && !isSender && isTabActive 
+          ? { ...msg, seen: true }
+          : msg
+      );
 
-    if (isSameRoom) {
-      console.log("In same room - displaying message");
-      setChats((prevChats) => {
-        const updatedChats = [...prevChats, messageWithId];
+      // 💾 Cache messages
+      localStorage.setItem(`chats_${room}`, JSON.stringify(finalChats));
 
-        const finalChats = updatedChats.map((msg) =>
-          msg.messageId === data.messageId && !isSender && isTabActive
-            ? { ...msg, seen: true }
-            : msg
-        );
-
-        localStorage.setItem(`chats_${room}`, JSON.stringify(finalChats));
-
-        if (data.text.match(/\.(jpg|jpeg|png|gif)$/i)) {
-          setImageBuffer((prev) => [...prev, data.text]);
-        } else {
-          setImageBuffer([]);
-        }
-
-        return finalChats;
-      });
-
-      if (!isSender && isTabActive) {
-        socket.emit("message_seen", {
-          messageId: data.messageId,
-          room: data.room,
-          userId: currentUserPhone,
-        });
-      }
-
-      setTimeout(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-      }, 100);
-    }
-
-    //  Push Notification (browser)
-    if (document.hidden) {
-      if ("Notification" in window && Notification.permission === "granted") {
-        alert("Notification received");
-        notifyUser(selectedContact.mobile, data.userName, data.text);
+      // 🖼️ If it's an image message
+      if (data.text.match(/\.(jpg|jpeg|png|gif)$/i)) {
+        setImageBuffer((prev) => [...prev, data.text]);
       } else {
-        console.warn("Notification not shown: permission not granted");
+        setImageBuffer([]);
       }
+
+      return finalChats;
+    });
+
+    // Emit message_seen if receiver
+    if (!isSender && isTabActive) {
+      console.log("Emitting seen for:", data.messageId);
+      socket.emit("message_seen", {
+        messageId: data.messageId,
+        room: data.room,
+        userId: currentUserPhone, // needed for db update
+      });
     }
+  
+
+
+
+
+
+
+    // Scroll to latest message
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 100);
+  }
+
+    // ✅ Notify other users
+   if (!isSender && (!isSameRoom || document.hidden)) {
+  if ("Notification" in window && Notification.permission === "granted") {
+   notifyUser(selectedContact.mobile,data.userName,data.text);
+   return;
+  } else {
+    console.warn("Notification not shown: permission not granted");
+  }
+}
+
   });
 
-  // 🧹 Cleanup
+  
   return () => {
     socket.off("receive_message");
-    socket.off("show_online");
-    socket.off("message_seen_update");
+     socket.off("show_online");
+      socket.off("message_seen_update");
   };
 }, [room]);
-
 
 
 
@@ -1005,59 +1042,59 @@ const deleteMessage = ()=>{
    setRoom("");
    }
   // Fetch selected contact details
-const handleContactClick = async (contactId) => {
-  try {
-    if (!contactId) {
-      console.error("❌ Invalid contact ID");
-      return;
-    }
-
-    // 📡 Fetch full contact info by ID
-    const res = await fetch(`${backendUrl}api/contact/${contactId}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-    });
-
-    if (!res.ok) {
-      if (res.status === 404) {
-        console.error("❌ Contact not found");
+  const handleContactClick = async (contactId) => {
+   
+     
+  
+    try {
+      if (!contactId) {
+        console.error("Error: Invalid contact ID");
         return;
       }
-      throw new Error("❌ Failed to fetch contact details");
+  
+      const res = await fetch(`${backendUrl}api/contact/${contactId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      });
+  
+      if (!res.ok) {
+        if (res.status === 404) {
+          console.error("Error: Contact not found");
+          return;
+        }
+        throw new Error("Failed to fetch contact details");
+      }
+  
+      const data = await res.json();
+      setSelectedContact(data);
+      sessionStorage.setItem("mobileNumber",data.mobile);
+      // Generate unique room ID based on session phone and selected contact's mobile
+     const phone = sessionStorage.getItem("phone") || Cookies.get("mobile");
+const newRoom = [phone, data.mobile].sort().join("_");
+      
+      // Clear previous chat history
+      setChats([]);
+      setTypingUser("");
+  
+      // Set room and join
+      setRoom(newRoom);
+        currentViewedRoomRef.current = newRoom;
+      socket.emit("join_room", newRoom);
+    
+      // UI state updates
+      setIsPopup(false);
+      setSecond(true);
+     
+      setActiveContact(contactId);
+      setWelcome(false);
+      setJoined(true);
+      
+    } catch (error) {
+      console.error("Error fetching contact details:", error);
     }
-
-    const data = await res.json(); // contact object { name, mobile, ... }
-
-    // ✅ Store selected contact in state and session
-    setSelectedContact(data);
-    sessionStorage.setItem("mobileNumber", data.mobile); // receiver's phone
-
-    // 👤 Get current user phone
-    const currentUserPhone = sessionStorage.getItem("phone") || Cookies.get("mobile");
-
-    // ✅ Set room to receiver's mobile number (used for message targeting)
-    const receiverRoom = data.mobile;
-    setRoom(receiverRoom);
-    currentViewedRoomRef.current = receiverRoom;
-
-    // 🔁 Clear chat UI state for new contact
-    setChats([]);
-    setTypingUser("");
-    setImageBuffer([]);
-    setIsPopup(false);
-    setSecond(true);
-    setActiveContact(contactId);
-    setWelcome(false);
-    setJoined(true);
-
-    // 🧠 Optionally re-emit join (usually not needed if already joined in useEffect)
-    // socket.emit("join_room", currentUserPhone); // only if you're not already joined
-
-  } catch (error) {
-    console.error("❌ Error fetching contact details:", error);
-  }
-};
-
+  };
+  
 
 
 

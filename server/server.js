@@ -105,67 +105,7 @@ const upload = multer({
 
 
 
-import admin from "firebase-admin";
-admin.initializeApp({
-  credential: admin.credential.cert({
-    type: process.env.FIREBASE_TYPE,
-    project_id: process.env.FIREBASE_PROJECT_ID,
-    private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
-    private_key: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
-    client_email: process.env.FIREBASE_CLIENT_EMAIL,
-    client_id: process.env.FIREBASE_CLIENT_ID,
-    auth_uri: process.env.FIREBASE_AUTH_URI,
-    token_uri: process.env.FIREBASE_TOKEN_URI,
-    auth_provider_x509_cert_url: process.env.FIREBASE_AUTH_PROVIDER_CERT_URL,
-    client_x509_cert_url: process.env.FIREBASE_CLIENT_CERT_URL,
-    universe_domain: process.env.FIREBASE_UNIVERSE_DOMAIN,
-  }),
-});
 
-
-// 🔔 FCM Send Function
-
-
-const tokenMap = {}; // Stored in memory — resets when server restarts
-const userSocketMap = new Map(); // mobile -> socket.id
-
-// 🔔 Send FCM Notification
-const sendFCM = async (token, title, body) => {
-  const message = {
-    token,
-    notification: {
-      title,
-      body,
-    },
-  };
-  return await admin.messaging().send(message);
-};
-app.post("/register-token", (req, res) => {
-  const { mobile, token } = req.body;
-  if (mobile && token) {
-    tokenMap[mobile] = token;
-    console.log(`📲 Token registered for ${mobile}: ${token}`);
-    return res.send({ success: true });
-  }
-  res.status(400).send({ error: "Missing mobile or token" });
-});
-app.post("/notify", async (req, res) => {
-  const { mobile, title, body } = req.body;
-  const token = tokenMap[mobile];
-  if (!token) return res.status(404).send("No token for user");
-
-  try {
-    await sendFCM(token, title, body);
-    res.send("Notification sent");
-  } catch (err) {
-    console.error("FCM Error:", err);
-    if (err.errorInfo?.code === 'messaging/registration-token-not-registered') {
-      delete tokenMap[mobile];
-      console.log(`Deleted invalid token for ${mobile}`);
-    }
-    res.status(500).send("Failed to send notification");
-  }
-});
 
 
 
@@ -214,60 +154,40 @@ const Messages = mongoose.model("Messages", messageSchema);
 export default Messages;
 // Socket.io connection
 const roomUsers = {};
-
 io.on("connection", async (socket) => {
   console.log("User connected:", socket.id);
 
-  socket.on("join_room", async (roomOrMobile) => {
-    socket.join(roomOrMobile);
-    socket.room = roomOrMobile;
-    userSocketMap.set(roomOrMobile, socket.id);
+  socket.on("join_room", async (room) => {
+    socket.join(room);
+   socket.room = room;
+  
 
-    // Check online status
-    const clients = await io.in(roomOrMobile).fetchSockets();
+    const clients = await io.in(room).fetchSockets();
+   
+    // If more than 1 user is in the room, notify everyone they're online
     if (clients.length > 1) {
-      io.to(roomOrMobile).emit("show_online", "Online");
+     console.log("bc");
+      io.to(room).emit("show_online", "Online");
     } else {
-      socket.emit("show_online", "Offline");
+       socket.emit("show_online", "Offline"); // Only user in room
+       
+     
     }
 
-    // Send previous chats
-    const messages = await Messages.find({ room: roomOrMobile }).sort({ timeStamp: 1 }).limit(50);
+    // Fetch and send previous messages for the room
+    const messages = await Messages.find({ room }).sort({ timeStamp: 1 }).limit(50);
     socket.emit("chat_history", messages);
   });
 
   socket.on("send_message", async (data) => {
-    const { messageId, userName, text, room, msgStatus, timeStamp } = data;
+    const {messageId,userName, text, room, msgStatus, timeStamp } = data;
 
-    const newMessage = new Messages({
-      messageId,
-      userName,
-      text,
-      room,
-      msgStatus,
-      timeStamp,
-    });
-
+    // Save text message to MongoDB
+    const newMessage = new Messages({messageId, userName, text, room, msgStatus,timeStamp });
     await newMessage.save();
 
-    const isReceiverOnline = userSocketMap.has(room); // `room` is the receiver's mobile
-
-    if (isReceiverOnline) {
-      io.to(room).emit("receive_message", data);
-      console.log("📤 Sent message to online user:", room);
-    } else {
-      console.log("📴 User offline, sending FCM to:", room);
-      const token = tokenMap[room];
-      if (token) {
-        try {
-          await sendFCM(token, `New message from ${userName}`, text);
-        } catch (err) {
-          console.error("❌ Error sending FCM:", err);
-        }
-      } else {
-        console.warn(`⚠️ No FCM token for ${room}`);
-      }
-    }
+    // Broadcast to the roomd
+    io.to(room).emit("receive_message", data);
   });
 
   socket.on("typing", ({ room, userName }) => {
@@ -308,12 +228,10 @@ socket.on("message_seen", ({ messageId, room }) => {
 socket.on('delete_for_everyone', ({ room }) => {
   socket.to(room).emit('chats_deleted', { room });
 });
-
   socket.on("disconnect", async() => {
-  console.log("❌ User disconnected:", socket.id);
-    const room = socket.room;
+    console.log("User Disconnected:", socket.id);
+     const room = socket.room;
     if (room) {
-      userSocketMap.delete(room);
       const clients = await io.in(room).fetchSockets();
       if (clients.length <= 1) {
         io.to(room).emit("show_online", "Offline");
@@ -527,6 +445,126 @@ room:room,
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import admin from "firebase-admin";
+
+
+
+
+
+
+admin.initializeApp({
+  credential: admin.credential.cert({
+    type: process.env.FIREBASE_TYPE,
+    project_id: process.env.FIREBASE_PROJECT_ID,
+    private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
+    private_key: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+    client_email: process.env.FIREBASE_CLIENT_EMAIL,
+    client_id: process.env.FIREBASE_CLIENT_ID,
+    auth_uri: process.env.FIREBASE_AUTH_URI,
+    token_uri: process.env.FIREBASE_TOKEN_URI,
+    auth_provider_x509_cert_url: process.env.FIREBASE_AUTH_PROVIDER_CERT_URL,
+    client_x509_cert_url: process.env.FIREBASE_CLIENT_CERT_URL,
+    universe_domain: process.env.FIREBASE_UNIVERSE_DOMAIN,
+  }),
+});
+
+
+// 🔔 FCM Send Function
+const sendFCM = async (token, title, body) => {
+  const message = {
+    token,
+    notification: {
+      title,
+      body,
+    },
+  };
+
+  return await admin.messaging().send(message);
+};
+
+const tokenMap = {}; // Stored in memory — resets when server restarts
+
+app.post("/register-token", (req, res) => {
+  const { mobile, token } = req.body;
+  if (mobile && token) {
+    tokenMap[mobile] = token;
+    console.log(`Token registered for ${mobile}: ${token}`);
+    res.send({ success: true });
+  } else {
+    res.status(400).send({ error: "Missing mobile or token" });
+  }
+});
+
+app.post("/notify", async (req, res) => {
+  const { mobile, title, body} = req.body;
+
+  // 📍 Get the FCM token from in-memory map
+  const token = tokenMap[mobile];
+
+  if (!token) {
+    return res.status(404).send("❌ No token found for this number");
+  }
+
+  // 📦 Compose full message payload
+  const message = {
+    token,
+    notification: {
+      title,
+      body
+       // optional: will be undefined if not passed
+    // },
+    // android: {
+    //   notification: {
+    //     icon: icon || "default",
+    //     sound: sound || "default",
+    //   },
+    // },
+    // webpush: {
+    //   notification: {
+    //     icon: icon || "./Images/app.png",
+    //     sound: sound || "default",
+    //   },
+    // },
+    // apns: {
+    //   payload: {
+    //     aps: {
+    //       sound: sound || "default",
+    //     },
+    //   },
+    // },
+    }}
+
+  try {
+    await admin.messaging().send(message);
+    res.send("✅ Notification sent to " + mobile);
+  } catch (err) {
+    console.error("❌ FCM Error:", err);
+
+    // 🧹 Clean up invalid token
+    if (err.errorInfo?.code === 'messaging/registration-token-not-registered') {
+      delete tokenMap[mobile];
+      console.log(`🧹 Removed invalid token for ${mobile}`);
+    }
+
+    res.status(500).send("❌ Failed to send notification");
+  }
+});
 
 
 
