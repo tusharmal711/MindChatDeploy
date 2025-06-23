@@ -550,11 +550,18 @@ app.post("/notify", async (req, res) => {
     //   },
     // },
     },
+    android : {
+        priority : "high"
+    },
      webpush: {
+       headers : {
+        Urgency : "high",
+       },
        notification: {
       icon: "https://mindchat-one.vercel.app/Images/app.png", // ✅ Full HTTPS URL only
       sound : "https://mindchat-one.vercel.app/Sounds/notifications.mp3",
          badge: "https://mindchat-one.vercel.app/Images/app.png",
+         vibrate : [200,100,200],
     },
     fcm_options: {
       link: "https://mindchat-one.vercel.app/", // 🔗 URL to open when clicked

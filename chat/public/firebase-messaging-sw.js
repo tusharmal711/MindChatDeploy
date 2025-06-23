@@ -11,28 +11,15 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-// ✅ Show notification when message received in background
 messaging.onBackgroundMessage(function (payload) {
-  console.log("🔔 FCM background message:", payload);
+  console.log("FCM background message: ", payload);
 
-  const notificationTitle = payload.notification?.title || "MindChat";
+  const notificationTitle = payload.notification.title;
   const notificationOptions = {
-    body: payload.notification?.body || "You have a new message.",
-    icon: "/Images/app.png", // Make sure this path exists in your public folder
-    badge: "/Images/app.png",
-    data: {
-      url: payload?.fcmOptions?.link || "https://mindchat-one.vercel.app/chatboard"
-    }
+    body: payload.notification.body,
+    icon: "/Images/app.png",
+  
   };
 
-  // ✅ Display the notification
-  self.registration.showNotification(notificationTitle, notificationOptions);
-});
-
-// ✅ Handle notification click
-self.addEventListener("notificationclick", function (event) {
-  event.notification.close();
-  event.waitUntil(
-    clients.openWindow(event.notification.data?.url || "https://mindchat-one.vercel.app/chatboard")
-  );
+  // self.registration.showNotification(notificationTitle, notificationOptions);
 });
