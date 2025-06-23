@@ -526,7 +526,8 @@ app.post("/notify", async (req, res) => {
     token,
     notification: {
       title,
-      body
+      body,
+     
        // optional: will be undefined if not passed
     // },
     // android: {
@@ -550,6 +551,9 @@ app.post("/notify", async (req, res) => {
     // },
     },
      webpush: {
+       notification: {
+      icon: "https://mindchat-one.vercel.app/Images/app.png", // ✅ Full HTTPS URL only
+    },
     fcm_options: {
       link: "https://mindchat-one.vercel.app/", // 🔗 URL to open when clicked
     },
