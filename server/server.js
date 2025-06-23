@@ -527,30 +527,20 @@ app.post("/notify", async (req, res) => {
     notification: {
       title,
       body,
-      icon : "./Images/app.png"
+      icon : "https://mindchat-one.vercel.app/Images/app.png"
       
-       // optional: will be undefined if not passed
-    // },
-    // android: {
-    //   notification: {
-    //     icon: icon || "default",
-    //     sound: sound || "default",
-    //   },
-    // },
-    // webpush: {
-    //   notification: {
-    //     icon: icon || "./Images/app.png",
-    //     sound: sound || "default",
-    //   },
-    // },
-    // apns: {
-    //   payload: {
-    //     aps: {
-    //       sound: sound || "default",
-    //     },
-    //   },
-    // },
-    }}
+     
+    },
+    webpush: {
+    fcm_options: {
+      link: "https://mindchat-one.vercel.app/", // 🔗 URL to open when clicked
+    },
+  },
+  
+  
+  
+  
+  }
 
   try {
     await admin.messaging().send(message);
