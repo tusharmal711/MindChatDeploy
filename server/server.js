@@ -518,7 +518,7 @@ app.post("/notify", async (req, res) => {
   const token = tokenMap[mobile];
 
   if (!token) {
-    return res.status(404).send("❌ No token found for this number");
+    return res.status(404).send(" No token found for this number");
   }
 
   // 📦 Compose full message payload
@@ -553,6 +553,8 @@ app.post("/notify", async (req, res) => {
      webpush: {
        notification: {
       icon: "https://mindchat-one.vercel.app/Images/app.png", // ✅ Full HTTPS URL only
+      sound : "https://mindchat-one.vercel.app/Sounds/notifications.mp3",
+         badge: "https://mindchat-one.vercel.app/Images/app.png",
     },
     fcm_options: {
       link: "https://mindchat-one.vercel.app/", // 🔗 URL to open when clicked
