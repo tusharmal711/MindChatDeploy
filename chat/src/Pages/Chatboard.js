@@ -210,176 +210,138 @@ const [online,setOnline]=useState("offline");
 
   const chatInputRef = useRef(null);
 useEffect(() => {
-  if (!room ){
-    return ; 
-    
-  }
- console.log("Joining room:", room); // Make sure this logs
-  socket.emit("join_room", room);     //  Emit the correct room name
+  if (!room) return;
 
+  const currentUserPhone = sessionStorage.getItem("phone") || Cookies.get("mobile");
+  console.log("Joining room:", currentUserPhone);
+  socket.emit("join_room", currentUserPhone); // join own mobile number as room
+
+  // 👀 Track online/offline status
   socket.on("show_online", (status) => {
-    console.log("Online status received:", status); // Should log Online/Offline
+    console.log("Online status received:", status);
     setOnline(status);
-    if(status==="Online"){
+
+    if (status === "Online") {
       setOnlineNow(true);
       setStatus("seen");
-              try {
-    const response = fetch(`${backendUrl}api/updateSeen`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({room}),
-    });
-     
-    const result = response.text();
-    console.log(result);
-     
-  } catch (error) {
-    console.error("Notification Error:", error);
-  }
-    }else{
-       setOnlineNow(false);
-       setStatus("sent");
+
+      try {
+        fetch(`${backendUrl}api/updateSeen`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ room }),
+        }).then((res) => res.text())
+          .then((result) => console.log(result));
+      } catch (error) {
+        console.error("Seen update error:", error);
+      }
+    } else {
+      setOnlineNow(false);
+      setStatus("sent");
     }
   });
 
+  // 📦 Fetch previous chat history
+  const fetchHistory = async () => {
+    try {
+      const cachedChats = localStorage.getItem(`chats_${room}`);
+      let parsedChats = [];
 
-
-
-
-
-
-
- 
-  const phone = sessionStorage.getItem("phone") || Cookies.get("mobile");
-
-const fetchHistory = async () => {
-  try {
-    const cachedChats = localStorage.getItem(`chats_${room}`);
-    let parsedChats = [];
-
-    if (cachedChats) {
-      parsedChats = JSON.parse(cachedChats);
-      setChats(parsedChats);
-    }
-
-    // Always call backend too
-    const res = await fetch(`${backendUrl}api/fetchHistory`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ room, userId: phone }),
-    });
-
-    if (!res.ok) throw new Error("Failed to fetch chat history");
-
-    const data = await res.json();
-
-    // Merge only if new messages are found
-    if (JSON.stringify(parsedChats) !== JSON.stringify(data)) {
-      setChats(data);
-      localStorage.setItem(`chats_${room}`, JSON.stringify(data));
-    }
-
-    setTimeout(() => {
-      messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
-    }, 0);
-  } catch (error) {
-    console.error("Error fetching chat history:", error);
-  }
-};
-
-
-  fetchHistory();
-// document.addEventListener("visibilitychange", () => {
-//   if (document.hidden) {
-//     console.log("User left the tab - website is not open now.");
-//   } else {
-//     console.log("User returned - website is now active.");
-//   }
-// });
-  // Receive message event
- socket.on("receive_message", (data) => {
-  const currentUserPhone = sessionStorage.getItem("phone") || Cookies.get("mobile");
-  
-  const isSender = data.userId === currentUserPhone;
-  const isSameRoom = data.room === room;
-  const isTabActive = !document.hidden;
-const messageWithId = {
-    ...data,
-    messageId: data._id || Date.now().toString() // Fallback to new ID if not present
-  };
-
-  // Always update messages if it's the same room
-  if (isSameRoom) {
-
-    console.log("In same room ");
-    setChats((prevChats) => {
-      const updatedChats = [...prevChats, messageWithId];
-
-      // 🔁 Update seen flag here if this user has seen it
-      const finalChats = updatedChats.map((msg) =>
-        msg.messageId === data.messageId && !isSender && isTabActive 
-          ? { ...msg, seen: true }
-          : msg
-      );
-
-      // 💾 Cache messages
-      localStorage.setItem(`chats_${room}`, JSON.stringify(finalChats));
-
-      // 🖼️ If it's an image message
-      if (data.text.match(/\.(jpg|jpeg|png|gif)$/i)) {
-        setImageBuffer((prev) => [...prev, data.text]);
-      } else {
-        setImageBuffer([]);
+      if (cachedChats) {
+        parsedChats = JSON.parse(cachedChats);
+        setChats(parsedChats);
       }
 
-      return finalChats;
-    });
-
-    // Emit message_seen if receiver
-    if (!isSender && isTabActive) {
-      console.log("Emitting seen for:", data.messageId);
-      socket.emit("message_seen", {
-        messageId: data.messageId,
-        room: data.room,
-        userId: currentUserPhone, // needed for db update
+      const res = await fetch(`${backendUrl}api/fetchHistory`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ room, userId: currentUserPhone }),
       });
+
+      if (!res.ok) throw new Error("Failed to fetch chat history");
+
+      const data = await res.json();
+      if (JSON.stringify(parsedChats) !== JSON.stringify(data)) {
+        setChats(data);
+        localStorage.setItem(`chats_${room}`, JSON.stringify(data));
+      }
+
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
+      }, 0);
+    } catch (error) {
+      console.error("Error fetching chat history:", error);
     }
-  
+  };
 
+  fetchHistory();
 
+  // 📥 Handle incoming message
+  socket.on("receive_message", (data) => {
+    const isSender = data.userId === currentUserPhone;
+    const isSameRoom = data.room === room;
+    const isTabActive = !document.hidden;
 
+    if (isSender) return; // Don't process self-sent message
 
+    const messageWithId = {
+      ...data,
+      messageId: data._id || Date.now().toString()
+    };
 
+    if (isSameRoom) {
+      console.log("In same room - displaying message");
+      setChats((prevChats) => {
+        const updatedChats = [...prevChats, messageWithId];
 
-    // Scroll to latest message
-    setTimeout(() => {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, 100);
-  }
+        const finalChats = updatedChats.map((msg) =>
+          msg.messageId === data.messageId && !isSender && isTabActive
+            ? { ...msg, seen: true }
+            : msg
+        );
 
-    // ✅ Notify other users
-   if (!isSender && (!isSameRoom || document.hidden)) {
-  if ("Notification" in window && Notification.permission === "granted") {
-   notifyUser(selectedContact.mobile,data.userName,data.text);
-   return;
-  } else {
-    console.warn("Notification not shown: permission not granted");
-  }
-}
+        localStorage.setItem(`chats_${room}`, JSON.stringify(finalChats));
 
+        if (data.text.match(/\.(jpg|jpeg|png|gif)$/i)) {
+          setImageBuffer((prev) => [...prev, data.text]);
+        } else {
+          setImageBuffer([]);
+        }
+
+        return finalChats;
+      });
+
+      if (!isSender && isTabActive) {
+        socket.emit("message_seen", {
+          messageId: data.messageId,
+          room: data.room,
+          userId: currentUserPhone,
+        });
+      }
+
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    }
+
+    // 🔔 Push Notification (browser)
+    if (!isSameRoom || document.hidden) {
+      if ("Notification" in window && Notification.permission === "granted") {
+        notifyUser(selectedContact.mobile, data.userName, data.text);
+      } else {
+        console.warn("Notification not shown: permission not granted");
+      }
+    }
   });
 
-  
+  // 🧹 Cleanup
   return () => {
     socket.off("receive_message");
-     socket.off("show_online");
-      socket.off("message_seen_update");
+    socket.off("show_online");
+    socket.off("message_seen_update");
   };
 }, [room]);
+
 
 
 
