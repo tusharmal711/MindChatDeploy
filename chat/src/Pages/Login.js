@@ -176,7 +176,7 @@ const getOtpColor = () => {
           
       </div>
       <div className="otp">
-            <input type="number" onChange={(e)=>setOtp(e.target.value)} id="otp" placeholder="# Code" 
+            <input type="number" onChange={(e)=>setOtp(e.target.value)}   autoComplete="one-time-code" id="otp" placeholder="# Code" 
             style={{
        
          color: `${getOtpColor()}`,
