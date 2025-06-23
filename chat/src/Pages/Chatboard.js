@@ -324,9 +324,10 @@ useEffect(() => {
       }, 100);
     }
 
-    // 🔔 Push Notification (browser)
-    if (!isSameRoom || document.hidden) {
+    //  Push Notification (browser)
+    if (document.hidden) {
       if ("Notification" in window && Notification.permission === "granted") {
+        alert("Notification received");
         notifyUser(selectedContact.mobile, data.userName, data.text);
       } else {
         console.warn("Notification not shown: permission not granted");
@@ -1004,59 +1005,59 @@ const deleteMessage = ()=>{
    setRoom("");
    }
   // Fetch selected contact details
-  const handleContactClick = async (contactId) => {
-   
-     
-  
-    try {
-      if (!contactId) {
-        console.error("Error: Invalid contact ID");
+const handleContactClick = async (contactId) => {
+  try {
+    if (!contactId) {
+      console.error("❌ Invalid contact ID");
+      return;
+    }
+
+    // 📡 Fetch full contact info by ID
+    const res = await fetch(`${backendUrl}api/contact/${contactId}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    });
+
+    if (!res.ok) {
+      if (res.status === 404) {
+        console.error("❌ Contact not found");
         return;
       }
-  
-      const res = await fetch(`${backendUrl}api/contact/${contactId}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({}),
-      });
-  
-      if (!res.ok) {
-        if (res.status === 404) {
-          console.error("Error: Contact not found");
-          return;
-        }
-        throw new Error("Failed to fetch contact details");
-      }
-  
-      const data = await res.json();
-      setSelectedContact(data);
-      sessionStorage.setItem("mobileNumber",data.mobile);
-      // Generate unique room ID based on session phone and selected contact's mobile
-     const phone = sessionStorage.getItem("phone") || Cookies.get("mobile");
-const newRoom = [phone, data.mobile].sort().join("_");
-      
-      // Clear previous chat history
-      setChats([]);
-      setTypingUser("");
-  
-      // Set room and join
-      setRoom(newRoom);
-        currentViewedRoomRef.current = newRoom;
-      socket.emit("join_room", newRoom);
-    
-      // UI state updates
-      setIsPopup(false);
-      setSecond(true);
-     
-      setActiveContact(contactId);
-      setWelcome(false);
-      setJoined(true);
-      
-    } catch (error) {
-      console.error("Error fetching contact details:", error);
+      throw new Error("❌ Failed to fetch contact details");
     }
-  };
-  
+
+    const data = await res.json(); // contact object { name, mobile, ... }
+
+    // ✅ Store selected contact in state and session
+    setSelectedContact(data);
+    sessionStorage.setItem("mobileNumber", data.mobile); // receiver's phone
+
+    // 👤 Get current user phone
+    const currentUserPhone = sessionStorage.getItem("phone") || Cookies.get("mobile");
+
+    // ✅ Set room to receiver's mobile number (used for message targeting)
+    const receiverRoom = data.mobile;
+    setRoom(receiverRoom);
+    currentViewedRoomRef.current = receiverRoom;
+
+    // 🔁 Clear chat UI state for new contact
+    setChats([]);
+    setTypingUser("");
+    setImageBuffer([]);
+    setIsPopup(false);
+    setSecond(true);
+    setActiveContact(contactId);
+    setWelcome(false);
+    setJoined(true);
+
+    // 🧠 Optionally re-emit join (usually not needed if already joined in useEffect)
+    // socket.emit("join_room", currentUserPhone); // only if you're not already joined
+
+  } catch (error) {
+    console.error("❌ Error fetching contact details:", error);
+  }
+};
+
 
 
 
