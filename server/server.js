@@ -512,7 +512,7 @@ app.post("/register-token", (req, res) => {
 });
 
 app.post("/notify", async (req, res) => {
-  const { mobile, title, body} = req.body;
+  const { mobile, title, body , icon} = req.body;
 
   // 📍 Get the FCM token from in-memory map
   const token = tokenMap[mobile];
@@ -526,7 +526,9 @@ app.post("/notify", async (req, res) => {
     token,
     notification: {
       title,
-      body
+      body,
+      icon,
+      
        // optional: will be undefined if not passed
     // },
     // android: {

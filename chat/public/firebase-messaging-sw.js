@@ -17,9 +17,23 @@ messaging.onBackgroundMessage(function (payload) {
   const notificationTitle = payload.notification.title;
   const notificationOptions = {
     body: payload.notification.body,
-    icon: "/Images/app.png",
+    icon: "./Images/app.png",
   
   };
 
-  // self.registration.showNotification(notificationTitle, notificationOptions);
+  self.registration.showNotification(notificationTitle, notificationOptions);
+});
+
+// In your firebase-messaging-sw.js
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  
+  const room = event.notification.data?.room;
+  const url = room 
+    ? `https://mindchat-one.vercel.app/chatboard?room=${room}`
+    : 'https://mindchat-one.vercel.app/';
+  
+    event.waitUntil(
+    clients.openWindow(url)
+  );
 });
