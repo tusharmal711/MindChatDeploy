@@ -161,13 +161,13 @@ const [status,setStatus]=useState(null);
 async function notifyUser(mobileNumber,senderName,text) {
   const title = `${senderName}`;
   const body = `${text}`;
-  const icon="./Images/app.png";
+
  
   try {
     const response = await fetch("https://mindchatdeploy-2.onrender.com/notify", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ mobile: mobileNumber, title, body , icon}),
+      body: JSON.stringify({ mobile: mobileNumber, title, body}),
     });
 
     const result = await response.text();
