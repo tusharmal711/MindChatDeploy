@@ -111,7 +111,28 @@ const verifyOTP = async () => {
 
  
 
+const handleChange = (e)=>{
+  setPhone(e.target.value);
 
+}
+const getBorderColor = () => {
+ 
+   if (!phone) return "1px solid silver";
+    if (phone.length < 10) return "2px solid rgb(255, 221, 0)";
+    if (phone.length === 10) return "2px solid green";
+    if (phone.length > 10) return "2px solid #ff3838";
+    return "";
+  };
+
+
+const getOtpColor = () => {
+
+   if (!otp) return "1px solid silver";
+    if (otp.length < 6) return "rgb(255, 221, 0)";
+    if (otp.length === 6) return "green";
+    if (otp.length > 6) return "red";
+    return "";
+  };
 
 
 
@@ -132,7 +153,14 @@ const verifyOTP = async () => {
     
       <div className="input-field mobile">
           
-          <input type="number" value={phone} onChange={(e)=>setPhone(e.target.value)} placeholder="Mobile No"required />
+          <input type="number" value={phone} onChange={handleChange} placeholder="Mobile No (10 digits)"required  
+          style={{
+        border: `${getBorderColor()}`,
+        borderRadius: "5px",
+         color:"black",
+        outline: "none"
+      }}
+          />
       </div>
       <div className="input-field password">
          
@@ -148,7 +176,16 @@ const verifyOTP = async () => {
           
       </div>
       <div className="otp">
-            <input type="number" onChange={(e)=>setOtp(e.target.value)} id="otp" placeholder="# Code" /><button type="submit"  id="sc">Send Code</button>
+            <input type="number" onChange={(e)=>setOtp(e.target.value)} id="otp" placeholder="# Code" 
+            style={{
+       
+         color: `${getOtpColor()}`,
+        borderRadius: "5px",
+        
+        outline: "none"
+      }}
+            
+            /><button type="submit"  id="sc">Send Code</button>
           </div>
     
       <button type="button" onClick={verifyOTP} className="login" >Login</button>
