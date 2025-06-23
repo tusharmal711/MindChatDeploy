@@ -526,8 +526,8 @@ app.post("/notify", async (req, res) => {
     token,
     notification: {
       title,
-      body,
-      icon : "https://mindchat-one.vercel.app/Images/app.png"
+      body
+   
       
      
     },
