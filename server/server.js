@@ -527,11 +527,29 @@ app.post("/notify", async (req, res) => {
     notification: {
       title,
       body
-   
-      
-     
+       // optional: will be undefined if not passed
+    // },
+    // android: {
+    //   notification: {
+    //     icon: icon || "default",
+    //     sound: sound || "default",
+    //   },
+    // },
+    // webpush: {
+    //   notification: {
+    //     icon: icon || "./Images/app.png",
+    //     sound: sound || "default",
+    //   },
+    // },
+    // apns: {
+    //   payload: {
+    //     aps: {
+    //       sound: sound || "default",
+    //     },
+    //   },
+    // },
     },
-    webpush: {
+     webpush: {
     fcm_options: {
       link: "https://mindchat-one.vercel.app/", // 🔗 URL to open when clicked
     },

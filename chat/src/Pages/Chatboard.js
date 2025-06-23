@@ -107,12 +107,12 @@ useEffect(() => {
   const unsubscribe = onMessage(messaging, (payload) => {
     console.log("Message received in foreground:", payload);
 
-    const { title, body , icon } = payload.notification;
+    const { title, body } = payload.notification;
 
     if (Notification.permission === "granted") {
       new Notification(title, {
         body,
-       icon
+       
       });
     }
   });
@@ -161,13 +161,13 @@ const [status,setStatus]=useState(null);
 async function notifyUser(mobileNumber,senderName,text) {
   const title = `${senderName}`;
   const body = `${text}`;
-
+  const icon="/Images/app.png";
  
   try {
     const response = await fetch("https://mindchatdeploy-2.onrender.com/notify", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ mobile: mobileNumber, title, body}),
+      body: JSON.stringify({ mobile: mobileNumber, title, body , icon}),
     });
 
     const result = await response.text();
@@ -1080,7 +1080,6 @@ const newRoom = [phone, data.mobile].sort().join("_");
       // Set room and join
       setRoom(newRoom);
         currentViewedRoomRef.current = newRoom;
-       
       socket.emit("join_room", newRoom);
     
       // UI state updates
