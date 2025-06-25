@@ -1453,6 +1453,14 @@ useEffect(() => {
 }, []);
 
 
+const getBorderColor = () => {
+ 
+   if (!mobile) return "1px solid silver";
+    if (mobile.length < 10) return "2px solid rgb(255, 221, 0)";
+    if (mobile.length === 10) return "2px solid green";
+    if (mobile.length > 10) return "2px solid #ff3838";
+    return "";
+  };
 
 
 
@@ -1969,7 +1977,15 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
         <form onSubmit={addContact}>
             <div className="textarea">
             <input type="text" className="name" placeholder="Enter contact name..." onChange={(e) => setUsername(e.target.value)} required />
-            <input tupe="number" className="phone" placeholder="Enter mobile number..."  onChange={(e) => setMobile(e.target.value)} required />
+            <input tupe="number" className="phone" placeholder="Enter mobile number (10 digits)..."  onChange={(e) => setMobile(e.target.value)} required 
+             style={{
+        border: `${getBorderColor()}`,
+        borderRadius: "5px",
+         color:"black",
+        outline: "none"
+      }}
+            
+            />
             </div>
            
             <div className="button">
