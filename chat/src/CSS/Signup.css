@@ -3475,10 +3475,10 @@ width:30%;
 }
 
 .right-friend{
-   
+   position: relative;
     width:70%;
     height:100%;
-   
+   overflow-y: scroll;
 }
 .right-friend-top{
    
@@ -3493,7 +3493,7 @@ width:30%;
     height:4rem;
     display: flex;
     align-items: center;
-   
+   position: relative;
 }
 .left-friend-content{
 
@@ -3537,21 +3537,138 @@ gap:1rem;
 
 
 .right-friend-top{
+   
     padding:1rem;
     display: flex;
+   
     align-items: center;
     font-family: sans-serif;
     margin:0.5rem;
     border-radius: 0.5rem;
     box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
 }
-.right-friend-bottom{
-    padding:1rem;
+
+.right-friend-bottom {
+  width: 94%;
+  padding: 1rem;
+  margin: 0.5rem;
+  border-radius: 0.5rem;
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,
+              rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(175px, 1fr)); 
+  gap: 0.5rem;
+  font-family: sans-serif;
+  justify-content: start;
+}
+
+.friend-display{
+    display: none;
+}
+.all-users {
+  height:20rem;
+  width: 100%;
+  
+  border-radius: 0.5rem;
+ box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+}
+
+.card-img{
+    height: 60%;
+   
+}
+.card-img img{
+    width: 100%;
+  height: 100%;
+  object-fit: cover;  /* the image cover the container */
+  display: block;
+   border-top-right-radius: 0.5rem;
+    border-top-left-radius: 0.5rem;
+}
+.card-content{
+    padding:0.6rem;
+}
+
+.add-friend{
+    width:94%;
+    background-color: #a3c3ff;
+    color:#003d7e;
+    font-weight: 600;
+}
+.add-friend:hover{
+    background-color:#5c95ff;
+    color:white;
+}
+.add-remove{
+    width: 94%;
+    background-color: rgb(234, 234, 234);
+    color:black;
+     font-weight: 600;
+}
+.add-remove:hover{
+     background-color: rgb(185, 185, 185);
+     
+}
+.right-nav-friend{
+    border-radius:0.5rem;
+    height:3.5rem;
+    margin:0.5rem;
+    box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
     display: flex;
     align-items: center;
-    font-family: sans-serif;
-    margin:0.5rem;
-    border-radius: 0.5rem;
-    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+    justify-content: center;
+    position: relative;
+}
+.right-nav-friend input{
+    width:45%;
+    border-radius: 2rem;
+    background-color: rgb(232, 232, 232);
+    border:none;
+    outline:none;
+    padding-left: 2rem;
+    padding-right: 1rem;
+    font-size: 1.05rem;
+}
+.right-nav-friend h2{
+    float:left;
+    position: absolute;
+    left:6.5rem;
+    display: none;
+}
+
+
+.left-friend-arrow{
+    color:rgb(79, 79, 79);
+    float:right;
+    font-size: 1.3rem;
+    position:absolute;
+    right:2rem;
+    padding:0.8rem;
+    background-color: rgb(227, 227, 227);
+    border-radius: 50%;
+}
+.right-friend-arrow{
+     color:rgb(79, 79, 79);
+    float:right;
+    font-size: 1.3rem;
+    position:absolute;
+    left:2rem;
+    padding:0.8rem;
+    background-color: rgb(227, 227, 227);
+    border-radius: 50%;
+    display: none;
+}
+.right-dynamic{
+    width:100%;
+     margin-left: 6%;
+}
+.sent-request{
+    background-color: #00f2ad;
+    color:rgb(0, 56, 0);
+}
+.sent-request:hover{
+    background-color: rgb(0, 56, 0);
+    color: #00f2ad;
 }
 /* add friend part is ending here */
