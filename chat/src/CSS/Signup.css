@@ -1,3 +1,4 @@
+
 *{
     margin:0;
     padding:0;
@@ -3175,4 +3176,272 @@ display: none;
     right:4rem;
    
     
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* moments part is starting from here */
+.moment-container{
+
+    height:100vh;
+    width:100%;
+    display: flex;
+   
+}
+.contact-moments{
+margin-left: 6%;
+background-color: white;
+height:100%;
+width:40%;
+ box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+}
+
+.moments-heading{
+    float:left;
+    margin:0.5rem;
+
+}
+.moments-nav{
+   
+    width:100%;
+    height:4rem;
+}
+.own-moments{
+    padding-left: 1.3rem;
+    
+    width:100%;
+    height:4rem;
+    display: flex;
+    
+    align-items: center;
+}
+.own-moment-dp{
+    height: 40px;
+    width:40px;
+    border-radius: 50%;
+
+}
+.moment-content{
+   
+    font-family: sans-serif;
+    margin:1rem;
+}
+.moment-content-text2{
+color:rgb(151, 151, 151);
+font-size: 0.8rem;
+}
+.moment-image{
+    background-color: rgb(198, 26, 55);
+      height: 40px;
+    width:40px;
+    border-radius: 50%;
+    position: relative;
+}
+.love-add{
+    position: absolute;
+    bottom: -0.3rem;
+    right:-0.3rem;
+    font-size: 1.3rem;
+    color: #0062ff;
+}
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.moments-icon-design{
+    font-size: 6rem;
+  color:#2dceff;
+    animation: spin 7s linear infinite;
+     
+}
+.moments-status{
+    height:100%;
+    width:60%;
+display: flex;
+align-items: center;
+justify-content: center;
+flex-direction: column;
+}
+.moments-status p{
+   font-family: sans-serif;
+   color:rgb(71, 71, 71);
+}
+.status-popup
+{
+    height:6.1rem;
+    width:13rem;
+  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+   border-radius: 0.7rem;
+   margin-top: 0.1rem;
+   margin-left: 2rem;
+   padding-left: 1rem;
+   display: none;
+}
+.spv{
+    display: block;
+}
+.photo-m{
+    padding:1rem;
+    padding-bottom: 0.5rem;
+    font-family: sans-serif;
+    width: 100%;
+   
+   
+}
+
+.photo-m p{
+    display: flex;
+    align-items: center;
+   gap : 0.5rem;
+    color:rgb(130, 130, 130);
+}
+.video-m{
+    padding:1rem;
+      padding-bottom: 0.5rem;
+     font-family: sans-serif;
+    
+}
+.video-m p{
+     display: flex;
+    align-items: center;
+    gap : 0.5rem;
+     color:rgb(130, 130, 130);
+}
+.p-m{
+    font-size: 1.2rem;
+     color:rgb(95, 95, 95);
+}
+.v-m{
+    font-size: 1.2rem;
+    color:rgb(95, 95, 95);
+}
+.status-popup .input{
+    display: none;
+}
+
+
+.your-moment-preview{
+   height: 230px;
+   width:auto;
+   
+}
+.photo-overlay-moment{
+       position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: white;/* Dark semi-transparent background */
+    display: flex;
+   
+    align-items: center;
+    z-index: 999999999999999999999;
+    flex-direction: column;
+}
+.overlay-moment-nav{
+   
+    height:4rem;
+    width:100%;
+}
+.overlay-moment-image{
+   
+    width:95%;
+    height: calc(100% - 12rem);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap:2rem;
+    border-bottom: 1px solid silver;
+}
+.overlay-moment-image input{
+    width:40%;
+    font-size: 1.1rem;
+    background-color: rgb(242, 242, 242);
+    outline: none;
+    border:none;
+}
+.overlay-moment-fotter{
+   
+    height:8rem;
+    width:100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.image-adding{
+   position: relative;
+    width:100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap:1rem;
+}
+.image-adding-img{
+    height: 50px;
+    width: 50px;
+    padding:0rem;
+    background-color: white;
+    border:3px solid green;
+    border-radius: 0.4rem;
+}
+
+.image-adding-icon{
+     height: 50px;
+    width: 50px;
+    padding:0rem;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border:1px solid rgb(150, 150, 150);
+    border-radius: 0.4rem;
+}
+.adding-plus{
+    font-size: 1.2rem;
+    color:rgb(86, 86, 86);
+}
+.moment-send{
+    font-size: 2rem;
+    padding:0.9rem;
+    background-color:#007bff;
+    border-radius: 50%;
+    position: absolute;
+    right:2rem;
+    color:white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.overlay-moment-nav{
+    display: flex;
+    align-items:center;
+    position: relative;
+
+}
+.overlay-nav-cross{
+   position: absolute;
+   left:2rem;
+   font-size: 1.4rem;
+   color:rgb(79, 79, 79);
+}
+.overlay-nav-download{
+     position: absolute;
+   right:2rem;
+   font-size: 1.4rem;
+   color:rgb(79, 79, 79);
 }

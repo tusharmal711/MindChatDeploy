@@ -75,7 +75,11 @@ useEffect(() => {
       if (!res.ok) throw new Error("Failed to fetch your profile");
 
       const data = await res.json();
-      setYou(data);
+    
+         
+    //  console.log("Fetched profile data:", data); // 🧪 Check this
+sessionStorage.setItem("profile-dp", JSON.stringify(data));
+  setYou(data);
     } catch (error) {
       console.error("Error fetching your profile:", error);
     }
