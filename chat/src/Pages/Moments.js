@@ -62,7 +62,9 @@ statusPopup.classList.remove("spv");
 }
 
 
-
+const statusSend = ()=>{
+  alert("Sorry ! this site still is in building process...");
+}
 
 
 
@@ -110,7 +112,7 @@ statusPopup.classList.remove("spv");
                 }
                    
                    <div className='image-adding-icon'><FaPlus className='adding-plus'/></div>
-                    <IoMdSend className='moment-send'/>
+                    <IoMdSend className='moment-send' onClick={statusSend}/>
               </div>
 
             </div>
