@@ -63,7 +63,7 @@ statusPopup.classList.remove("spv");
 
 
 const statusSend = ()=>{
-  alert("Sorry ! this site still is in building process...");
+  alert("Sorry ! this site is in building process...");
 }
 
 

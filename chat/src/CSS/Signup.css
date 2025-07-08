@@ -3445,3 +3445,113 @@ flex-direction: column;
    font-size: 1.4rem;
    color:rgb(79, 79, 79);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+/* add friend part is starting from here */
+.friend-container{
+    
+    width:100%;
+    height:100vh;
+    display: flex;
+}
+.left-friend{
+   margin-left: 6%;
+background-color: white;
+height:100%;
+width:30%;
+ display: flex;
+    flex-direction: column;
+ box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+}
+
+.right-friend{
+   
+    width:70%;
+    height:100%;
+   
+}
+.right-friend-top{
+   
+    height:auto;
+   
+}
+.left-friend h2{
+    float:left;
+}
+.left-friend nav{
+    width: 100%;
+    height:4rem;
+    display: flex;
+    align-items: center;
+   
+}
+.left-friend-content{
+
+padding:0.7rem;
+}
+.left-friend-content div{
+border-radius: 0.5rem;
+padding:0.7rem;
+margin:0.7rem;
+font-size: 1.2rem;
+font-family: sans-serif;
+display: flex;
+position: relative;
+align-items: center;
+gap:1rem;
+}
+.lfc1:hover{
+    background-color: rgb(240, 240, 240);
+}
+.frl{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+   
+    gap:1rem;
+}
+.fri{
+    font-size: 1.4rem;
+    padding:1rem;
+    border-radius: 50%;
+    background-color: rgb(228, 228, 228);
+}
+.frla{
+    position: absolute;
+    right:1rem;
+    float:right;
+    font-size: 1.3rem;
+    color:rgb(82, 82, 82);
+
+}
+
+
+.right-friend-top{
+    padding:1rem;
+    display: flex;
+    align-items: center;
+    font-family: sans-serif;
+    margin:0.5rem;
+    border-radius: 0.5rem;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+}
+.right-friend-bottom{
+    padding:1rem;
+    display: flex;
+    align-items: center;
+    font-family: sans-serif;
+    margin:0.5rem;
+    border-radius: 0.5rem;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+}
+/* add friend part is ending here */
