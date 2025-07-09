@@ -3860,7 +3860,9 @@ align-items: center;
   font-size: 1.05rem;
   font-family: sans-serif;
   margin:1rem;
-
+display: flex;
+align-items: center;
+gap:0.5rem;
 }
 
 .friend-profile-friends{
@@ -3870,7 +3872,7 @@ align-items: center;
   gap: 0px;
 }
 .friend-profile-contact-container{
-  
+   
    height:3rem;
    display: flex;
    align-items: center;
@@ -3884,7 +3886,13 @@ align-items: center;
   font-size: 1.05rem;
   font-family: sans-serif;
   margin:1rem;
-
+display: flex;
+align-items: center;
+gap:0.5rem;
+}
+.friend-profile-friends-dp{
+    margin-left: 0.5rem;
+    border-radius: 50%;
 }
 /* add friend part is ending here */
 

@@ -568,3 +568,15 @@ export const fetchalluser = async (req, res) => {
 
 
 
+
+
+export const countContactsByMobile = async (req, res) => {
+  const { phone } = req.body;
+
+  try {
+    const count = await Contact.countDocuments({ phone });
+    res.status(200).json({ count });
+  } catch (err) {
+    res.status(500).json({ message: 'Server Error', error: err.message });
+  }
+};

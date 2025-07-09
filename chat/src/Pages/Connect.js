@@ -6,6 +6,10 @@ import { useState , useEffect ,useRef} from 'react';
 import { FaChevronLeft } from "react-icons/fa6";
 import { RxCross2 } from "react-icons/rx";
 import { IoPersonAdd } from "react-icons/io5";
+import { MdEmail } from "react-icons/md";
+import { IoIosCall } from "react-icons/io";
+import { FaCircleInfo } from "react-icons/fa6";
+
 import Cookies from "js-cookie";
 const backendUrl = process.env.REACT_APP_BACKEND_URL; 
 const Connect = ()=>{
@@ -234,7 +238,7 @@ useEffect(() => {
     prevFilteredContacts.current = friendFriends;
 
     const cachedDpMap = JSON.parse(localStorage.getItem("dpMap") || "{}");
-    const cachedUsernameMap = JSON.parse(localStorage.getItem("aboutMap") || "{}");
+    const cachedUsernameMap = JSON.parse(localStorage.getItem("usernameMap") || "{}");
 
     // Create maps for faster lookup
     const updatedDpMap = { ...cachedDpMap };
@@ -342,7 +346,7 @@ useEffect(() => {
                                            <img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${friendDp}`} onClick={() => friendImageView(users._id)}/>
                                            <div className='friend-p-top-content'>
                                               <h2>{friendName}</h2>
-                                              <p>90 friends</p>
+                                              <p onClick={()=>setViewSection(3)}>90 friends</p>
                                            </div>
                                            <button><IoPersonAdd />Add friend</button>
                                            
@@ -360,15 +364,15 @@ useEffect(() => {
                                                      {
                                                         viewSection===1 ?(
                                                               <section className='friend-profile-about' id="friend-profile-about">
-                                                               <p>{friendAbout}</p>
+                                                               <p><FaCircleInfo />{friendAbout}</p>
                                                                </section>
                                                         ) : viewSection === 2 ? (
                                                               <section className='friend-profile-contact' id="friend-profile-contact">
                                                       <section className='friend-profile-contact-container'>
-                                                           <p>{friendEmail}</p>
+                                                           <p><MdEmail />{friendEmail}</p>
                                                       </section>
                                                        <section className='friend-profile-contact-container'>
-                                                            <p>+91 {friendPhone}</p>
+                                                            <p><IoIosCall />+91 {friendPhone}</p>
                                                       </section>
                                                      
                                                     </section>
@@ -379,7 +383,7 @@ useEffect(() => {
                                                              <section className='friend-profile-contact-container'>
                                                                 <img
                                                          src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${dpMap[friend.mobile]}`}
-                                                         id="dp-default"
+                                                         className='friend-profile-friends-dp'
                                                        
                                                          onError={(e) => {
                                                          e.target.src = "https://res.cloudinary.com/dnd9qzxws/image/upload/v1743764088/image_dp_uwfq2g.png";
