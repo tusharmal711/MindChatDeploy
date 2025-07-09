@@ -396,7 +396,7 @@ export const fetchDp = async (req, res) => {
 
     if (!user) return res.status(404).json({ dp: null, about: "" });
 
-    res.status(200).json({ dp: user.dp, about: user.about }); // Send DP and About
+    res.status(200).json({ dp: user.dp, about: user.about , username : user.username }); // Send DP and About
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
