@@ -214,7 +214,34 @@ const fetchFriendFriends = async () => {
 }, [friendPhone]);
 
 
+const [friendCount,setFriendCount]=useState(0)
 
+useEffect(() => {
+  const countContactsByMobile = async () => {
+    try {
+      
+      if (!friendPhone) {
+        console.warn("No phone number found");
+        return;
+      }
+             
+      const res = await fetch(`${backendUrl}api/countContactsByMobile`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone : friendPhone }),
+      });
+
+      if (!res.ok) throw new Error("Failed to fetch count");
+
+      const data = await res.json();
+      setFriendCount(data.count); // 
+    } catch (error) {
+      console.error("Error fetching count:", error);
+    }
+  };
+
+  countContactsByMobile();
+}, [friendPhone]);
 
 
 
@@ -346,7 +373,10 @@ useEffect(() => {
                                            <img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${friendDp}`} onClick={() => friendImageView(users._id)}/>
                                            <div className='friend-p-top-content'>
                                               <h2>{friendName}</h2>
-                                              <p onClick={()=>setViewSection(3)}>90 friends</p>
+                                              <p onClick={()=>setViewSection(3)}>{friendCount} friends</p>
+
+
+                                              
                                            </div>
                                            <button><IoPersonAdd />Add friend</button>
                                            
