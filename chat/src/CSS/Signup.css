@@ -3216,7 +3216,7 @@ width:40%;
 .moments-heading{
     float:left;
     margin:0.5rem;
-
+    font-size: 1.4rem;
 }
 .moments-nav{
    
@@ -3453,7 +3453,19 @@ flex-direction: column;
    color:rgb(79, 79, 79);
 }
 
-
+@media (max-width: 675px) {
+  .moments-status{
+    display: none;
+  }
+  .contact-moments{
+    margin:0;
+    width:100%;
+  }
+  .overlay-moment-image input{
+    width:80%;
+    padding:0.7rem;
+  }
+}
 
 
 
@@ -3767,6 +3779,8 @@ align-items: center;
     margin-bottom: 0rem;
     padding-bottom: 0.1rem;
     margin:0;
+    text-align: left;
+    font-size: 1.4rem;
 }
 .friend-p-top-content p{
     font-size: 1.1rem;
@@ -3820,7 +3834,7 @@ align-items: center;
 }
 
 .friend-profile-overlay-image{
-      position: fixed;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
@@ -4033,7 +4047,9 @@ gap:0.5rem;
   
     box-shadow: rgba(0, 0, 0, 0.25) 0px 0.0625em 0.0625em, rgba(0, 0, 0, 0.25) 0px 0.125em 0.5em, rgba(255, 255, 255, 0.1) 0px 0px 0px 1px inset;
 }
-
+.friend-profile-overlay-image{
+       z-index: 9999999999999999999999999;
+}
  }
 
 
@@ -4156,6 +4172,7 @@ width:40%;
 
 .call-center h2{
     float:left;
+    font-size: 1.4rem;
 }
 .call-center nav{
     height:4rem;
@@ -4243,7 +4260,11 @@ display: none;
     margin:0;
 }
 
-
+.call-center nav input{
+    font-size: 1.03rem;
+    padding:0.6rem;
+    padding-left: 0.9rem;
+}
 
 
 
