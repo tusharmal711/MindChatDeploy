@@ -11,7 +11,7 @@ import ForgotPassword from "./Pages/ForgotPassword.js";
 import Moments from './Pages/Moments.js';
 import Connect from "./Pages/Connect.js";
 import Calls from "./Pages/Calls.js";
-
+import { ScrollProvider } from './ScrollContext';
 import Navbar from "./Pages/Navbar.js";
 import { getFCMToken } from './Pages/firebase-config.js';
 import ResetPassword from "./Pages/ResetPassword.js";
@@ -46,9 +46,11 @@ const App = () => {
 }, []);
 
   return (
+     <ScrollProvider>
     <BrowserRouter>
       <MainRoutes />
     </BrowserRouter>
+    </ScrollProvider>
   );
 };
 

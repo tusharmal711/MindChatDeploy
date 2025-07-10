@@ -5,6 +5,7 @@ import { MdCall } from "react-icons/md";
 import { RiVideoOnAiFill } from "react-icons/ri";
 import { MdCallMade } from "react-icons/md";
 import { MdAddIcCall } from "react-icons/md";
+import { useScrollContext } from '../ScrollContext.js';
 const backendUrl = process.env.REACT_APP_BACKEND_URL; 
 
 const Calls = ()=>{
@@ -199,7 +200,28 @@ const [currentTime, setCurrentTime] = useState('');
  const [rating, setRating] = useState(0);         // current rating
   const [hover, setHover] = useState(null); 
 
+const scrollRef = useRef(null);
+  const { setShowNavbar } = useScrollContext();
+  const lastScrollTop = useRef(0);
 
+  useEffect(() => {
+    const scrollableDiv = scrollRef.current;
+
+    const handleScroll = () => {
+      const currentScrollTop = scrollableDiv.scrollTop;
+
+      if (currentScrollTop > lastScrollTop.current) {
+        setShowNavbar(false); // Scroll down → hide
+      } else {
+        setShowNavbar(true);  // Scroll up → show
+      }
+
+      lastScrollTop.current = currentScrollTop <= 0 ? 0 : currentScrollTop;
+    };
+
+    scrollableDiv?.addEventListener('scroll', handleScroll);
+    return () => scrollableDiv?.removeEventListener('scroll', handleScroll);
+  }, [setShowNavbar]);
 
 
 
@@ -260,7 +282,7 @@ const [currentTime, setCurrentTime] = useState('');
                    <input type="text" placeholder='Search calls...' value={searchTerm2} onChange={(e)=>{setSearchTerm2(e.target.value)}}/>
                 </nav>
                   
-                <div className='call-contact'>
+                <div className='call-contact' ref={scrollRef}>
                       {
                         filteredContacts2.map((contacts)=>(
                           <div className='each-contact'>

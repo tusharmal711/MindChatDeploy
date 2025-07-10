@@ -22,6 +22,7 @@ import { ImCross } from "react-icons/im";
 import "cropperjs/dist/cropper.css";
 import Cropper from "cropperjs";
 import { TiTick } from "react-icons/ti";
+import { useScrollContext } from '../ScrollContext.js';
 const Navbar = ()=>{
    const navigate=useNavigate();
  const [isOpen, setIsOpen] = useState(false); // Popup state
@@ -43,7 +44,7 @@ const Navbar = ()=>{
 
 
 
-
+const { showNavbar } = useScrollContext();
 
 
 
@@ -409,7 +410,7 @@ const [loader,setLoader]=useState(false);
 {/* dp setting is starting from here */}
 {
    isMobile?(
-        <div className="mobile-navbar">
+        <div className={`mobile-navbar ${showNavbar ? 'show' : 'hide'}`}>
 {dp && (
         <div className="popup-overlay" id="crop-overlay">
           <div className="photo-nav">

@@ -25,6 +25,7 @@ import { FaFilePdf } from "react-icons/fa6";
 import { RxCross2 } from "react-icons/rx";
 import { IoDocumentTextSharp } from "react-icons/io5";
 import { FaCamera } from "react-icons/fa";
+import { useScrollContext } from '../ScrollContext.js';
 import { PiMicrosoftPowerpointLogoFill } from "react-icons/pi";
 import { MdAudioFile } from "react-icons/md";
 import { FaFileVideo } from "react-icons/fa";
@@ -787,6 +788,28 @@ useEffect(() => {
 
 
 
+ const navscrollRef = useRef(null);
+  const { setShowNavbar } = useScrollContext();
+  const lastScrollTop = useRef(0);
+
+  useEffect(() => {
+    const scrollableDiv = navscrollRef.current;
+
+    const handleScroll = () => {
+      const currentScrollTop = scrollableDiv.scrollTop;
+
+      if (currentScrollTop > lastScrollTop.current) {
+        setShowNavbar(false); // Scroll down → hide
+      } else {
+        setShowNavbar(true);  // Scroll up → show
+      }
+
+      lastScrollTop.current = currentScrollTop <= 0 ? 0 : currentScrollTop;
+    };
+
+    scrollableDiv?.addEventListener('scroll', handleScroll);
+    return () => scrollableDiv?.removeEventListener('scroll', handleScroll);
+  }, [setShowNavbar]);
 
 
 
@@ -1875,7 +1898,7 @@ you.map((profile)=>(
         </div>
           
         {/* Contacts List */}
-        <div className="chat-part">
+        <div className="chat-part" ref={navscrollRef}>
   <ul>
     {filteredContacts.map((contact) => {
       // Create the room ID for this specific contact

@@ -9,7 +9,8 @@ import { IoPersonAdd } from "react-icons/io5";
 import { MdEmail } from "react-icons/md";
 import { IoIosCall } from "react-icons/io";
 import { FaCircleInfo } from "react-icons/fa6";
-
+import { BsThreeDotsVertical } from "react-icons/bs";
+import { useScrollContext } from '../ScrollContext.js';
 import Cookies from "js-cookie";
 const backendUrl = process.env.REACT_APP_BACKEND_URL; 
 const Connect = ()=>{
@@ -115,6 +116,7 @@ const friendProfileView = (userId) => {
 };
 
 const closeFriendProfileView =()=>{
+ 
   let friendProfileOverlay=document.querySelector(".friend-profile-overlay");
   friendProfileOverlay.style.display="none";
   setViewSection(1);
@@ -357,6 +359,40 @@ useEffect(() => {
 
 
 
+
+
+
+
+
+
+
+  const scrollRef = useRef(null);
+  const { setShowNavbar } = useScrollContext();
+  const lastScrollTop = useRef(0);
+
+  useEffect(() => {
+    const scrollableDiv = scrollRef.current;
+
+    const handleScroll = () => {
+      const currentScrollTop = scrollableDiv.scrollTop;
+
+      if (currentScrollTop > lastScrollTop.current) {
+        setShowNavbar(false); // Scroll down → hide
+      } else {
+        setShowNavbar(true);  // Scroll up → show
+      }
+
+      lastScrollTop.current = currentScrollTop <= 0 ? 0 : currentScrollTop;
+    };
+
+    scrollableDiv?.addEventListener('scroll', handleScroll);
+    return () => scrollableDiv?.removeEventListener('scroll', handleScroll);
+  }, [setShowNavbar]);
+
+
+
+
+
     return(
          <SwipeNavigator>
           <div className='friend-container'>
@@ -375,10 +411,9 @@ useEffect(() => {
                                               <h2>{friendName}</h2>
                                               <p onClick={()=>setViewSection(3)}>{friendCount} friends</p>
 
-
-                                              
+                                          <button className='mobile-add-friend-btn'><IoPersonAdd />Add friend</button>
                                            </div>
-                                           <button><IoPersonAdd />Add friend</button>
+                                           <button className='desktop-add-friend-btn'><IoPersonAdd />Add friend</button>
                                            
                                         </div>
                                         <div className='friend-profile-center'>
@@ -501,10 +536,23 @@ useEffect(() => {
               </div>
             </div>
 
-            <div className='right-friend'>
+            <div className='right-friend' ref={scrollRef}>
+              <div className='right-nav-friend-mobile'>
+                 <h3 className='mobile-friend-heading'>Friends</h3>
+                  <input type="text" placeholder='Search here' value={searchValue} onChange={(e)=>{setSearchValue(e.target.value)}}/>
+              </div>
+                 <div className='right-nav2-friend-mobile'>
+                   <p onClick={friendRequest}>Friend requests</p>
+                   <p onClick={addFriend}>Add friend</p>
+              </div>
+
+
+
+
               <div className='right-nav-friend'>
                  <FaChevronRight className='right-friend-arrow' onClick={openLeftFriend}/>
                  <h2 id="r-n-f">Friends</h2>
+                 
                   <input type="text" placeholder='Search here' value={searchValue} onChange={(e)=>{setSearchValue(e.target.value)}}/>
               </div>
               <div className='right-friend-top' id="right-friend-top">
