@@ -4014,6 +4014,7 @@ gap:0.5rem;
          display: grid;
   grid-template-columns: repeat(2, 1fr); /* 2 equal columns */
   gap: 8px;
+  margin-bottom: 2rem;
     }
     .right-nav-friend-mobile{
         display: flex;
@@ -4154,6 +4155,7 @@ width:40%;
     padding:0.6rem;
     align-items: center;
    position: relative;
+   margin:0.2rem;
 }
 .each-contact:hover{
     background-color: rgb(242, 242, 242);
@@ -4172,6 +4174,8 @@ width:40%;
 
 .each-contact-img img{
     border-radius: 50%;
+    height: 45px;
+    width:45px;
    
 }
 .each-contact-text{
