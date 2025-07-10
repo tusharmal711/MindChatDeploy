@@ -81,47 +81,6 @@ const statusSend = ()=>{
 
 
 
-      {
-        preview &&(
-          <div className="photo-overlay-moment">
-            <div className='overlay-moment-nav'>
-             <RxCross2 className='overlay-nav-cross'onClick={closePopoverlay}/>
-             <IoMdDownload className='overlay-nav-download'/>
-            </div>
-            <div className='overlay-moment-image'>
-             {
-                  file.type.startsWith("video/") ? (
-                      <video src={preview} controls className='your-moment-preview' />
-                  ):(
-                    <img src={preview} className='your-moment-preview' />
-                  )
-                }
-              <input type="text" placeholder='Add a caption' autoFocus/>
-              
-            </div>
-            
-
-            <div className='overlay-moment-fotter'>
-              <div className='image-adding'>
-                {
-                  file.type.startsWith("video/") ? (
-                      <video src={preview} className='image-adding-img' />
-                  ):(
-                    <img src={preview} className='image-adding-img' />
-                  )
-                }
-                   
-                   <div className='image-adding-icon'><FaPlus className='adding-plus'/></div>
-                    <IoMdSend className='moment-send' onClick={statusSend}/>
-              </div>
-
-            </div>
-          
-        </div>
-        )
-      }
-         
-
 
 
 
@@ -190,6 +149,65 @@ const statusSend = ()=>{
         <p>Share photos , videos and text will disappear within 24 hours </p>
        </div>
       
+
+
+
+
+
+
+
+
+      {
+        preview &&(
+          <div className="photo-overlay-moment">
+            <div className='overlay-moment-nav'>
+             <RxCross2 className='overlay-nav-cross'onClick={closePopoverlay}/>
+             <IoMdDownload className='overlay-nav-download'/>
+            </div>
+            <div className='overlay-moment-image'>
+             {
+                  file.type.startsWith("video/") ? (
+                      <video src={preview} controls className='your-moment-preview' />
+                  ):(
+                    <img src={preview} className='your-moment-preview' />
+                  )
+                }
+              <input type="text" placeholder='Add a caption'/>
+              
+            </div>
+            
+
+            <div className='overlay-moment-fotter'>
+              <div className='image-adding'>
+                {
+                  file.type.startsWith("video/") ? (
+                      <video src={preview} className='image-adding-img' />
+                  ):(
+                    <img src={preview} className='image-adding-img' />
+                  )
+                }
+                   
+                   <div className='image-adding-icon'><FaPlus className='adding-plus'/></div>
+                    <IoMdSend className='moment-send' onClick={statusSend}/>
+              </div>
+
+            </div>
+          
+        </div>
+        )
+      }
+         
+
+
+
+
+
+
+
+
+
+
+
       </div>
       
     </SwipeNavigator>

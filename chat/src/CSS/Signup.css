@@ -3233,8 +3233,8 @@ width:40%;
     align-items: center;
 }
 .own-moment-dp{
-    height: 40px;
-    width:40px;
+    height: 45px;
+    width:45px;
     border-radius: 50%;
 
 }
@@ -3242,15 +3242,16 @@ width:40%;
    
     font-family: sans-serif;
     margin:1rem;
+    font-size: 1.1rem;
 }
 .moment-content-text2{
 color:rgb(151, 151, 151);
-font-size: 0.8rem;
+font-size: 0.9rem;
 }
 .moment-image{
     background-color: rgb(198, 26, 55);
-      height: 40px;
-    width:40px;
+      height: 45px;
+    width:45px;
     border-radius: 50%;
     position: relative;
 }
@@ -3465,6 +3466,7 @@ flex-direction: column;
     width:80%;
     padding:0.7rem;
   }
+
 }
 
 
