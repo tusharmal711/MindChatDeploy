@@ -4014,7 +4014,7 @@ gap:0.5rem;
          display: grid;
   grid-template-columns: repeat(2, 1fr); /* 2 equal columns */
   gap: 8px;
-  margin-bottom: 2rem;
+  margin-bottom: 5rem;
     }
     .right-nav-friend-mobile{
         display: flex;
@@ -4292,7 +4292,9 @@ display: none;
 }
 
 
-
+.call-contact{
+    margin-bottom: 5rem;
+}
 
  }
 /* calls part is ending here */
