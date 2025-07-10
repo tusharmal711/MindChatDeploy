@@ -3362,13 +3362,13 @@ flex-direction: column;
 }
 .overlay-moment-nav{
    
-    height:4rem;
+    height:10%;
     width:100%;
 }
 .overlay-moment-image{
    
     width:95%;
-    height: calc(100% - 12rem);
+    height: calc(100% - 35%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -3385,7 +3385,7 @@ flex-direction: column;
 }
 .overlay-moment-fotter{
    
-    height:8rem;
+    height:25%;
     width:100%;
     display: flex;
     align-items: center;
