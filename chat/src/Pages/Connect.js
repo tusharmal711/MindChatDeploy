@@ -487,11 +487,7 @@ useEffect(() => {
 
 
 
-                      <div className='friend-profile-overlay-image'>
-                           <RxCross2 className='overlay-image-cross' onClick={closeFriendImageView}/>
-                              <img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${friendDp}`} />
-                           
-                        </div>
+                     
 
 
 
@@ -578,6 +574,17 @@ useEffect(() => {
               }
               </div>
             </div>
+
+
+          <div className='friend-profile-overlay-image'>
+                           <RxCross2 className='overlay-image-cross' onClick={closeFriendImageView}/>
+                              <img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${friendDp}`} />
+                           
+                        </div>
+
+
+
+
           </div>
      
     </SwipeNavigator>
