@@ -11,6 +11,10 @@ import { IoIosCall } from "react-icons/io";
 import { FaCircleInfo } from "react-icons/fa6";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { useScrollContext } from '../ScrollContext.js';
+import { BsSendCheckFill } from "react-icons/bs";
+import { MdChildFriendly } from "react-icons/md";
+import { RiUserReceived2Fill } from "react-icons/ri";
+import { MdNotifications } from "react-icons/md";
 import Cookies from "js-cookie";
 const backendUrl = process.env.REACT_APP_BACKEND_URL; 
 const Connect = ()=>{
@@ -522,10 +526,20 @@ useEffect(() => {
               <div className='left-friend-content'>
                      <div className='lfc1' onClick={friendRequest}>
                      
-                         <p className='frl'> <IoPeople className='fri'/> Friend request <FaChevronRight className='frla'/></p>
+                         <p className='frl'> <RiUserReceived2Fill className='fri'/> Friend request <FaChevronRight className='frla'/></p>
                      </div>
                      <div className='lfc1' onClick={addFriend}>
                       <p className='frl'><IoPersonAddSharp className='fri'/> Add friend <FaChevronRight className='frla'/></p>
+                      
+                       
+                     </div>
+                      <div className='lfc1' onClick={addFriend}>
+                      <p className='frl'><MdChildFriendly className='fri'/> Sent request <FaChevronRight className='frla'/></p>
+                      
+                      
+                     </div>
+                      <div className='lfc1' onClick={addFriend}>
+                      <p className='frl'><MdNotifications className='fri'/> Notification <FaChevronRight className='frla'/></p>
                       
                        
                      </div>
@@ -538,8 +552,16 @@ useEffect(() => {
                   <input type="text" placeholder='Search here' value={searchValue} onChange={(e)=>{setSearchValue(e.target.value)}}/>
               </div>
                  <div className='right-nav2-friend-mobile'>
-                   <p onClick={friendRequest}>Friend requests</p>
+                  <div>
+                      <p onClick={friendRequest}>Friend requests</p>
                    <p onClick={addFriend}>Add friend</p>
+                  </div>
+                  <div> 
+                    <p onClick={addFriend}>Sent Request</p>
+                    <p onClick={addFriend}>Notification</p>
+
+                  </div>
+                    
               </div>
 
 
