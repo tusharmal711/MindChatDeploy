@@ -6,6 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Cookies from "js-cookie";
 import { FaRegEye } from "react-icons/fa";
 import { FaRegEyeSlash } from "react-icons/fa";
+import { Helmet } from 'react-helmet';
 const Login = () =>{
   const backendUrl = process.env.REACT_APP_BACKEND_URL; 
   const navigate=useNavigate();
@@ -138,6 +139,10 @@ const getOtpColor = () => {
 
 
   return <div>
+     <Helmet>
+        <title>Login – MindChat</title>
+        <meta name="description" content="Login to your MindChat account to start chatting securely." />
+      </Helmet>
   <div className="logo">
       <div className="img">
       <img src="./Images/app.png" alt="Not found" />
