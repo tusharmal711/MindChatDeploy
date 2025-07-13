@@ -2634,8 +2634,12 @@ width:100%;
 
   .mob{
     font-size: 1.5rem;
+    
   }
-  
+.mob:active{
+   -webkit-tap-highlight-color: transparent; 
+   
+}
   #mobile-default{
     height:45px;
     width:45px;
@@ -3827,10 +3831,14 @@ align-items: center;
     font-size: 1.02rem;
     font-family: sans-serif;
     color:rgb(38, 38, 38);
-    
+   
     
     display: flex;
     align-items: center;
+}
+.friend-profile-center nav a:active{
+   -webkit-tap-highlight-color: transparent; 
+   
 }
 .friend-nav-link-color{
      border-bottom: 3px solid rgb(0, 111, 237);
