@@ -124,7 +124,7 @@ const friendRequestSend = async (userId) => {
   setSender(senderPhone); // this is you
   
   try {
-    const res = await fetch("http://localhost:3001/api/friendrequest"
+    const res = await fetch(`${backendUrl}api/friendrequest`
 , {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -505,7 +505,7 @@ useEffect(() => {
 
     const fetchReceivedRequest = async () => {
       try {
-        const res = await fetch("http://localhost:3001/api/receivedrequestuser", {
+        const res = await fetch(`${backendUrl}api/receivedrequestuser`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ receiver: myPhone }),
@@ -530,7 +530,7 @@ useEffect(() => {
 
     const fetchReceivedUsers = async () => {
       try {
-        const res = await fetch("http://localhost:3001/api/sentrequestalluser", {
+        const res = await fetch(`${backendUrl}api/sentrequestalluser`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ phone: senderPhones }), // array of phones
