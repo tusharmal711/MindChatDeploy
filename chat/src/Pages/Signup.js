@@ -7,7 +7,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Cookies from "js-cookie";
 import { FaRegEye } from "react-icons/fa";
 import { FaRegEyeSlash } from "react-icons/fa";
-import { Helmet } from 'react-helmet';
+
 const Signup = () => {
   const backendUrl = process.env.REACT_APP_BACKEND_URL; 
   const [user, setUser] = useState({ username: "", email: "", phone: "", password: "" });
