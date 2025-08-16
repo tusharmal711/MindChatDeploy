@@ -59,7 +59,7 @@ const [update, forceUpdate] = useReducer(reducer, 0);
 useEffect(() => {
   const fetchContacts = async () => {
     try {
-      // ✅ Use sessionStorage first, then fallback to cookies
+      // Use sessionStorage first, then fallback to cookies
       const phone = sessionStorage.getItem("phone") || Cookies.get("mobile");
 
       if (!phone) {
@@ -803,7 +803,7 @@ you.map((profile)=>(
       <NavLink to="/moments" className="mob moments"><div className="nav-chat"><SiEventstore className="mob-icon"/><span>Moments</span></div></NavLink>
       <NavLink to="/connect" className="mob connect"><div className="nav-chat"><TbFriends className="mob-icon"/><span>Friends</span></div></NavLink>
       <NavLink to="/calls" className="mob calls"><div className="nav-chat"><BiSolidPhoneCall className="mob-icon"/><span>Calls</span></div></NavLink>
-    {/* <NavLink to="#" id="logout" className="link logout" onClick={sendData}><IoLogOut /></NavLink> */}
+    {/* <NavLink to="#" id="logout" className=link logout" onClick={sendData}><IoLogOut /></NavLink> */}
 
     {/* <button id="logout" className="link logout" onClick={()=>{setIsOpen(true)}}>
         <IoLogOut />

@@ -4,6 +4,7 @@ import { IoPersonAddSharp } from "react-icons/io5";
 import { FaChevronRight } from "react-icons/fa";
 import { useState , useEffect ,useRef} from 'react';
 import { FaChevronLeft } from "react-icons/fa6";
+import { Link, useNavigate , useLocation, Outlet } from 'react-router-dom';
 import { RxCross2 } from "react-icons/rx";
 import { IoPersonAdd } from "react-icons/io5";
 import { MdEmail } from "react-icons/md";
@@ -18,9 +19,9 @@ import { MdNotifications } from "react-icons/md";
 import Cookies from "js-cookie";
 const backendUrl = process.env.REACT_APP_BACKEND_URL; 
 const Connect = ()=>{
-
+const navigate=useNavigate();
   const [users,setUsers]=useState([]);
-
+const location=useLocation();
 useEffect(() => {
   const fetchAllUsers = async () => {
     try {
@@ -47,6 +48,25 @@ useEffect(() => {
 
 
 
+const [sender,setSender]=useState("");
+const [receiver,setReceiver]=useState("");
+ const phone = sessionStorage.getItem("phone") || Cookies.get("mobile");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 const friendRequest = ()=>{
  let rightFriendTop=document.getElementById("right-friend-top");
@@ -56,10 +76,7 @@ const friendRequest = ()=>{
 }
 
 const addFriend = ()=>{
- let rightFriendTop=document.getElementById("right-friend-top");
-  rightFriendTop.style.display="none";
- let rightFriendBottom=document.getElementById("right-friend-bottom");
-  rightFriendBottom.classList.remove("friend-display");
+   navigate("/connect");
 }
 
 const hideLeftFriend = ()=>{
@@ -94,12 +111,48 @@ const [searchValue,setSearchValue]=useState("");
 const [friendRequests, setFriendRequests] = useState({});
 
 
-const friendRequestSend = (userId) => {
-  setFriendRequests((prev) => ({
-    ...prev,
-    [userId]: prev[userId] === "Sent Request" ? "Add Friend" : "Sent Request" 
-  }));
+const friendRequestSend = async (userId) => {
+  const receiverUser = users.find(user => user._id === userId);
+  const senderPhone = sessionStorage.getItem("phone") || Cookies.get("mobile");
+
+  if (!receiverUser || !senderPhone) {
+    alert("Failed to send request: missing sender or receiver info.");
+    return;
+  }
+
+  setReceiver(receiverUser.phone); // set receiver state (optional)
+  setSender(senderPhone); // this is you
+  
+  try {
+    const res = await fetch("http://localhost:3001/api/friendrequest"
+, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        sender: senderPhone,
+        receiver: receiverUser.phone,
+       
+
+      }),
+    });
+
+    if (!res.ok) throw new Error("Failed to send friend request");
+     
+    const data = await res.json();
+     
+
+    
+    setFriendRequests((prev) => ({
+      ...prev,
+      [userId]: "Sent Request"
+    }));
+
+    console.log("Friend request sent:", data);
+  } catch (error) {
+    console.error("Error sending friend request:", error);
+  }
 };
+
 
 const [friendName,setFriendName]=useState("");
 const [friendDp,setFriendDp]=useState("");
@@ -107,7 +160,13 @@ const [friendEmail,setFriendEmail]=useState("");
 const [friendPhone,setFriendPhone]=useState("");
 const [friendAbout,setFriendAbout]=useState("");
 const friendProfileView = (userId) => {
+  
   const friend = users.find((user) => user._id === userId);
+  if (friend) {
+   sessionStorage.setItem("friend", JSON.stringify(friend));
+  navigate(`/${friend.username.replace(/\s+/g, '_')}/${friend._id}`);
+
+}
   if (friend) {
     setFriendName(friend.username);
       setFriendEmail(friend.email);
@@ -144,6 +203,42 @@ const closeFriendImageView = ()=>{
   let friendProfileOverlay = document.querySelector(".friend-profile-overlay-image");
   friendProfileOverlay.style.display = "none";
 }
+
+
+
+
+
+
+const [viewSec,setViewSec]=useState("");
+useEffect(() => {
+  const path = location.pathname;
+
+  if (path.includes("/sent-request")) {
+    setViewSec(2);
+  } else if (path.includes("/friend-request")) {
+    setViewSec(1);
+  } else if (path.includes("/notification")) {
+    setViewSec(3);
+  } else if (path.includes("/add-friend")) {
+    setViewSec(4); // or whatever value shows the default section (Add Friend)
+  } else if(path=== "/connect"){
+    setViewSec(0);
+  }
+}, [location]);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -395,6 +490,103 @@ useEffect(() => {
 
 
 
+ const isActive = (path) => {
+    return location.pathname.includes(path); // or === if you want exact match
+  };
+
+
+
+
+  const [senderPhones, setSenderPhones] = useState([]);
+  const [senders, setSenders] = useState([]);
+
+  useEffect(() => {
+    const myPhone = sessionStorage.getItem("phone");
+
+    const fetchReceivedRequest = async () => {
+      try {
+        const res = await fetch("http://localhost:3001/api/receivedrequestuser", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ receiver: myPhone }),
+        });
+
+        if (!res.ok) throw new Error("Failed to fetch friend requests");
+        
+        const data = await res.json();
+        
+        const phoneNumbers = data.map((friend) => friend.sender); // extract sender phones
+        setSenderPhones(phoneNumbers);
+      } catch (error) {
+        console.error("Error fetching friend requests:", error);
+      }
+    };
+
+    fetchReceivedRequest();
+  }, []);
+
+  useEffect(() => {
+    if (senderPhones.length === 0) return; // Don't fetch if no senders
+
+    const fetchReceivedUsers = async () => {
+      try {
+        const res = await fetch("http://localhost:3001/api/sentrequestalluser", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ phone: senderPhones }), // array of phones
+        });
+
+        if (!res.ok) throw new Error("Failed to fetch user data");
+
+        const data = await res.json();
+        setSenders(data); // Should be an array of user objects
+        console.log("Users who sent you requests:", data);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+
+    fetchReceivedUsers();
+  }, [senderPhones]);
+
+
+
+
+
+
+
+
+
+
+
+
+// const [searchValue,setSearchValue]=useState("");
+ const requests = senders.filter((users) =>
+    users.username.toLowerCase().includes(searchValue.toLowerCase())
+  );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     return(
@@ -524,25 +716,25 @@ useEffect(() => {
               </nav>
              
               <div className='left-friend-content'>
-                     <div className='lfc1' onClick={friendRequest}>
+                     <Link to="friend-request"  className={`sent-link ${isActive('friend-request') ? 'active-link' : ''}`}>
                      
                          <p className='frl'> <RiUserReceived2Fill className='fri'/> Friend request <FaChevronRight className='frla'/></p>
-                     </div>
-                     <div className='lfc1' onClick={addFriend}>
+                     </Link>
+                     <Link to="add-friend" className={`sent-link ${isActive('add-friend') ? 'active-link' : ''}`}>
                       <p className='frl'><IoPersonAddSharp className='fri'/> Add friend <FaChevronRight className='frla'/></p>
                       
                        
-                     </div>
-                      <div className='lfc1' onClick={addFriend}>
+                     </Link>
+                      <Link to="sent-request"  className={`sent-link ${isActive('sent-request') ? 'active-link' : ''}`}>
                       <p className='frl'><MdChildFriendly className='fri'/> Sent request <FaChevronRight className='frla'/></p>
                       
                       
-                     </div>
-                      <div className='lfc1' onClick={addFriend}>
+                     </Link>
+                      <Link to="notification"  className={`sent-link ${isActive('notification') ? 'active-link' : ''}`}>
                       <p className='frl'><MdNotifications className='fri'/> Notification <FaChevronRight className='frla'/></p>
                       
                        
-                     </div>
+                     </Link>
               </div>
             </div>
 
@@ -567,18 +759,46 @@ useEffect(() => {
 
 
 
-              <div className='right-nav-friend'>
+             
+
+               {
+                viewSec===1 ?(
+                   <div className='right-friend-to' id="right-friend-top">
+                  <Outlet />
+                  </div>
+                ) : viewSec===2 ?(
+                     <div className='right-friend-to' id="right-friend-top">
+                   <Outlet />
+                  </div>
+                ) : viewSec===3 ? (
+                     <div className='right-friend-top' id="right-friend-top">
+                   <Outlet />
+                  </div>
+                ) : viewSec===4 ?(
+                      <div className='right-friend-botto' id="right-friend-top">
+                   <Outlet />
+                  </div>
+                ):(
+                    <div>
+                       <div className='right-nav-friend'>
                  <FaChevronRight className='right-friend-arrow' onClick={openLeftFriend}/>
                  <h2 id="r-n-f">Friends</h2>
                  
                   <input type="text" placeholder='Search here' value={searchValue} onChange={(e)=>{setSearchValue(e.target.value)}}/>
               </div>
-              <div className='right-friend-top' id="right-friend-top">
-                <p>No friend request received yet...</p>
-              </div>
-              <div className='right-friend-bottom' id="right-friend-bottom">
-                {
-                 filteredUsers.map((users)=>(
+              <h1 className='connect-request'>Requests</h1>
+                <div className='right-friend-bottom' id="right-friend-top">
+                 
+                  {
+                     senders.length===0 ?(
+              <div>
+                <p>No request received</p>
+             </div>
+            ) : requests.length===0 ?(
+              <p>Not found</p>
+            ) : (
+             
+                      requests.map((users)=>(
                   <div className='all-users'  key={users._id}>
                       <div className='card-img' onClick={() => friendProfileView(users._id)}>
                          <img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${users.dp}`} />
@@ -586,15 +806,62 @@ useEffect(() => {
                       </div>
                       <div className='card-content'>
                              <h4>{users.username}</h4>
-                             <button  className={`add-friend ${friendRequests[users._id] === "Sent Request" ? "sent-request" : ""}`}  onClick={() => friendRequestSend(users._id)}>{friendRequests[users._id] || "Add Friend"}</button>
-                             <button className='add-remove'>Remove</button>
+                            <button
+  className={`add-friend-accept`}
+  onClick={() => friendRequestSend(users._id)}  // users._id is correct
+>
+  Accept
+</button>
+
+                             <button className='add-remove'>Cancel</button>
                         </div>
                       
                   </div>
                  )
                 )
+            )
+          
+                  }
+               
+              </div>
+                 <h1 className='connect-request'>Add friend</h1>
+              <div className='right-friend-bottom' id="right-friend-bottom">
+                
+                {
+                  filteredUsers.length===0 ?(
+                      <p>Not found</p>
+                  ) :(
+                        filteredUsers.map((users)=>(
+                  <div className='all-users'  key={users._id}>
+                      <div className='card-img' onClick={() => friendProfileView(users._id)}>
+                         <img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${users.dp}`} />
+
+                      </div>
+                      <div className='card-content'>
+                             <h4>{users.username}</h4>
+                            <button
+  className={`add-friend ${friendRequests[users._id] === "Sent Request" ? "sent-request" : ""}`}
+  onClick={() => friendRequestSend(users._id)}  // users._id is correct
+>
+  {friendRequests[users._id] || "Add Friend"}
+</button>
+
+                             <button className='add-remove'>Remove</button>
+                        </div>
+                      
+                  </div>
+                 )
+                  )
+             
+                )
               }
               </div>
+                      </div>
+                )      
+               }
+              
+
+
             </div>
 
 

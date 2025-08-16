@@ -2,10 +2,14 @@ import SwipeNavigator from './SwipeNavigator';
 import { useState,useEffect , useRef } from 'react';
 import Cookies from "js-cookie";
 import { MdCall } from "react-icons/md";
+import { useNavigate } from 'react-router-dom';
 import { RiVideoOnAiFill } from "react-icons/ri";
 import { MdCallMade } from "react-icons/md";
 import { MdAddIcCall } from "react-icons/md";
 import { useScrollContext } from '../ScrollContext.js';
+import io from "socket.io-client";
+import { socket } from './Socket.js';
+
 const backendUrl = process.env.REACT_APP_BACKEND_URL; 
 
 const Calls = ()=>{
@@ -224,10 +228,42 @@ const scrollRef = useRef(null);
   }, [setShowNavbar]);
 
 
+  const navigate = useNavigate();
+  const myPhone = sessionStorage.getItem("phone") || Cookies.get("mobile");
+  const [callUsername,setCallUsername]=useState("");
+  const handleCallClick = (phone,username,dp) => {
+    if (!myPhone) {
+      alert("No phone number found! Please login.");
+      return;
+    }
+
+    const room = [myPhone, phone].sort().join("_");
+    sessionStorage.setItem("contactPhone", phone);
+    sessionStorage.setItem("myPhone", myPhone);
+    sessionStorage.setItem("room", room);
+     sessionStorage.setItem("callusername", username);
+    sessionStorage.setItem("isCaller", "true"); // mark caller
+    sessionStorage.setItem("contactDp", dp);
+    // Join room before going to call page
+    socket.emit("join_call", room);
+
+    // Go to Call Page
+    navigate("/call");
+  };
+
+
+    const [startCallPopup,setStartCallPopup]=useState(false);
+
+
+
 
     return(
         <SwipeNavigator>
           <div className='call-container'>
+
+
+           
+
 
 
                <div className='call-left'>
@@ -251,9 +287,17 @@ const scrollRef = useRef(null);
                               </div>
                               <div className='each-contact-text'>
                                 {contacts.username}
+                                
                                 </div>
                                 <div className='each-contact-icon'>
-                                  <MdCall />
+                                  <MdCall 
+                                  onClick={() => handleCallClick(
+                                    contacts.mobile,
+                                    contacts.username,
+                                    dpMap[contacts.mobile] || "https://res.cloudinary.com/dnd9qzxws/image/upload/v1743764088/image_dp_uwfq2g.png"
+                                  )}
+                                />
+
                                   <RiVideoOnAiFill />
                                 </div>
                               
@@ -300,7 +344,13 @@ const scrollRef = useRef(null);
                                 <p><MdCallMade className='outgoing-call'/>{currentTime}</p>
                                 </div>
                                 <div className='each-contact-icon'>
-                                  <MdCall />
+                                   <MdCall 
+                                  onClick={() => handleCallClick(
+                                    contacts.mobile,
+                                    contacts.username,
+                                    dpMap[contacts.mobile] || "https://res.cloudinary.com/dnd9qzxws/image/upload/v1743764088/image_dp_uwfq2g.png"
+                                  )}
+                                />
                                   {/* <RiVideoOnAiFill /> */}
                                 </div>
                               

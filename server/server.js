@@ -218,7 +218,53 @@ socket.on("message_seen", ({ messageId, room }) => {
 
 
 
+  socket.on("join_call", async(room) => {
+    socket.join(room);
+    socket.room = room;
 
+   const clients = await io.in(room).fetchSockets();
+   
+    // If more than 1 user is in the room, notify everyone they're online
+    if (clients.length ===1) {
+    console.log("Not cal connected");
+        socket.emit("you-are-caller");
+    } else if(clients.length===2){
+      
+       console.log("connected");
+     io.to(room).emit("user-joined");
+    }
+  
+  
+  });
+
+   // Relay WebRTC offer
+  socket.on("offer", (data) => {
+    socket.to(socket.room).emit("offer", data);
+  });
+
+  // Relay WebRTC answer
+  socket.on("answer", (data) => {
+    socket.to(socket.room).emit("answer", data);
+  });
+
+  // Relay ICE candidates
+  socket.on("ice-candidate", (data) => {
+    socket.to(socket.room).emit("ice-candidate", data);
+  });
+
+  // End call
+  socket.on("end-call", () => {
+    io.to(socket.room).emit("end-call");
+    io.socketsLeave(socket.room); // Force all out of the room
+  });
+
+socket.on("video-status", ({ isVideoOff }) => {
+  socket.to(socket.room).emit("video-status", { isVideoOff });
+});
+
+socket.on("mute-status", ({ isMuted}) => {
+  socket.to(socket.room).emit("mute-status", { isMuted });
+});
 
 
 
@@ -228,7 +274,11 @@ socket.on("message_seen", ({ messageId, room }) => {
 socket.on('delete_for_everyone', ({ room }) => {
   socket.to(room).emit('chats_deleted', { room });
 });
+
+
+
   socket.on("disconnect", async() => {
+
     console.log("User Disconnected:", socket.id);
      const room = socket.room;
     if (room) {
@@ -237,6 +287,21 @@ socket.on('delete_for_everyone', ({ room }) => {
         io.to(room).emit("show_online", "Offline");
       }
     }
+
+
+ if (socket.room) {
+      io.to(socket.room).emit("call_ended");
+    }
+
+
+
+  
+
+
+
+
+
+
   });
 });
 

@@ -7,6 +7,8 @@ import Cookies from "js-cookie";
 import { FaRegEye } from "react-icons/fa";
 import { FaRegEyeSlash } from "react-icons/fa";
 import { Helmet } from 'react-helmet';
+import { socket } from "./Socket";
+
 const Login = () =>{
   const backendUrl = process.env.REACT_APP_BACKEND_URL; 
   const navigate=useNavigate();
@@ -68,6 +70,8 @@ const isLogin = async (e) => {
       Cookies.set("mobile", phone); // Persist login
       sessionStorage.setItem("phone", phone);
       localStorage.setItem("phone", phone);
+      socket.emit("register", phone);
+
      navigate("/chatboard");
     }
    
@@ -139,10 +143,7 @@ const getOtpColor = () => {
 
 
   return <div>
-     <Helmet>
-        <title>Login – MindChat</title>
-        <meta name="description" content="Login to your MindChat account to start chatting securely." />
-      </Helmet>
+   
   <div className="logo">
       <div className="img">
       <img src="./Images/app.png" alt="Not found" />

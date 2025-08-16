@@ -128,10 +128,7 @@ const getOtpColor = () => {
 
   return (
     <div>
-        <Helmet>
-        <title>Signup – MindChat</title>
-        <meta name="description" content="Signup in MindChat to start chatting securely." />
-      </Helmet>
+      
       <div className="logo">
         <div className="img">
           <img src="./Images/app.png" alt="Not found" />

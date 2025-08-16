@@ -9,6 +9,7 @@ import bcrypt from "bcrypt";
 import Messages from "./server.js";
 import fs from 'fs'; // File system module
 import path from 'path';
+import Friend from "./FriendRequest.js";
 
 dotenv.config();
 
@@ -403,6 +404,26 @@ export const fetchDp = async (req, res) => {
 };
 
 
+// export const fetchFriendUser = async (req, res) => {
+//   try {
+//     const { mobile } = req.body;
+
+//     const user = await User.findOne({ phone: mobile });
+
+//     if (!user) {
+//       return res.status(404).json({ message: "User not found" });
+//     }
+
+//     res.status(200).json(user); // Send full user object
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// };
+
+
+
+
+
 export const fetchOtherDp = async (req, res) => {
   try {
     const {mobile}=req.body;
@@ -580,3 +601,83 @@ export const countContactsByMobile = async (req, res) => {
     res.status(500).json({ message: 'Server Error', error: err.message });
   }
 };
+
+
+
+export const FriendRequest = async (req, res) => {
+  try {
+    
+    const {sender,receiver,text} = req.body;
+     
+    const newFriend = new Friend({sender,receiver,text : "sent you friend request"});
+    const data=await newFriend.save();
+
+    res.status(201).json({data});
+  } catch (error) {
+    console.error("Error during registration:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
+
+
+
+export const SentRequestUser = async (req, res) => {
+  try {
+    const {sender}=req.body;
+    const addedUser = await Friend.find({sender});
+    res.status(200).json(addedUser);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+
+
+export const ReceivedRequestUser = async (req, res) => {
+  try {
+    const {receiver}=req.body;
+    const addedUser = await Friend.find({receiver});
+    res.status(200).json(addedUser);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+
+
+
+
+
+
+export const SentRequestAllUser = async (req, res) => {
+  try {
+    const { phone } = req.body; // phone is actually an array of phones
+    const addedUser = await User.find({ phone: { $in: phone } }); // use $in for array
+    res.status(200).json(addedUser);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+export const CancelRequest = async (req, res) => {
+  try {
+    const { sender, receiver } = req.body;
+
+    // Add validation
+    if (!sender || !receiver) {
+      return res.status(400).json({ error: "Missing sender or receiver" });
+    }
+
+    await Friend.deleteOne({ sender, receiver });
+
+    res.status(200).json({ message: "Friend request canceled" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+
