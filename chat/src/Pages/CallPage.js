@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import io from "socket.io-client";
 import { GoDotFill } from "react-icons/go";
@@ -173,7 +173,7 @@ useEffect(() => {
 
   // If the caller hears that someone joined, they start the call
   socket.on("user-joined", () => {
-  startCall();
+
   setStatus("Connected");
   setIsConnected(true);
   });
