@@ -4784,6 +4784,7 @@ width:100%;
     color:white;
     width: 100%;
 }
+
 .video-section{
     width: 100%;
     display: flex;
@@ -4885,6 +4886,7 @@ width:100%;
     padding:10px;
     border-radius: 50%;
     cursor: pointer;
+     -webkit-tap-highlight-color: transparent; 
 }
 .call-btn{
     height: 5rem;

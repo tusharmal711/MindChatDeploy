@@ -162,7 +162,7 @@ useEffect(() => {
   // -------------------------------
  const [isCaller, setIsCaller] = useState(false);
 useEffect(() => {
-  alert(roomId);
+ 
    if (!socket.hasJoined) {
     socket.emit("join-room", roomId);
     socket.hasJoined = true;   // 👈 custom flag
@@ -252,6 +252,45 @@ setIsVideoOff(true);
     socket.off("end-call");
   };
 }, [roomId]);
+
+
+// camera rotation is starting from here 
+const [isFrontCamera, setIsFrontCamera] = useState(true);
+const switchCamera = async () => {
+  if (!localStreamRef.current) return;
+
+  // Stop the current video track
+  localStreamRef.current.getVideoTracks().forEach(track => track.stop());
+
+  // Request a new stream with opposite facing mode
+  const newStream = await navigator.mediaDevices.getUserMedia({
+    video: { facingMode: isFrontCamera ? "environment" : "user" },
+    audio: true,
+  });
+
+  const newVideoTrack = newStream.getVideoTracks()[0];
+
+  // Replace the video track in the PeerConnection
+  const sender = peerConnectionRef.current
+    ?.getSenders()
+    .find(s => s.track && s.track.kind === "video");
+  if (sender) {
+    sender.replaceTrack(newVideoTrack);
+  }
+
+  // Update localStreamRef with the new stream
+  localStreamRef.current = newStream;
+
+  // Show in local preview
+  if (localVideoRef.current) {
+    localVideoRef.current.srcObject = newStream;
+  }
+
+  // Flip camera state
+  setIsFrontCamera(prev => !prev);
+};
+
+// camera rotation is ending here 
 
 
 
@@ -415,14 +454,15 @@ const hasVideo = localStreamRef.current?.getVideoTracks().some(track => track.en
         <button
           onClick={toggleMute}
           style={{
-            backgroundColor: isMuted ? "gray" : "#444",
-            border: "none",
-            padding: "10px",
-            borderRadius: "50%",
-            cursor: "pointer",
-            pointerEvents: isConnected ? "auto" : "none",  
-            opacity: isConnected ? 1 : 0.5,  
-          }}
+  backgroundColor: isMuted ? "gray" : "#444",
+  border: "none",
+  padding: "10px",
+  borderRadius: "50%",
+  cursor: "pointer",
+  pointerEvents: isConnected ? "auto" : "none",
+  opacity: isConnected ? 1 : 0.5,
+  WebkitTapHighlightColor: "transparent",  // 👈 added here
+}}
         >
           {
             isMuted ?(
@@ -444,6 +484,7 @@ const hasVideo = localStreamRef.current?.getVideoTracks().some(track => track.en
             cursor: "pointer",
              pointerEvents: isConnected ? "auto" : "none",  
             opacity: isConnected ? 1 : 0.5,  
+            WebkitTapHighlightColor: "transparent",
           }}
         >
          {
@@ -458,6 +499,39 @@ const hasVideo = localStreamRef.current?.getVideoTracks().some(track => track.en
          
        
         </button>
+
+
+
+
+       <button
+  onClick={switchCamera}
+  style={{
+    backgroundColor: "#444",
+    border: "none",
+    padding: "10px",
+    borderRadius: "50%",
+    cursor: "pointer",
+    pointerEvents: isConnected ? "auto" : "none",
+    opacity: isConnected ? 1 : 0.5,
+    WebkitTapHighlightColor: "transparent",
+  }}
+>
+  🔄
+</button>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         <button
         className="end-call-btn"
