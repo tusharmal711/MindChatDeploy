@@ -36,26 +36,47 @@ const [isConnected, setIsConnected] = useState(false); // NEW
 
 
 
-  const startCall = async () => {
-   
-    peerConnectionRef.current = new RTCPeerConnection();
+ const startCall = async () => {
+  // Close existing connection if any
+  if (peerConnectionRef.current) {
+    peerConnectionRef.current.close();
+  }
 
-    // Handle remote stream
-    peerConnectionRef.current.ontrack = (event) => {
-      if (remoteVideoRef.current) {
-        remoteVideoRef.current.srcObject = event.streams[0];
-      }
-    };
+  // Create new peer connection
+  peerConnectionRef.current = new RTCPeerConnection({
+    iceServers: [
+      { urls: "stun:stun.l.google.com:19302" },
+      // You might want to add TURN servers here for better reliability
+    ]
+  });
 
-    // Get audio+video
+  // Handle remote stream
+  peerConnectionRef.current.ontrack = (event) => {
+    if (remoteVideoRef.current && event.streams && event.streams[0]) {
+      remoteVideoRef.current.srcObject = event.streams[0];
+    }
+  };
+
+  // ICE candidates
+  peerConnectionRef.current.onicecandidate = (event) => {
+    if (event.candidate) {
+      socket.emit("ice-candidate", { candidate: event.candidate, roomId });
+    }
+  };
+
+  // Get audio+video
+  try {
     localStreamRef.current = await navigator.mediaDevices.getUserMedia({
       audio: true,
       video: true,
     });
-  localStreamRef.current.getVideoTracks().forEach(track => {
-  track.enabled = false;
-});
-setIsVideoOff(true);
+
+    // Start with video off
+    localStreamRef.current.getVideoTracks().forEach(track => {
+      track.enabled = false;
+    });
+    setIsVideoOff(true);
+
     // Show local video
     if (localVideoRef.current) {
       localVideoRef.current.srcObject = localStreamRef.current;
@@ -66,18 +87,19 @@ setIsVideoOff(true);
       peerConnectionRef.current.addTrack(track, localStreamRef.current);
     });
 
-    // ICE candidates
-    peerConnectionRef.current.onicecandidate = (event) => {
-      if (event.candidate) {
-        socket.emit("ice-candidate", { candidate: event.candidate, roomId });
-      }
-    };
-
     // Create & send offer
-    const offer = await peerConnectionRef.current.createOffer();
+    const offer = await peerConnectionRef.current.createOffer({
+      offerToReceiveAudio: true,
+      offerToReceiveVideo: true
+    });
+    
     await peerConnectionRef.current.setLocalDescription(offer);
     socket.emit("offer", { offer, roomId });
-  };
+  } catch (err) {
+    console.error("Failed to get media or create offer", err);
+    endCall();
+  }
+};
 
   // -------------------------------
   // End call
@@ -129,7 +151,18 @@ useEffect(() => {
   // Toggle video
   // -------------------------------
 // Local video OFF at start
-
+const processQueuedCandidates = async () => {
+  if (!peerConnectionRef.current || !peerConnectionRef.current.candidateQueue) return;
+  
+  while (peerConnectionRef.current.candidateQueue.length > 0) {
+    const candidate = peerConnectionRef.current.candidateQueue.shift();
+    try {
+      await peerConnectionRef.current.addIceCandidate(candidate);
+    } catch (err) {
+      console.error("Error adding queued ICE candidate", err);
+    }
+  }
+};
 
 const toggleVideo = () => {
   if (!localStreamRef.current) return;
@@ -161,9 +194,10 @@ useEffect(() => {
   // -------------------------------
  const [isCaller, setIsCaller] = useState(false);
 useEffect(() => {
-  
+   if (!socket.hasJoined) {
     socket.emit("join-room", roomId);
-   
+    socket.hasJoined = true;   // 👈 custom flag
+  }
 
   // If this user is the caller, start the call
   socket.on("you-are-caller", () => {
@@ -180,62 +214,111 @@ useEffect(() => {
   setIsConnected(true);
   });
 
-  socket.on("offer", async ({ offer }) => {
-    // Only run if not already connected
-    if (!peerConnectionRef.current) {
-      peerConnectionRef.current = new RTCPeerConnection();
+socket.on("offer", async ({ offer }) => {
+  // Only run if not already connected
+  if (peerConnectionRef.current) {
+    // If we already have a connection, close it first
+    peerConnectionRef.current.close();
+  }
 
-      peerConnectionRef.current.ontrack = (event) => {
-        if (remoteVideoRef.current) {
-          remoteVideoRef.current.srcObject = event.streams[0];
-        }
-      };
+  peerConnectionRef.current = new RTCPeerConnection({
+    iceServers: [
+      { urls: "stun:stun.l.google.com:19302" },
+      // Add TURN servers if needed
+    ]
+  });
 
-      localStreamRef.current = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-        video: true,
-      });
-      localStreamRef.current.getVideoTracks().forEach(track => {
-  track.enabled = false;
-});
-setIsVideoOff(true);
-      if (localVideoRef.current) {
-        localVideoRef.current.srcObject = localStreamRef.current;
-      }
-      localStreamRef.current.getTracks().forEach((track) => {
-        peerConnectionRef.current.addTrack(track, localStreamRef.current);
-      });
+  peerConnectionRef.current.ontrack = (event) => {
+    if (remoteVideoRef.current && event.streams && event.streams[0]) {
+      remoteVideoRef.current.srcObject = event.streams[0];
+    }
+  };
 
-      peerConnectionRef.current.onicecandidate = (event) => {
-        if (event.candidate) {
-          socket.emit("ice-candidate", { candidate: event.candidate, roomId });
-        }
-      };
+  try {
+    localStreamRef.current = await navigator.mediaDevices.getUserMedia({
+      audio: true,
+      video: true,
+    });
+    
+    // Start with video off
+    localStreamRef.current.getVideoTracks().forEach(track => {
+      track.enabled = false;
+    });
+    setIsVideoOff(true);
+
+    if (localVideoRef.current) {
+      localVideoRef.current.srcObject = localStreamRef.current;
     }
 
-    await peerConnectionRef.current.setRemoteDescription(
-      new RTCSessionDescription(offer)
-    );
+    localStreamRef.current.getTracks().forEach((track) => {
+      peerConnectionRef.current.addTrack(track, localStreamRef.current);
+    });
 
+    peerConnectionRef.current.onicecandidate = (event) => {
+      if (event.candidate) {
+        socket.emit("ice-candidate", { candidate: event.candidate, roomId });
+      }
+    };
+
+    await peerConnectionRef.current.setRemoteDescription(new RTCSessionDescription(offer));
+    processQueuedCandidates();
     const answer = await peerConnectionRef.current.createAnswer();
     await peerConnectionRef.current.setLocalDescription(answer);
     socket.emit("answer", { answer, roomId });
-  });
+  } catch (err) {
+    console.error("Error handling offer", err);
+    endCall();
+  }
+});
 
   socket.on("answer", async ({ answer }) => {
-    await peerConnectionRef.current.setRemoteDescription(
-      new RTCSessionDescription(answer)
-    );
-  });
-
-  socket.on("ice-candidate", async ({ candidate }) => {
-    try {
-      await peerConnectionRef.current.addIceCandidate(new RTCIceCandidate(candidate));
-    } catch (err) {
-      console.error("Error adding ICE candidate", err);
+  try {
+    if (!peerConnectionRef.current) {
+      console.error("No peer connection when receiving answer");
+      return;
     }
-  });
 
+    const remoteDesc = new RTCSessionDescription(answer);
+    
+    // Check if we've already set this answer
+    if (peerConnectionRef.current.remoteDescription && 
+        peerConnectionRef.current.remoteDescription.type === 'answer') {
+      return;
+    }
+
+    // Check if we're in a state where we can set the answer
+    if (peerConnectionRef.current.signalingState !== 'have-local-offer' &&
+        peerConnectionRef.current.signalingState !== 'have-remote-offer') {
+      console.warn(`Cannot set answer in signaling state: ${peerConnectionRef.current.signalingState}`);
+      return;
+    }
+
+    await peerConnectionRef.current.setRemoteDescription(remoteDesc);
+   
+processQueuedCandidates();
+  } catch (err) {
+    console.error("Error setting remote description", err);
+    endCall();
+  }
+});
+socket.on("ice-candidate", async ({ candidate }) => {
+  try {
+    if (!peerConnectionRef.current || !candidate) return;
+    
+    // Check if we're in a state where we can add candidates
+    if (peerConnectionRef.current.remoteDescription) {
+      await peerConnectionRef.current.addIceCandidate(new RTCIceCandidate(candidate));
+    } else {
+      // If we don't have remote description yet, queue the candidate
+      if (!peerConnectionRef.current.candidateQueue) {
+        peerConnectionRef.current.candidateQueue = [];
+      }
+      peerConnectionRef.current.candidateQueue.push(new RTCIceCandidate(candidate));
+    }
+  } catch (err) {
+    console.error("Error adding ICE candidate", err);
+  }
+});
   socket.on("end-call", () => {
     endCall();
   });
