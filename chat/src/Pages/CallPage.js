@@ -86,29 +86,23 @@ setIsVideoOff(true);
   // -------------------------------
   // End call
   // -------------------------------
-const endCall = () => {
+const endCall = (isRemote = false) => {
   // Stop all local tracks
   if (localStreamRef.current) {
     localStreamRef.current.getTracks().forEach(track => track.stop());
-    localStreamRef.current = null;  // reset
+    localStreamRef.current = null;
   }
 
-  // Stop remote video
-  if (remoteVideoRef.current) {
-    remoteVideoRef.current.srcObject = null;
-  }
-
-  // Stop local video
-  if (localVideoRef.current) {
-    localVideoRef.current.srcObject = null;
-  }
+  // Clear video refs
+  if (remoteVideoRef.current) remoteVideoRef.current.srcObject = null;
+  if (localVideoRef.current) localVideoRef.current.srcObject = null;
 
   // Close peer connection
   if (peerConnectionRef.current) {
     peerConnectionRef.current.ontrack = null;
     peerConnectionRef.current.onicecandidate = null;
     peerConnectionRef.current.close();
-    peerConnectionRef.current = null;  // reset
+    peerConnectionRef.current = null;
   }
 
   // Reset states
@@ -118,11 +112,11 @@ const endCall = () => {
   setIsFlashOn(false);
   setStatus("Call Ended");
 
-  // Inform other peer
-  socket.emit("end-call", { roomId });
-
-  // Go back
-  navigate("/calls");
+  // 👉 Only emit if this user clicked End
+  if (!isRemote) {
+    socket.emit("end-call", { roomId });
+    navigate("/calls");
+  }
 };
 
 
@@ -268,8 +262,10 @@ setIsVideoOff(true);
   });
 
   socket.on("end-call", () => {
-    endCall();
-  });
+  // End triggered by the other peer
+  endCall(true);  
+  navigate("/calls"); // force navigate back for remote too
+});
 
   return () => {
     socket.off("you-are-caller");
