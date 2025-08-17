@@ -311,14 +311,44 @@ const toggleFlash = async () => {
   }
 
   try {
+    const newFlashState = !isFlashOn;
+
+    // Some browsers need the track to stay "active" before torch can update
     await videoTrack.applyConstraints({
-      advanced: [{ torch: !isFlashOn }]
+      advanced: [{ torch: newFlashState }]
     });
-    setIsFlashOn(prev => !prev);
+
+    setIsFlashOn(newFlashState);
   } catch (err) {
     console.error("Error toggling flash:", err);
+
+    // 🛠 Fallback: If turning OFF fails, restart track without torch
+    if (isFlashOn) {
+      try {
+        const newStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: isFrontCamera ? "user" : "environment" },
+          audio: true
+        });
+        const newVideoTrack = newStream.getVideoTracks()[0];
+
+        const sender = peerConnectionRef.current
+          ?.getSenders()
+          .find(s => s.track && s.track.kind === "video");
+        if (sender) sender.replaceTrack(newVideoTrack);
+
+        localStreamRef.current = newStream;
+        if (localVideoRef.current) {
+          localVideoRef.current.srcObject = newStream;
+        }
+
+        setIsFlashOn(false);
+      } catch (fallbackErr) {
+        console.error("Flash fallback failed:", fallbackErr);
+      }
+    }
   }
 };
+
 
 // flash light onoff is ending here
 
