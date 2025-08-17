@@ -240,7 +240,7 @@ const scrollRef = useRef(null);
     const room = [myPhone, phone].sort().join("_");
     sessionStorage.setItem("contactPhone", phone);
     sessionStorage.setItem("myPhone", myPhone);
-    sessionStorage.setItem("room", room);
+    sessionStorage.setItem("roomId", room);
      sessionStorage.setItem("callusername", username);
     sessionStorage.setItem("isCaller", "true"); // mark caller
     sessionStorage.setItem("contactDp", dp);
