@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import io from "socket.io-client";
 import { GoDotFill } from "react-icons/go";
+import { IoCameraReverseSharp } from "react-icons/io5";
 import { MdCallEnd, MdMicOff, MdMic, MdVideocam, MdVideocamOff } from "react-icons/md";
 
 import { socket } from "./Socket";
@@ -256,38 +257,59 @@ setIsVideoOff(true);
 
 // camera rotation is starting from here 
 const [isFrontCamera, setIsFrontCamera] = useState(true);
-const switchCamera = async () => {
-  if (!localStreamRef.current) return;
+// add at top inside your component
+const [cameraIndex, setCameraIndex] = useState(0); // 👈 current camera index
+const [videoDevices, setVideoDevices] = useState([]); // 👈 store all available video devices
 
-  // Stop the current video track
-  localStreamRef.current.getVideoTracks().forEach(track => track.stop());
-
-  // Request a new stream with opposite facing mode
-  const newStream = await navigator.mediaDevices.getUserMedia({
-    video: { facingMode: isFrontCamera ? "environment" : "user" },
-    audio: true,
+useEffect(() => {
+  // Fetch available video devices once
+  navigator.mediaDevices.enumerateDevices().then((devices) => {
+    const cams = devices.filter((d) => d.kind === "videoinput");
+    setVideoDevices(cams);
   });
+}, []);
 
-  const newVideoTrack = newStream.getVideoTracks()[0];
-
-  // Replace the video track in the PeerConnection
-  const sender = peerConnectionRef.current
-    ?.getSenders()
-    .find(s => s.track && s.track.kind === "video");
-  if (sender) {
-    sender.replaceTrack(newVideoTrack);
+// --- Switch camera function ---
+const switchCamera = async () => {
+  if (videoDevices.length < 2) {
+    alert("Only one camera available");
+    return;
   }
 
-  // Update localStreamRef with the new stream
-  localStreamRef.current = newStream;
+  try {
+    const nextIndex = (cameraIndex + 1) % videoDevices.length;
+    const newStream = await navigator.mediaDevices.getUserMedia({
+      video: { deviceId: { exact: videoDevices[nextIndex].deviceId } },
+      audio: true,
+    });
 
-  // Show in local preview
-  if (localVideoRef.current) {
-    localVideoRef.current.srcObject = newStream;
+    const newVideoTrack = newStream.getVideoTracks()[0];
+
+    // Replace in peer connection
+    const sender = peerConnectionRef.current
+      ?.getSenders()
+      .find((s) => s.track && s.track.kind === "video");
+
+    if (sender) {
+      sender.replaceTrack(newVideoTrack);
+    }
+
+    // Stop old track
+    localStreamRef.current.getVideoTracks().forEach((t) => t.stop());
+
+    // Assign new stream
+    localStreamRef.current = newStream;
+    if (localVideoRef.current) {
+      localVideoRef.current.srcObject = newStream;
+    }
+
+    // Respect video on/off state
+    newVideoTrack.enabled = !isVideoOff;
+
+    setCameraIndex(nextIndex); //  update index
+  } catch (err) {
+    console.error("Error switching camera:", err);
   }
-
-  // Flip camera state
-  setIsFrontCamera(prev => !prev);
 };
 
 // camera rotation is ending here 
@@ -516,7 +538,7 @@ const hasVideo = localStreamRef.current?.getVideoTracks().some(track => track.en
     WebkitTapHighlightColor: "transparent",
   }}
 >
-  🔄
+  <IoCameraReverseSharp size={24}/>
 </button>
 
 
