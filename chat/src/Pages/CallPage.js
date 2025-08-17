@@ -258,75 +258,67 @@ setIsVideoOff(true);
 
 
 // camera rotation is starting from here 
-// const [isFrontCamera, setIsFrontCamera] = useState(true);
-// const switchCamera = async () => {
-//   if (!localStreamRef.current) return;
+const [isFrontCamera, setIsFrontCamera] = useState(true);
+const switchCamera = async () => {
+  if (!localStreamRef.current) return;
 
-//   // Stop the current video track
-//   localStreamRef.current.getVideoTracks().forEach(track => track.stop());
+  // Stop the current video track
+  localStreamRef.current.getVideoTracks().forEach(track => track.stop());
 
-//   // Request a new stream with opposite facing mode
-//   const newStream = await navigator.mediaDevices.getUserMedia({
-//     video: { facingMode: isFrontCamera ? "environment" : "user" },
-//     audio: true,
-//   });
+  // Request a new stream with opposite facing mode
+  const newStream = await navigator.mediaDevices.getUserMedia({
+    video: { facingMode: isFrontCamera ? "environment" : "user" },
+    audio: true,
+  });
 
-//   const newVideoTrack = newStream.getVideoTracks()[0];
+  const newVideoTrack = newStream.getVideoTracks()[0];
 
-//   // Replace the video track in the PeerConnection
-//   const sender = peerConnectionRef.current
-//     ?.getSenders()
-//     .find(s => s.track && s.track.kind === "video");
-//   if (sender) {
-//     sender.replaceTrack(newVideoTrack);
-//   }
+  // Replace the video track in the PeerConnection
+  const sender = peerConnectionRef.current
+    ?.getSenders()
+    .find(s => s.track && s.track.kind === "video");
+  if (sender) {
+    sender.replaceTrack(newVideoTrack);
+  }
 
-//   // Update localStreamRef with the new stream
-//   localStreamRef.current = newStream;
+  // Update localStreamRef with the new stream
+  localStreamRef.current = newStream;
 
-//   // Show in local preview
-//   if (localVideoRef.current) {
-//     localVideoRef.current.srcObject = newStream;
-//   }
+  // Show in local preview
+  if (localVideoRef.current) {
+    localVideoRef.current.srcObject = newStream;
+  }
 
-//   // Flip camera state
-//   setIsFrontCamera(prev => !prev);
-// };
+  // Flip camera state
+  setIsFrontCamera(prev => !prev);
+};
 
 // camera rotation is ending here 
 
 
 // flash light onoff is starting from here
-// const [isFlashOn, setIsFlashOn] = useState(false);
-// const toggleFlash = async () => {
-//   if (!localStreamRef.current) return;
+const [isFlashOn, setIsFlashOn] = useState(false);
+const toggleFlash = async () => {
+  if (!localStreamRef.current) return;
 
-//   const videoTrack = localStreamRef.current.getVideoTracks()[0];
-//   if (!videoTrack) {
-//     console.warn("No video track available");
-//     return;
-//   }
+  const videoTrack = localStreamRef.current.getVideoTracks()[0];
+  if (!videoTrack) return;
 
-//   const capabilities = videoTrack.getCapabilities();
-//   if (!capabilities.torch) {
-//     alert("Flash is only supported on the back camera");
-//     return;
-//   }
+  const capabilities = videoTrack.getCapabilities();
+  if (!capabilities.torch) {
+    alert("Flash not supported on this device");
+    return;
+  }
 
-//   // Compute new state immediately
-//   setIsFlashOn(prev => {
-//     const newState = !prev;
-
-//     // Apply constraints based on newState
-//     videoTrack.applyConstraints({
-//       advanced: [{ torch: newState }]
-//     }).catch(err => {
-//       console.error("Error toggling flash:", err);
-//     });
-
-//     return newState;
-//   });
-// };
+  try {
+    await videoTrack.applyConstraints({
+      advanced: [{ torch: !isFlashOn }]
+    });
+    setIsFlashOn(prev => !prev);
+  } catch (err) {
+    console.error("Error toggling flash:", err);
+  }
+};
 
 
 // flash light onoff is ending here
@@ -538,7 +530,7 @@ const hasVideo = localStreamRef.current?.getVideoTracks().some(track => track.en
 
 
 
-       {/* <button
+        <button
   onClick={switchCamera}
   style={{
   backgroundColor: isFrontCamera ? "rgb(157, 199, 255)" : "#a9ffd2ff",
@@ -552,14 +544,14 @@ const hasVideo = localStreamRef.current?.getVideoTracks().some(track => track.en
   }}
 >
   <IoCameraReverseSharp size={24} style={{color: isFrontCamera ? "rgba(0, 55, 128, 1)":"#006832ff"}}/>
-</button> */}
+</button> 
 
 
 
 
 
 
-{/* <button
+<button
   onClick={toggleFlash}
   style={{
     backgroundColor: isFlashOn ? "#ffe08a" : "gray",
@@ -577,7 +569,7 @@ const hasVideo = localStreamRef.current?.getVideoTracks().some(track => track.en
   ) : (
     <IoMdFlashOff size={24}/>
   )}
-</button> */}
+</button> 
 
 
 
