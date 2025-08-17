@@ -299,10 +299,13 @@ const switchCamera = async () => {
 // flash light onoff is starting from here
 const [isFlashOn, setIsFlashOn] = useState(false);
 const toggleFlash = async () => {
-  if (!localStreamRef.current) return;
+  setIsFlashOn(prev => !prev);  // Always toggle state first (UI updates)
 
-  const videoTrack = localStreamRef.current.getVideoTracks()[0];
-  if (!videoTrack) return;
+  const videoTrack = localStreamRef.current?.getVideoTracks()[0];
+  if (!videoTrack) {
+    console.warn("No video track available, flash state toggled only in UI.");
+    return;
+  }
 
   const capabilities = videoTrack.getCapabilities();
   if (!capabilities.torch) {
@@ -311,41 +314,11 @@ const toggleFlash = async () => {
   }
 
   try {
-    const newFlashState = !isFlashOn;
-
-    // Some browsers need the track to stay "active" before torch can update
     await videoTrack.applyConstraints({
-      advanced: [{ torch: newFlashState }]
+      advanced: [{ torch: !isFlashOn }]
     });
-
-    setIsFlashOn(newFlashState);
   } catch (err) {
     console.error("Error toggling flash:", err);
-
-    // 🛠 Fallback: If turning OFF fails, restart track without torch
-    if (isFlashOn) {
-      try {
-        const newStream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: isFrontCamera ? "user" : "environment" },
-          audio: true
-        });
-        const newVideoTrack = newStream.getVideoTracks()[0];
-
-        const sender = peerConnectionRef.current
-          ?.getSenders()
-          .find(s => s.track && s.track.kind === "video");
-        if (sender) sender.replaceTrack(newVideoTrack);
-
-        localStreamRef.current = newStream;
-        if (localVideoRef.current) {
-          localVideoRef.current.srcObject = newStream;
-        }
-
-        setIsFlashOn(false);
-      } catch (fallbackErr) {
-        console.error("Flash fallback failed:", fallbackErr);
-      }
-    }
   }
 };
 
