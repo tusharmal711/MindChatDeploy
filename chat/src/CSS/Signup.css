@@ -4776,7 +4776,7 @@ width:100%;
 .main-video-call{
     background-color: #000;
     /* background-color: ; */
-    height: 100%;
+    height: 100dvh;
     display: flex;
     flex-direction: column;
     align-items: center;
