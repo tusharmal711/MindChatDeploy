@@ -161,7 +161,9 @@ useEffect(() => {
   // -------------------------------
  const [isCaller, setIsCaller] = useState(false);
 useEffect(() => {
-  socket.emit("join-room", roomId);
+  
+    socket.emit("join-room", roomId);
+   
 
   // If this user is the caller, start the call
   socket.on("you-are-caller", () => {
@@ -173,7 +175,7 @@ useEffect(() => {
 
   // If the caller hears that someone joined, they start the call
   socket.on("user-joined", () => {
-
+  startCall();
   setStatus("Connected");
   setIsConnected(true);
   });
