@@ -299,30 +299,32 @@ const switchCamera = async () => {
 // flash light onoff is starting from here
 const [isFlashOn, setIsFlashOn] = useState(false);
 const toggleFlash = async () => {
+  if (!localStreamRef.current) return;
+
+  const videoTrack = localStreamRef.current.getVideoTracks()[0];
+  if (!videoTrack) {
+    console.warn("No video track available");
+    return;
+  }
+
+  const capabilities = videoTrack.getCapabilities();
+  if (!capabilities.torch) {
+    alert("Flash is only supported on the back camera");
+    return;
+  }
+
+  // Compute new state immediately
   setIsFlashOn(prev => {
-    const newState = !prev;  // toggle করে নতুন state নিলাম
+    const newState = !prev;
 
-    const videoTrack = localStreamRef.current?.getVideoTracks()[0];
-    if (!videoTrack) {
-      console.warn("No video track available, flash state toggled only in UI.");
-      return newState;
-    }
-
-    const capabilities = videoTrack.getCapabilities();
-    if (!capabilities.torch) {
-      alert("Flash not supported on this device");
-      return prev; // flash নাই হলে আগের state ফেরত দেই
-    }
-
-    try {
-      videoTrack.applyConstraints({
-        advanced: [{ torch: newState }]  // নতুন state অনুযায়ী flash on/off
-      });
-    } catch (err) {
+    // Apply constraints based on newState
+    videoTrack.applyConstraints({
+      advanced: [{ torch: newState }]
+    }).catch(err => {
       console.error("Error toggling flash:", err);
-    }
+    });
 
-    return newState; // এইটাই হবে নতুন state
+    return newState;
   });
 };
 
