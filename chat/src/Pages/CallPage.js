@@ -86,37 +86,43 @@ setIsVideoOff(true);
   // -------------------------------
   // End call
   // -------------------------------
-const endCall = (isRemote = false) => {
-  // Stop all local tracks
+const endCall = () => {
+  // Turn off flash if still ON
   if (localStreamRef.current) {
-    localStreamRef.current.getTracks().forEach(track => track.stop());
-    localStreamRef.current = null;
+    const videoTrack = localStreamRef.current.getVideoTracks()[0];
+    if (videoTrack) {
+      try {
+        videoTrack.applyConstraints({ advanced: [{ torch: false }] });
+      } catch (err) {
+        console.warn("Failed to turn off torch:", err);
+      }
+    }
   }
 
-  // Clear video refs
-  if (remoteVideoRef.current) remoteVideoRef.current.srcObject = null;
-  if (localVideoRef.current) localVideoRef.current.srcObject = null;
+  // Stop local tracks
+  if (localStreamRef.current) {
+    localStreamRef.current.getTracks().forEach((track) => track.stop());
+    localStreamRef.current = null;  // reset ref
+  }
 
   // Close peer connection
   if (peerConnectionRef.current) {
-    peerConnectionRef.current.ontrack = null;
-    peerConnectionRef.current.onicecandidate = null;
     peerConnectionRef.current.close();
     peerConnectionRef.current = null;
   }
 
-  // Reset states
-  setIsConnected(false);
+  // Reset ALL states back to initial
   setIsMuted(false);
   setIsVideoOff(false);
   setIsFlashOn(false);
-  setStatus("Call Ended");
+  setIsFrontCamera(true);
+  setIsConnected(false);
+  setStatus("Calling...");
+  setIsRemoteVideoOff(true);
+  setRemoteMuted(false);
 
-  // 👉 Only emit if this user clicked End
-  if (!isRemote) {
-    socket.emit("end-call", { roomId });
-    navigate("/calls");
-  }
+  socket.emit("end-call", { roomId });
+  navigate("/calls"); // Go back to home after ending call
 };
 
 
@@ -262,10 +268,8 @@ setIsVideoOff(true);
   });
 
   socket.on("end-call", () => {
-  // End triggered by the other peer
-  endCall(true);  
-  navigate("/calls"); // force navigate back for remote too
-});
+    endCall();
+  });
 
   return () => {
     socket.off("you-are-caller");
@@ -340,6 +344,7 @@ const toggleFlash = async () => {
     console.error("Error toggling flash:", err);
   }
 };
+
 
 
 // flash light onoff is ending here
