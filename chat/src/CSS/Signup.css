@@ -4896,7 +4896,11 @@ width:100%;
     display: flex;
     align-items: center;
     justify-content: center;
+   
     
+}
+.call-btn button{
+    margin:0;
 }
 .other-video-logo{
     position: absolute;
