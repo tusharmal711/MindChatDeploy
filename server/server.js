@@ -225,7 +225,7 @@ socket.on("join_call", async (roomId) => {
   if (currentRooms.length > 0) {
     // User is already in a call, reject the new one
     socket.emit("another-call");
-    
+    return;
   }
   socket.join(roomId);
   socket.roomId = roomId;

@@ -194,16 +194,6 @@ useEffect(() => {
   // -------------------------------
 
 
-useEffect(() => {
-  socket.on("another-call", () => {
-    alert("The user is on another call. Please try later.");
-   
-  });
-
-  return () => {
-    socket.off("another-call");
-  };
-}, []);
 
 
 
@@ -249,7 +239,10 @@ socket.on("you-are-callee", () => {
     setIsConnected(true);
   // Callee waits for offer from caller, no startCall()
 });
-
+socket.on("another-call", () => {
+   setStatus("On another call");
+   
+  });
 
   socket.on("offer", async ({ offer }) => {
     // Only run if not already connected
@@ -319,7 +312,7 @@ setIsVideoOff(true);
     socket.off("answer");
     socket.off("ice-candidate");
     socket.off("end-call");
-    
+    socket.off("another-call");
   };
 }, [roomId]);
 
