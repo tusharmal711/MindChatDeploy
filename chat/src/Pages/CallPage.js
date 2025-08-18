@@ -210,10 +210,10 @@ useEffect(() => {
 
  
 useEffect(() => {
-
+ if (!roomId || !myPhone) return;
    if (!socket.hasJoined) {
    
-    socket.emit("join_call", roomId);
+    socket.emit("join_call", { roomId, myPhone });
     socket.hasJoined = true;   // custom flag
   }
 
@@ -314,7 +314,7 @@ setIsVideoOff(true);
     socket.off("end-call");
     socket.off("another-call");
   };
-}, [roomId]);
+}, [roomId , myPhone]);
 
 
 // camera rotation is starting from here 

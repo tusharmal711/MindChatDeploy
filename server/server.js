@@ -216,17 +216,48 @@ socket.on("message_seen", ({ messageId, room }) => {
 
 
 
+socket.on("register", (phone) => {
+  socket.phone = phone; 
+});
 
-
-socket.on("join_call", async (roomId) => {
+socket.on("join_call", async ({ roomId, myPhone }) => {
+   if (!roomId || !myPhone) return;
+   socket.phone = myPhone;
   if (socket.alreadyJoined) return;
   socket.alreadyJoined = true;
- const currentRooms = Array.from(socket.rooms).filter(r => r !== socket.id);
-  if (currentRooms.length > 0) {
-    // User is already in a call, reject the new one
-    socket.emit("another-call");
-    return;
+
+
+
+const [phone1, phone2] = roomId.split("_"); // both numbers in this call
+console.log("socket.phone =", socket.phone);
+
+console.log(roomId);
+  const contactPhone = phone1 === socket.phone ? phone2 : phone1; // determine the target contact
+console.log(contactPhone);
+ const allSockets = Array.from(io.sockets.sockets.values()); // all connected sockets
+  for (let clientSocket of allSockets) {
+    const clientRooms = Array.from(clientSocket.rooms).filter(r => r !== clientSocket.id);
+    for (let r of clientRooms) {
+      const clientsInRoom = await io.in(r).fetchSockets();
+      if (clientsInRoom.length >= 2 && r.includes(contactPhone)) {
+        // target is already in a call with 2 users
+        console.log("in another-call");
+        socket.emit("another-call");
+        return;
+      }
+    }
   }
+
+
+
+
+
+
+
+
+
+
+
   socket.join(roomId);
   socket.roomId = roomId;
 
