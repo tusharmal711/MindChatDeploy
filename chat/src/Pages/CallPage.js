@@ -253,14 +253,14 @@ const [isLoud, setIsLoud] = useState(false);
 useEffect(() => {
   if (ringingAudioRef.current) {
  
-    ringingAudioRef.current.volume = 0.05; // 🔊 Initial volume
+    ringingAudioRef.current.volume = 0.1; // 🔊 Initial volume
   }
 }, []);
 const toggleRingtoneVolume = () => {
   if (!ringingAudioRef.current) return;
 
   if (isLoud) {
-    ringingAudioRef.current.volume = 0.05; // back to normal
+    ringingAudioRef.current.volume = 0.1; // back to normal
     setIsLoud(false);
   } else {
     ringingAudioRef.current.volume = 0.8; // loud mode
