@@ -5,6 +5,7 @@ import { GoDotFill } from "react-icons/go";
 import { IoCameraReverseSharp } from "react-icons/io5";
 import { IoMdFlashOff } from "react-icons/io";
 import { IoMdFlash } from "react-icons/io";
+import { HiSpeakerWave } from "react-icons/hi2";
 import { MdCallEnd, MdMicOff, MdMic, MdVideocam, MdVideocamOff } from "react-icons/md";
 
 import { socket } from "./Socket";
@@ -500,6 +501,7 @@ const hasVideo = localStreamRef.current?.getVideoTracks().some(track => track.en
 
 
           {/* Own Video (always rendered, just hidden when OFF) */}
+<div  className="own-video-overlay" style={{ display: isVideoOff ? "none" : "block"}}>
 <video
   ref={localVideoRef}
   autoPlay
@@ -513,6 +515,35 @@ const hasVideo = localStreamRef.current?.getVideoTracks().some(track => track.en
     display: isVideoOff ? "none" : "block",  // 👈 hide instead of unmount
   }}
 />
+
+
+  <IoCameraReverseSharp size={27}  onClick={switchCamera} style={{color: isFrontCamera ? "rgba(173, 208, 255, 1)":"#aeffd5ff",
+      
+      position:"absolute",
+      bottom: "5px",   
+      right: "5px",   
+      backgroundColor: isFrontCamera ? "none" : "none",
+      border: "none",
+      
+      borderRadius: "50%",
+      cursor: "pointer",
+      pointerEvents: isConnected ? "auto" : "none",
+      opacity: isConnected ? 1 : 0.5,
+      WebkitTapHighlightColor: "transparent",
+      boxShadow: "0px 2px 6px rgba(0,0,0,0.3)" // 👈 সুন্দর shadow
+
+
+
+
+  }}/>
+
+
+
+
+</div>
+
+
+
 
 {isVideoOff && (
   <div className="own-video-off">
@@ -591,10 +622,12 @@ const hasVideo = localStreamRef.current?.getVideoTracks().some(track => track.en
 
 
 
-        <button
-  onClick={switchCamera}
+ 
+
+<button
+  onClick={toggleFlash}
   style={{
-  backgroundColor: isFrontCamera ? "rgb(157, 199, 255)" : "#a9ffd2ff",
+    backgroundColor: isFlashOn ? "white" : "gray",
     border: "none",
     padding: "10px",
     borderRadius: "50%",
@@ -604,8 +637,16 @@ const hasVideo = localStreamRef.current?.getVideoTracks().some(track => track.en
     WebkitTapHighlightColor: "transparent",
   }}
 >
-  <IoCameraReverseSharp size={24} style={{color: isFrontCamera ? "rgba(0, 55, 128, 1)":"#006832ff"}}/>
+  <HiSpeakerWave size={24} style={{color : isFlashOn ? "black" : "white"}} />
 </button> 
+
+
+
+
+
+
+
+
 
 
 
