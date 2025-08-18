@@ -7,7 +7,8 @@ import { IoMdFlashOff } from "react-icons/io";
 import { IoMdFlash } from "react-icons/io";
 import { HiSpeakerWave } from "react-icons/hi2";
 import { MdCallEnd, MdMicOff, MdMic, MdVideocam, MdVideocamOff } from "react-icons/md";
-
+import { TbHeadphonesFilled } from "react-icons/tb";
+import { FaBluetoothB } from "react-icons/fa";
 import { socket } from "./Socket";
 const backendUrl = process.env.REACT_APP_BACKEND_URL; 
 const CallPage = () => {
@@ -19,15 +20,16 @@ const [isConnected, setIsConnected] = useState(false); // NEW
   const remoteVideoRef = useRef(null);
   const peerConnectionRef = useRef(null);
   const localStreamRef = useRef(null);
-
+const [isLoudSpeaker, setIsLoudSpeaker] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
-  const [isVideoOff, setIsVideoOff] = useState(false);
+  const [isVideoOff, setIsVideoOff] = useState(true);
   const [status,setStatus]=useState("Calling...");
   const callusername=sessionStorage.getItem("callusername");
     const [contactDp, setContactDp] = useState("");
   const myPhone=sessionStorage.getItem("myPhone");
   const roomId=sessionStorage.getItem("roomId");
     const contactPhone=sessionStorage.getItem("contactPhone");
+    const [outputDevice, setOutputDevice] = useState("speaker"); 
   useEffect(() => {
     const dp = sessionStorage.getItem("contactDp") 
       || "https://res.cloudinary.com/dnd9qzxws/image/upload/v1743764088/image_dp_uwfq2g.png"; // fallback
@@ -38,7 +40,33 @@ const [isConnected, setIsConnected] = useState(false); // NEW
   // -------------------------------
   // Start the call
   // -------------------------------
+useEffect(() => {
+  const detectAudioDevice = async () => {
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const audioOutputs = devices.filter(d => d.kind === "audiooutput");
 
+      if (audioOutputs.some(d => d.label.toLowerCase().includes("bluetooth"))) {
+        setOutputDevice("bluetooth");
+      } else if (audioOutputs.some(d => d.label.toLowerCase().includes("headset") || d.label.toLowerCase().includes("headphone"))) {
+        setOutputDevice("headphone");
+      } else {
+        setOutputDevice("speaker");
+      }
+    } catch (err) {
+      console.error("Device detection error:", err);
+    }
+  };
+
+  detectAudioDevice();
+
+  // also re-check if devices change (like plugging headphones)
+  navigator.mediaDevices.addEventListener("devicechange", detectAudioDevice);
+
+  return () => {
+    navigator.mediaDevices.removeEventListener("devicechange", detectAudioDevice);
+  };
+}, []);
 
 
   const startCall = async () => {
@@ -49,6 +77,9 @@ const [isConnected, setIsConnected] = useState(false); // NEW
     peerConnectionRef.current.ontrack = (event) => {
       if (remoteVideoRef.current) {
         remoteVideoRef.current.srcObject = event.streams[0];
+         if(!isLoudSpeaker){
+           remoteVideoRef.current.volume = 0.3;
+          }
       }
     };
 
@@ -88,37 +119,41 @@ setIsVideoOff(true);
   // End call
   // -------------------------------
 const endCall = () => {
-  // 1️⃣ Notify backend to end call for everyone in room
+ 
   if (roomId) {
     socket.emit("end-call", { roomId });
   }
 socket.hasJoined=false;
+ if (timerRef.current) {
+    clearInterval(timerRef.current);
+    timerRef.current = null;
+  }
+   setCallDuration("00:00:00");
 
-  // 2️⃣ Stop all local tracks
   if (localStreamRef.current) {
     localStreamRef.current.getTracks().forEach(track => track.stop());
     localStreamRef.current = null;
   }
 
-  // 3️⃣ Close peer connection
+ 
   if (peerConnectionRef.current) {
     peerConnectionRef.current.close();
     peerConnectionRef.current = null;
   }
 
-  // 4️⃣ Clear sessionStorage related to call
+
   sessionStorage.removeItem("roomId");
   sessionStorage.removeItem("contactPhone");
   sessionStorage.removeItem("callusername");
   sessionStorage.removeItem("contactDp");
 
-  // 5️⃣ Reset state (optional, helps if user comes back to call page)
+
   setIsConnected(false);
   setIsVideoOff(true);
   setIsMuted(false);
   setStatus("Calling...");
 
-  // 6️⃣ Navigate away
+
   navigate("/calls");
 };
 
@@ -203,11 +238,35 @@ useEffect(() => {
 
 
 
+const [callDuration, setCallDuration] = useState("00:00:00");
+const startTimeRef = useRef(null);
+const timerRef = useRef(null);
 
 
 
  const [isCaller, setIsCaller] = useState(false);
  const isCallerRef = useRef(false);
+const ringingAudioRef = useRef(null);
+
+const [isLoud, setIsLoud] = useState(false);
+
+useEffect(() => {
+  if (ringingAudioRef.current) {
+ 
+    ringingAudioRef.current.volume = 0.2; // 🔊 Initial volume
+  }
+}, []);
+const toggleRingtoneVolume = () => {
+  if (!ringingAudioRef.current) return;
+
+  if (isLoud) {
+    ringingAudioRef.current.volume = 0.2; // back to normal
+    setIsLoud(false);
+  } else {
+    ringingAudioRef.current.volume = 1.0; // loud mode
+    setIsLoud(true);
+  }
+};
 
  
 useEffect(() => {
@@ -223,15 +282,37 @@ useEffect(() => {
 socket.on("you-are-caller", () => {
   setIsCaller(true);
   isCallerRef.current = true;
+  
   setStatus("Ringing...");
+   if (ringingAudioRef.current) {
+    ringingAudioRef.current.play().catch(err => {
+      console.error("Autoplay prevented:", err);
+    });
+  }
 });
 
 socket.on("user-joined", () => {
   setStatus("Connected, calling...");
   setIsConnected(true);
+   if (ringingAudioRef.current) {
+    ringingAudioRef.current.pause();
+    ringingAudioRef.current.currentTime = 0;
+  }
   if (isCallerRef.current) {
     startCall(); // guaranteed to run for the caller
   }
+   startTimeRef.current = new Date();
+  timerRef.current = setInterval(() => {
+    const now = new Date();
+    const diff = Math.floor((now - startTimeRef.current) / 1000); // seconds
+
+    const hrs = String(Math.floor(diff / 3600)).padStart(2, "0");
+    const mins = String(Math.floor((diff % 3600) / 60)).padStart(2, "0");
+    const secs = String(diff % 60).padStart(2, "0");
+    const duration = `${hrs}:${mins}:${secs}`;
+    setCallDuration(duration);
+     socket.emit("duration", { duration, roomId });
+  }, 1000);
 });
 // Callee (second user)
 socket.on("you-are-callee", () => {
@@ -244,7 +325,9 @@ socket.on("another-call", () => {
    setStatus("On another call");
    
   });
-
+ socket.on("duration", ({ duration }) => {
+    setCallDuration(duration); // update from caller broadcast
+  });
   socket.on("offer", async ({ offer }) => {
     // Only run if not already connected
   // alert("Please Receive Call");
@@ -254,6 +337,11 @@ socket.on("another-call", () => {
       peerConnectionRef.current.ontrack = (event) => {
         if (remoteVideoRef.current) {
           remoteVideoRef.current.srcObject = event.streams[0];
+          if(!isLoudSpeaker){
+           remoteVideoRef.current.volume = 0.3;
+          }
+          
+       
         }
       };
 
@@ -314,6 +402,7 @@ setIsVideoOff(true);
     socket.off("ice-candidate");
     socket.off("end-call");
     socket.off("another-call");
+    socket.off("duration");
   };
 }, [roomId , myPhone]);
 
@@ -428,9 +517,24 @@ useEffect(() => {
 
 
 
+ 
 
 
 
+
+const toggleLoudSpeaker = () => {
+  if (!remoteVideoRef.current) return;
+
+  if (isLoudSpeaker) {
+   
+    remoteVideoRef.current.volume = 0.3;
+    setIsLoudSpeaker(false);
+  } else {
+   
+    remoteVideoRef.current.volume = 1.0;
+    setIsLoudSpeaker(true);
+  }
+};
 
 
 
@@ -447,6 +551,13 @@ const hasVideo = localStreamRef.current?.getVideoTracks().some(track => track.en
   return (
     <div className="main-video-call" >
       {/* Video Section */}
+      <audio
+  ref={ringingAudioRef}
+  src="./Sounds/ringing-sound.mp3"  // 👈 put your ringtone file in `public/` folder
+  loop className="ringing-tone"
+/>
+
+
       {
         !isConnected ? (
                 <div className="normal-call-section">
@@ -490,11 +601,15 @@ const hasVideo = localStreamRef.current?.getVideoTracks().some(track => track.en
       {remoteMuted &&(
   <span className="muted">(Muted)</span>
 ) }
-
-      
-      
-      
       </h3>
+
+
+      <p className="call-duration">{callDuration}</p>
+
+
+
+
+
          </div>
         )
        }
@@ -622,34 +737,6 @@ const hasVideo = localStreamRef.current?.getVideoTracks().some(track => track.en
 
 
 
- 
-
-<button
-  onClick={toggleFlash}
-  style={{
-    backgroundColor: isFlashOn ? "white" : "gray",
-    border: "none",
-    padding: "10px",
-    borderRadius: "50%",
-    cursor: "pointer",
-    pointerEvents: isConnected ? "auto" : "none",
-    opacity: isConnected ? 1 : 0.5,
-    WebkitTapHighlightColor: "transparent",
-  }}
->
-  <HiSpeakerWave size={24} style={{color : isFlashOn ? "black" : "white"}} />
-</button> 
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -672,6 +759,65 @@ const hasVideo = localStreamRef.current?.getVideoTracks().some(track => track.en
     <IoMdFlashOff size={24}/>
   )}
 </button> 
+
+
+
+
+
+
+
+{
+  isConnected ?(
+       <button
+  onClick={toggleLoudSpeaker}
+  style={{
+    backgroundColor: isLoudSpeaker ? "white" : "gray",
+    border: "none",
+    padding: "10px",
+    borderRadius: "50%",
+    cursor: "pointer",
+   pointerEvents : "auto",
+  
+    WebkitTapHighlightColor: "transparent",
+  }}
+>
+  {outputDevice === "bluetooth" ? (
+    <FaBluetoothB size={24} style={{ color: isLoudSpeaker ? "black" : "white" }} />
+  ) : outputDevice === "headphone" ? (
+    <TbHeadphonesFilled  size={24} style={{ color: isLoudSpeaker ? "black" : "white" }} />
+  ) : (
+    <HiSpeakerWave size={24} style={{ color: isLoudSpeaker ? "black" : "white" }} />
+  )}
+</button>
+
+  ):(
+<button
+ onClick={toggleRingtoneVolume}
+  style={{
+    backgroundColor: isLoud ? "white" : "gray",
+    border: "none",
+    padding: "10px",
+    borderRadius: "50%",
+    cursor: "pointer",
+   pointerEvents : "auto",
+  
+    WebkitTapHighlightColor: "transparent",
+  }}
+>
+  {outputDevice === "bluetooth" ? (
+    <FaBluetoothB size={24} style={{ color: isLoud ? "black" : "white" }} />
+  ) : outputDevice === "headphone" ? (
+    <TbHeadphonesFilled  size={24} style={{ color: isLoud ? "black" : "white" }} />
+  ) : (
+    <HiSpeakerWave size={24} style={{ color: isLoud ? "black" : "white" }} />
+  )}
+</button>
+  )
+}
+
+
+
+
 
 
 

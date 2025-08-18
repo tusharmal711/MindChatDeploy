@@ -277,6 +277,9 @@ console.log(contactPhone);
   }
 });
 
+socket.on("duration",({duration , roomId})=>{
+socket.to(roomId).emit("duration",{duration});
+})
 
    // Relay WebRTC offer
 socket.on("offer", ({ offer, roomId }) => {
