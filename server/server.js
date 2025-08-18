@@ -155,6 +155,15 @@ export default Messages;
 // Socket.io connection
 const roomUsers = {};
 io.on("connection", async (socket) => {
+
+socket.on("register", (phone) => {
+  socket.phone = phone; 
+  console.log("phone",socket.phone);
+});
+
+
+
+
   console.log("User connected:", socket.id);
 
   socket.on("join_room", async (room) => {
@@ -216,9 +225,6 @@ socket.on("message_seen", ({ messageId, room }) => {
 
 
 
-socket.on("register", (phone) => {
-  socket.phone = phone; 
-});
 
 socket.on("join_call", async ({ roomId, myPhone }) => {
    if (!roomId || !myPhone) return;
