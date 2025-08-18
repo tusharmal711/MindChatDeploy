@@ -87,64 +87,68 @@ setIsVideoOff(true);
   // End call
   // -------------------------------
 const endCall = () => {
-  // Turn off flash if still ON
+  // 1️⃣ Notify backend to end call for everyone in room
+  if (roomId) {
+    socket.emit("end-call", { roomId });
+  }
+socket.hasJoined=false;
+
+  // 2️⃣ Stop all local tracks
   if (localStreamRef.current) {
-    const videoTrack = localStreamRef.current.getVideoTracks()[0];
-    if (videoTrack) {
-      try {
-        videoTrack.applyConstraints({ advanced: [{ torch: false }] });
-      } catch (err) {
-        console.warn("Failed to turn off torch:", err);
-      }
-    }
+    localStreamRef.current.getTracks().forEach(track => track.stop());
+    localStreamRef.current = null;
   }
 
-  // Stop local tracks
-  if (localStreamRef.current) {
-    localStreamRef.current.getTracks().forEach((track) => track.stop());
-    localStreamRef.current = null;  // reset ref
-  }
-
-  // Close peer connection
+  // 3️⃣ Close peer connection
   if (peerConnectionRef.current) {
     peerConnectionRef.current.close();
     peerConnectionRef.current = null;
   }
 
-  // Reset ALL states back to initial
-  setIsMuted(false);
-  setIsVideoOff(false);
-  setIsFlashOn(false);
-  setIsFrontCamera(true);
-  setIsConnected(false);
-  setStatus("Calling...");
-  setIsRemoteVideoOff(true);
-  setRemoteMuted(false);
+  // 4️⃣ Clear sessionStorage related to call
+  sessionStorage.removeItem("roomId");
+  sessionStorage.removeItem("contactPhone");
+  sessionStorage.removeItem("callusername");
+  sessionStorage.removeItem("contactDp");
 
-  socket.emit("end-call", { roomId });
-  navigate("/calls"); // Go back to home after ending call
+  // 5️⃣ Reset state (optional, helps if user comes back to call page)
+  setIsConnected(false);
+  setIsVideoOff(true);
+  setIsMuted(false);
+  setStatus("Calling...");
+
+  // 6️⃣ Navigate away
+  navigate("/calls");
 };
+
+
 
 
   // -------------------------------
   // Toggle mute
   // -------------------------------
- const toggleMute = () => {
+const toggleMute = () => {
   if (!localStreamRef.current) return;
 
+  // toggle local track
   localStreamRef.current.getAudioTracks().forEach((track) => {
     track.enabled = !track.enabled;
   });
 
-  const newMuteState = !isMuted;
-  setIsMuted(newMuteState);
-
- 
-  socket.emit("mute-status", { isMuted: newMuteState});
+  // toggle state safely
+  setIsMuted(prev => {
+    const newMuteState = !prev;
+    socket.emit("mute-status", { isMuted: newMuteState, roomId }); // send roomId
+    return newMuteState;
+  });
 };
+
 
 const [remoteMuted,setRemoteMuted]=useState(false);
 useEffect(() => {
+  if(remoteMuted){
+    alert("muted");
+  }
   socket.on("mute-status", ({ isMuted }) => {
     setRemoteMuted(isMuted); // state for showing remote muted status
   });
@@ -152,7 +156,7 @@ useEffect(() => {
   return () => {
     socket.off("mute-status");
   };
-}, []);
+}, [roomId]);
 
   // -------------------------------
   // Toggle video
@@ -183,36 +187,50 @@ useEffect(() => {
   return () => {
     socket.off("video-status");
   };
-}, []);
+}, [roomId]);
 
   // -------------------------------
   // Socket listeners
   // -------------------------------
  const [isCaller, setIsCaller] = useState(false);
-useEffect(() => {
+ const isCallerRef = useRef(false);
+
  
+useEffect(() => {
+
    if (!socket.hasJoined) {
-    socket.emit("join-room", roomId);
-    socket.hasJoined = true;   // 👈 custom flag
+    alert("caller is joining ");
+    socket.emit("join_call", roomId);
+    socket.hasJoined = true;   // custom flag
   }
 
   // If this user is the caller, start the call
-  socket.on("you-are-caller", () => {
-    
-    startCall();
-    setStatus("Ringing...");
-   
-  });
+// Caller (first user)
+socket.on("you-are-caller", () => {
+  setIsCaller(true);
+  isCallerRef.current = true;
+  setStatus("Waiting for other user...");
+});
 
-  // If the caller hears that someone joined, they start the call
-  socket.on("user-joined", () => {
-  startCall();
-  setStatus("Connected");
+socket.on("user-joined", () => {
+  setStatus("Connected, calling...");
   setIsConnected(true);
-  });
+  if (isCallerRef.current) {
+    startCall(); // guaranteed to run for the caller
+  }
+});
+// Callee (second user)
+socket.on("you-are-callee", () => {
+  setIsCaller(false);
+  setStatus("Joining call...");
+    setIsConnected(true);
+  // Callee waits for offer from caller, no startCall()
+});
+
 
   socket.on("offer", async ({ offer }) => {
     // Only run if not already connected
+   alert("offer-received");
     if (!peerConnectionRef.current) {
       peerConnectionRef.current = new RTCPeerConnection();
 
@@ -278,6 +296,7 @@ setIsVideoOff(true);
     socket.off("answer");
     socket.off("ice-candidate");
     socket.off("end-call");
+    
   };
 }, [roomId]);
 

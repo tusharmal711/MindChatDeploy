@@ -218,52 +218,60 @@ socket.on("message_seen", ({ messageId, room }) => {
 
 
 
-  socket.on("join_call", async(room) => {
-    socket.join(room);
-    socket.room = room;
+socket.on("join_call", async (roomId) => {
+  if (socket.alreadyJoined) return;
+  socket.alreadyJoined = true;
 
-   const clients = await io.in(room).fetchSockets();
-   
-    // If more than 1 user is in the room, notify everyone they're online
-    if (clients.length ===1) {
-    console.log("Not cal connected");
-        socket.emit("you-are-caller");
-    } else if(clients.length===2){
-      
-       console.log("connected");
-     io.to(room).emit("user-joined");
-    }
-  
-  
-  });
+  socket.join(roomId);
+  socket.roomId = roomId;
 
-   // Relay WebRTC offer
-  socket.on("offer", (data) => {
-    socket.to(socket.room).emit("offer", data);
-  });
+  const clients = await io.in(roomId).fetchSockets();
 
-  // Relay WebRTC answer
-  socket.on("answer", (data) => {
-    socket.to(socket.room).emit("answer", data);
-  });
+  if (clients.length === 1) {
+    console.log("caller joined");
+    socket.emit("you-are-caller"); // first user becomes caller
+  } else if (clients.length === 2) {
+    console.log("callee joined");
 
-  // Relay ICE candidates
-  socket.on("ice-candidate", (data) => {
-    socket.to(socket.room).emit("ice-candidate", data);
-  });
-
-  // End call
-  socket.on("end-call", () => {
-    io.to(socket.room).emit("end-call");
-    io.socketsLeave(socket.room); // Force all out of the room
-  });
-
-socket.on("video-status", ({ isVideoOff }) => {
-  socket.to(socket.room).emit("video-status", { isVideoOff });
+    // Notify the new user that they are callee
+    socket.emit("you-are-callee");
+    console.log("connected");
+    // Notify the existing user that a peer joined
+    socket.to(roomId).emit("user-joined");
+  }
 });
 
-socket.on("mute-status", ({ isMuted}) => {
-  socket.to(socket.room).emit("mute-status", { isMuted });
+
+   // Relay WebRTC offer
+socket.on("offer", ({ offer, roomId }) => {
+  console.log("offer-received-from server side");
+  socket.to(roomId).emit("offer", { offer });
+});
+
+socket.on("answer", ({ answer, roomId }) => {
+  socket.to(roomId).emit("answer", { answer });
+});
+
+socket.on("ice-candidate", ({ candidate, roomId }) => {
+  socket.to(roomId).emit("ice-candidate", { candidate });
+});
+
+
+  // End call
+  socket.on("end-call", ({roomId}) => {
+    console.log("caller-exit");
+    io.to(roomId).emit("end-call");
+    io.socketsLeave(roomId); // Force all out of the room
+     socket.alreadyJoined = false;
+    delete socket.roomId;
+  });
+
+socket.on("video-status", ({ isVideoOff , roomId }) => {
+  socket.to(roomId).emit("video-status", { isVideoOff });
+});
+
+socket.on("mute-status", ({ isMuted , roomId }) => {
+  socket.to(roomId).emit("mute-status", { isMuted });
 });
 
 
