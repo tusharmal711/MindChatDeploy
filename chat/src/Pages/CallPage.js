@@ -328,38 +328,20 @@ socket.on("another-call", () => {
  socket.on("duration", ({ duration }) => {
     setCallDuration(duration); // update from caller broadcast
   });
-  socket.on("offer", async ({ offer }) => {
-    // Only run if not already connected
-  // alert("Please Receive Call");
+socket.on("offer", async ({ offer }) => {
+  try {
+    // Ensure peerConnection exists
     if (!peerConnectionRef.current) {
       peerConnectionRef.current = new RTCPeerConnection();
 
+      // Handle remote track
       peerConnectionRef.current.ontrack = (event) => {
         if (remoteVideoRef.current) {
           remoteVideoRef.current.srcObject = event.streams[0];
-          // if(!isLoudSpeaker){
-          //  remoteVideoRef.current.volume = 1.0;
-          // }
-          
-       
         }
       };
 
-      localStreamRef.current = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-        video: true,
-      });
-      localStreamRef.current.getVideoTracks().forEach(track => {
-  track.enabled = false;
-});
-setIsVideoOff(true);
-      if (localVideoRef.current) {
-        localVideoRef.current.srcObject = localStreamRef.current;
-      }
-      localStreamRef.current.getTracks().forEach((track) => {
-        peerConnectionRef.current.addTrack(track, localStreamRef.current);
-      });
-
+      // ICE candidates
       peerConnectionRef.current.onicecandidate = (event) => {
         if (event.candidate) {
           socket.emit("ice-candidate", { candidate: event.candidate, roomId });
@@ -367,14 +349,46 @@ setIsVideoOff(true);
       };
     }
 
+    // ✅ Always grab local stream BEFORE setting remote desc (mobile needs this)
+    if (!localStreamRef.current) {
+      localStreamRef.current = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+        video: true,
+      });
+
+      // Start with video off
+      localStreamRef.current.getVideoTracks().forEach(track => {
+        track.enabled = false;
+      });
+      setIsVideoOff(true);
+
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = localStreamRef.current;
+      }
+
+      // Add local tracks
+      localStreamRef.current.getTracks().forEach((track) => {
+        peerConnectionRef.current.addTrack(track, localStreamRef.current);
+      });
+    }
+
+    // ✅ Always set remote description (don’t skip)
     await peerConnectionRef.current.setRemoteDescription(
       new RTCSessionDescription(offer)
     );
 
-    const answer = await peerConnectionRef.current.createAnswer();
-    await peerConnectionRef.current.setLocalDescription(answer);
-    socket.emit("answer", { answer, roomId });
-  });
+    // ✅ Create and send answer (only if not already answered)
+    if (!peerConnectionRef.current.currentLocalDescription) {
+      const answer = await peerConnectionRef.current.createAnswer();
+      await peerConnectionRef.current.setLocalDescription(answer);
+      socket.emit("answer", { answer, roomId });
+    }
+
+  } catch (err) {
+    console.error("Error handling offer:", err);
+  }
+});
+
 
   socket.on("answer", async ({ answer }) => {
     await peerConnectionRef.current.setRemoteDescription(
