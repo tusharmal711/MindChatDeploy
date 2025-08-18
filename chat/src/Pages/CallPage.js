@@ -573,7 +573,7 @@ const hasVideo = localStreamRef.current?.getVideoTracks().some(track => track.en
         <button
           onClick={toggleMute}
           style={{
-  backgroundColor: isMuted ? "gray" : "#444",
+  backgroundColor: isMuted ? "gray" : "white",
   border: "none",
   padding: "10px",
   borderRadius: "50%",
@@ -585,9 +585,9 @@ const hasVideo = localStreamRef.current?.getVideoTracks().some(track => track.en
         >
           {
             isMuted ?(
-             <MdMicOff size={24} color="#fff" />
+             <MdMicOff size={24} color="white" />
             ) :(
-               <MdMic size={24} color="#fff" />
+               <MdMic size={24} color="black" />
             )
           }
          
@@ -596,7 +596,7 @@ const hasVideo = localStreamRef.current?.getVideoTracks().some(track => track.en
         <button
           onClick={toggleVideo}
           style={{
-            backgroundColor: isVideoOff ? "gray" : "#444",
+            backgroundColor: isVideoOff ? "gray" : "white",
             border: "none",
             padding: "10px",
             borderRadius: "50%",
@@ -609,10 +609,10 @@ const hasVideo = localStreamRef.current?.getVideoTracks().some(track => track.en
          {
              isVideoOff ?
              (
-              <MdVideocamOff size={24} color="#fff" />
+              <MdVideocamOff size={24} color="white" />
                  
              ) : (
-                <MdVideocam size={24} color="#fff" />
+                <MdVideocam size={24} color="black" />
              )
             }
          
@@ -656,7 +656,7 @@ const hasVideo = localStreamRef.current?.getVideoTracks().some(track => track.en
 <button
   onClick={toggleFlash}
   style={{
-    backgroundColor: isFlashOn ? "#ffe08a" : "gray",
+    backgroundColor: isFlashOn ? "white" : "gray",
     border: "none",
     padding: "10px",
     borderRadius: "50%",
@@ -667,7 +667,7 @@ const hasVideo = localStreamRef.current?.getVideoTracks().some(track => track.en
   }}
 >
   {isFlashOn ? (
-    <IoMdFlash size={24} style={{color: "#4f3a00ff"}}/>
+    <IoMdFlash size={24} style={{color: "black"}}/>
   ) : (
     <IoMdFlashOff size={24}/>
   )}
