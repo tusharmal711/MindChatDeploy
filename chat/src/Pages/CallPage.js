@@ -246,7 +246,7 @@ socket.on("another-call", () => {
 
   socket.on("offer", async ({ offer }) => {
     // Only run if not already connected
-  alert("Please Receive Call");
+  // alert("Please Receive Call");
     if (!peerConnectionRef.current) {
       peerConnectionRef.current = new RTCPeerConnection();
 
