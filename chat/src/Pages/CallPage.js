@@ -192,6 +192,29 @@ useEffect(() => {
   // -------------------------------
   // Socket listeners
   // -------------------------------
+
+
+useEffect(() => {
+  socket.on("another-call", () => {
+    alert("The user is on another call. Please try later.");
+   
+  });
+
+  return () => {
+    socket.off("another-call");
+  };
+}, []);
+
+
+
+
+
+
+
+
+
+
+
  const [isCaller, setIsCaller] = useState(false);
  const isCallerRef = useRef(false);
 
@@ -199,7 +222,7 @@ useEffect(() => {
 useEffect(() => {
 
    if (!socket.hasJoined) {
-    alert("caller is joining ");
+   
     socket.emit("join_call", roomId);
     socket.hasJoined = true;   // custom flag
   }
@@ -230,7 +253,7 @@ socket.on("you-are-callee", () => {
 
   socket.on("offer", async ({ offer }) => {
     // Only run if not already connected
-   alert("offer-received");
+  
     if (!peerConnectionRef.current) {
       peerConnectionRef.current = new RTCPeerConnection();
 

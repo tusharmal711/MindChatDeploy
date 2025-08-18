@@ -221,7 +221,12 @@ socket.on("message_seen", ({ messageId, room }) => {
 socket.on("join_call", async (roomId) => {
   if (socket.alreadyJoined) return;
   socket.alreadyJoined = true;
-
+ const currentRooms = Array.from(socket.rooms).filter(r => r !== socket.id);
+  if (currentRooms.length > 0) {
+    // User is already in a call, reject the new one
+    socket.emit("another-call");
+    
+  }
   socket.join(roomId);
   socket.roomId = roomId;
 
