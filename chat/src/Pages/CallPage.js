@@ -77,9 +77,9 @@ useEffect(() => {
     peerConnectionRef.current.ontrack = (event) => {
       if (remoteVideoRef.current) {
         remoteVideoRef.current.srcObject = event.streams[0];
-         if(!isLoudSpeaker){
-           remoteVideoRef.current.volume = 0.3;
-          }
+        //  if(!isLoudSpeaker){
+        //    remoteVideoRef.current.volume = 0.3;
+        //   }
       }
     };
 
@@ -337,9 +337,9 @@ socket.on("another-call", () => {
       peerConnectionRef.current.ontrack = (event) => {
         if (remoteVideoRef.current) {
           remoteVideoRef.current.srcObject = event.streams[0];
-          if(!isLoudSpeaker){
-           remoteVideoRef.current.volume = 0.3;
-          }
+          // if(!isLoudSpeaker){
+          //  remoteVideoRef.current.volume = 1.0;
+          // }
           
        
         }
@@ -522,19 +522,19 @@ useEffect(() => {
 
 
 
-const toggleLoudSpeaker = () => {
-  if (!remoteVideoRef.current) return;
+// const toggleLoudSpeaker = () => {
+//   if (!remoteVideoRef.current) return;
 
-  if (isLoudSpeaker) {
+//   if (isLoudSpeaker) {
    
-    remoteVideoRef.current.volume = 0.3;
-    setIsLoudSpeaker(false);
-  } else {
+//     remoteVideoRef.current.volume = 0.3;
+//     setIsLoudSpeaker(false);
+//   } else {
    
-    remoteVideoRef.current.volume = 1.0;
-    setIsLoudSpeaker(true);
-  }
-};
+//     remoteVideoRef.current.volume = 1.0;
+//     setIsLoudSpeaker(true);
+//   }
+// };
 
 
 
@@ -769,7 +769,7 @@ const hasVideo = localStreamRef.current?.getVideoTracks().some(track => track.en
 {
   isConnected ?(
        <button
-  onClick={toggleLoudSpeaker}
+ 
   style={{
     backgroundColor: isLoudSpeaker ? "white" : "gray",
     border: "none",
