@@ -315,22 +315,7 @@ console.log("socket.phone =", socket.phone);
 
 console.log(roomId);
   const contactPhone = targetPhone;
-console.log(contactPhone);
- const allSockets = Array.from(io.sockets.sockets.values()); // all connected sockets
-  for (let clientSocket of allSockets) {
-    const clientRooms = Array.from(clientSocket.rooms).filter(r => r !== clientSocket.id);
-    for (let r of clientRooms) {
-      const clientsInRoom = await io.in(r).fetchSockets();
-      if (clientsInRoom.length >= 2 && r.includes(contactPhone)) {
-        // target is already in a call with 2 users
-        console.log("in another-call");
-        socket.emit("another-call");
-        return;
-      }
-    }
-  }
-
-
+console.log(targetPhone);
 
 
 
@@ -352,11 +337,9 @@ console.log(contactPhone);
   // Check if target is already in a call
   if (ongoingCalls.has(contactPhone)) {
     console.log(`[JOIN_CALL] Target ${targetPhone} is already in a call with ${ongoingCalls.get(targetPhone)}`);
-    
+     socket.emit("another-call");
   }
 
- ongoingCalls.set(myPhone, targetPhone);
-  ongoingCalls.set(targetPhone, myPhone);
 
 
 
@@ -367,15 +350,19 @@ console.log(contactPhone);
   const clients = await io.in(roomId).fetchSockets();
 
   if (clients.length === 1) {
-    console.log("caller joined");
+    
     socket.emit("you-are-caller"); // first user becomes caller
-    console.log(`[JOIN_CALL] Trying to alert ${contactPhone} on socket ${targetSocket}`);
-console.log("All phoneToSocket entries:", Array.from(phoneToSocket.entries()));
- 
-     io.to(targetSocket).emit("incoming-call");
-     console.log("incomming-call from ${myPhone}");
+   
+     if (targetSocket) {
+   
+    socket.to(targetSocket).emit("ping-test", myPhone);
+    console.log(`[JOIN_CALL] Incoming call sent to ${targetPhone}`);
+  }
+     console.log(`incomming-call from ${myPhone} to ${targetSocket}`);
   } else if (clients.length === 2) {
     console.log("callee joined");
+ ongoingCalls.set(myPhone, targetPhone);
+  ongoingCalls.set(targetPhone, myPhone);
 
     // Notify the new user that they are callee
     socket.emit("you-are-callee");
@@ -443,11 +430,29 @@ socket.on('delete_for_everyone', ({ room }) => {
       }
     }
 
+console.log(`[DISCONNECT] ${socket.id} disconnected`);
 
+  // Clear from phoneToSocket
+  if (socket.phone) {
+    phoneToSocket.delete(socket.phone);
+  }
 
+  // Clear from ongoingCalls
+  if (socket.phone && ongoingCalls.has(socket.phone)) {
+    const partner = ongoingCalls.get(socket.phone);
+    ongoingCalls.delete(socket.phone);
+    ongoingCalls.delete(partner);
 
+    // Inform partner that call ended
+    const partnerSocket = phoneToSocket.get(partner);
+    if (partnerSocket) {
+      io.to(partnerSocket).emit("caller-exit");
+    }
 
+    console.log(`[DISCONNECT] Cleared call between ${socket.phone} and ${partner}`);
+  }
 
+ socket.alreadyJoined = false;
 
 
 

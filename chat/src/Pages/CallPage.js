@@ -269,6 +269,25 @@ const toggleRingtoneVolume = () => {
   }
 };
 
+
+
+
+
+
+
+
+useEffect(() => {
+  if (ringingAudioRef.current) {
+    if (status === "Calling..." || status === "Ringing...") {
+      ringingAudioRef.current.play().catch((e) => console.log(e));
+    
+    } else {
+      ringingAudioRef.current.pause();
+      ringingAudioRef.current.currentTime = 0;
+    }
+  }
+}, [status]);
+
  
 useEffect(() => {
   
@@ -284,22 +303,15 @@ useEffect(() => {
 socket.on("you-are-caller", () => {
   setIsCaller(true);
   isCallerRef.current = true;
-  
+ 
   setStatus("Ringing...");
-   if (ringingAudioRef.current) {
-    ringingAudioRef.current.play().catch(err => {
-      console.error("Autoplay prevented:", err);
-    });
-  }
+
 });
 
 socket.on("user-joined", () => {
   setStatus("Connected, calling...");
   setIsConnected(true);
-   if (ringingAudioRef.current) {
-    ringingAudioRef.current.pause();
-    ringingAudioRef.current.currentTime = 0;
-  }
+  
   if (isCallerRef.current) {
     startCall(); // guaranteed to run for the caller
   }
@@ -327,13 +339,33 @@ socket.on("another-call", () => {
    setStatus("On another call");
    
   });
-  socket.on("incoming-call", () => {
-  alert("incomming-call from ");
-   console.log("incomming-cal");
-  });
+
  socket.on("duration", ({ duration }) => {
     setCallDuration(duration); // update from caller broadcast
   });
+
+
+
+//  socket.on("incoming-call", ({ from }) => {
+//     console.log("📞 Incoming call from:", from);
+
+//     // ekhane alert ba UI popup show koro
+//     alert(`Incoming call from ${from}`);
+
+//     // optional: accept call button click e emit korte paro
+//     // socket.emit("accept_call", { roomId, myPhone });
+//   });
+
+
+
+
+
+
+
+
+
+
+
 socket.on("offer", async ({ offer }) => {
   try {
     // Ensure peerConnection exists
@@ -423,9 +455,10 @@ socket.on("offer", async ({ offer }) => {
     socket.off("end-call");
     socket.off("another-call");
     socket.off("duration");
-     socket.off("incoming-call");
+   
+   
   };
-}, [roomId , myPhone , targetPhone]);
+}, [roomId , myPhone , targetPhone,socket]);
 
 
 // camera rotation is starting from here 
@@ -572,10 +605,18 @@ const hasVideo = localStreamRef.current?.getVideoTracks().some(track => track.en
   return (
     <div className="main-video-call" >
       {/* Video Section */}
-      <audio
+     
+     
+     
+     
+     
+       
+
+   <audio
   ref={ringingAudioRef}
-  src="./Sounds/ringing-sound.mp3"  // 👈 put your ringtone file in `public/` folder
-  loop className="ringing-tone"
+  src={status === "Calling..." ? "./Sounds/phone-call.mp3" : "./Sounds/call-ringing.mp3"}
+  loop
+  className="ringing-tone"
 />
 
 
@@ -856,6 +897,7 @@ const hasVideo = localStreamRef.current?.getVideoTracks().some(track => track.en
           <MdCallEnd size={24} color="#fff" />
         </button>
       </div>
+
 
 
     </div>

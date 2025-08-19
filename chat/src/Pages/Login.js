@@ -71,6 +71,8 @@ const isLogin = async (e) => {
       sessionStorage.setItem("phone", phone);
       localStorage.setItem("phone", phone);
       
+ 
+ 
 
      navigate("/chatboard");
     }
