@@ -252,41 +252,74 @@ const scrollRef = useRef(null);
   };
 
 
-
 const ringingSoundRef = useRef(null);
 
+// 1️⃣ Unlock audio once on first user interaction
 useEffect(() => {
-  // Initialize audio once
+  const unlockAudio = () => {
+    if (ringingSoundRef.current) {
+      ringingSoundRef.current
+        .play()
+        .then(() => {
+          ringingSoundRef.current.pause();
+          ringingSoundRef.current.currentTime = 0;
+          console.log("Audio unlocked for autoplay");
+        })
+        .catch(() => {});
+    }
+    window.removeEventListener("click", unlockAudio);
+    window.removeEventListener("keydown", unlockAudio);
+  };
+
+  window.addEventListener("click", unlockAudio);
+  window.addEventListener("keydown", unlockAudio);
+
+  return () => {
+    window.removeEventListener("click", unlockAudio);
+    window.removeEventListener("keydown", unlockAudio);
+  };
+}, []);
+
+// 2️⃣ Initialize audio
+useEffect(() => {
   ringingSoundRef.current = new Audio("./Sounds/ringing-sound.mp3");
   ringingSoundRef.current.loop = true;
   ringingSoundRef.current.volume = 1.0;
 }, []);
 
+// 3️⃣ Handle incoming calls
 useEffect(() => {
   if (!socket) return;
 
-  // Remove previous listener
   socket.off("ping-test");
 
-  const handlePingTest = (callerPhone) => {
+  const handlePingTest = async (callerPhone) => {
     console.log("Ping-test received:", callerPhone);
 
+    // Play ringtone
     if (ringingSoundRef.current) {
-      ringingSoundRef.current.play().catch(e => console.log("Audio play failed:", e));
-      console.log("audio is ringing");
+      ringingSoundRef.current
+        .play()
+        .then(() => console.log("Audio is ringing"))
+        .catch((e) => console.log("Audio play failed:", e));
     }
 
-    const accept = window.confirm(`Incoming call from: ${callerPhone}\nDo you want to accept?`);
+    // Show incoming call prompt
+    const accept = window.confirm(
+      `Incoming call from: ${callerPhone}\nDo you want to accept?`
+    );
 
-    const callerContact = contacts.find(c => c.mobile === callerPhone);
-    const callerUsername = callerContact ? callerContact.username : "Unknown";
-    const callerDp = dpMap[callerPhone] || "https://res.cloudinary.com/dnd9qzxws/image/upload/v1743764088/image_dp_uwfq2g.png";
-
-    // Stop ringing
+    // Stop ringtone immediately
     if (ringingSoundRef.current) {
       ringingSoundRef.current.pause();
       ringingSoundRef.current.currentTime = 0;
     }
+
+    const callerContact = contacts.find((c) => c.mobile === callerPhone);
+    const callerUsername = callerContact ? callerContact.username : "Unknown";
+    const callerDp =
+      dpMap[callerPhone] ||
+      "https://res.cloudinary.com/dnd9qzxws/image/upload/v1743764088/image_dp_uwfq2g.png";
 
     if (accept) {
       handleCallClick(callerPhone, callerUsername, callerDp);
