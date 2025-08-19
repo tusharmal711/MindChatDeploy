@@ -253,45 +253,52 @@ const scrollRef = useRef(null);
 
 
 
+const ringingSoundRef = useRef(null);
 
-const ringingAudioRef = useRef(null);
+useEffect(() => {
+  // Initialize audio once
+  ringingSoundRef.current = new Audio("./Sounds/ringing-sound.mp3");
+  ringingSoundRef.current.loop = true;
+  ringingSoundRef.current.volume = 1.0;
+}, []);
+
 useEffect(() => {
   if (!socket) return;
 
-  // Remove previous listener if any
+  // Remove previous listener
   socket.off("ping-test");
 
   const handlePingTest = (callerPhone) => {
     console.log("Ping-test received:", callerPhone);
-  if (ringingAudioRef.current) {
-         ringingAudioRef.current.play().catch((e) => console.log(e));
-         console.log("audio is ringing");
-      }
+
+    if (ringingSoundRef.current) {
+      ringingSoundRef.current.play().catch(e => console.log("Audio play failed:", e));
+      console.log("audio is ringing");
+    }
+
     const accept = window.confirm(`Incoming call from: ${callerPhone}\nDo you want to accept?`);
-    
+
     const callerContact = contacts.find(c => c.mobile === callerPhone);
     const callerUsername = callerContact ? callerContact.username : "Unknown";
     const callerDp = dpMap[callerPhone] || "https://res.cloudinary.com/dnd9qzxws/image/upload/v1743764088/image_dp_uwfq2g.png";
-    
-    if (accept) {
-       ringingAudioRef.current.pause();
-      ringingAudioRef.current.currentTime = 0;
-      handleCallClick(callerPhone, callerUsername, callerDp);
 
-    }else{
-       ringingAudioRef.current.pause();
-      ringingAudioRef.current.currentTime = 0;
-      return;
+    // Stop ringing
+    if (ringingSoundRef.current) {
+      ringingSoundRef.current.pause();
+      ringingSoundRef.current.currentTime = 0;
+    }
+
+    if (accept) {
+      handleCallClick(callerPhone, callerUsername, callerDp);
     }
   };
 
   socket.on("ping-test", handlePingTest);
 
   return () => {
-    socket.off("ping-test", handlePingTest); // clean up on unmount or deps change
+    socket.off("ping-test", handlePingTest);
   };
 }, [socket, contacts, dpMap]);
-
 
 
 
@@ -314,15 +321,7 @@ useEffect(() => {
         <SwipeNavigator>
           <div className='call-container'>
 
-        
-   <audio
-  ref={ringingAudioRef}
-  src="./Sounds/ringing-sound.mp3"
-  loop
-  className="ringing-tone"
-/>
 
-           
 
 
 
