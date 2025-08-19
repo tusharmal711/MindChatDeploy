@@ -41,14 +41,9 @@ import { onMessage } from "firebase/messaging";
 import { FaCheckDouble } from "react-icons/fa6";
 import SwipeNavigator from './SwipeNavigator';
 import { messaging } from "./firebase-config"; // adjust path if needed
+import { socket } from "./Socket";
 const backendUrl = process.env.REACT_APP_BACKEND_URL; 
-const socket = io("https://mindchatdeploy-2.onrender.com/", {
-  transports: ["websocket"], // Forces WebSocket connection
-  withCredentials: true, // Allows cross-origin credentials
-  reconnection: true,
-  reconnectionAttempts: 5,
-  reconnectionDelay: 2000
-});
+
 
 const Chatboard = ({ user, contact , message ,src, alt, ...props}) => {
   const navigate = useNavigate();
@@ -196,6 +191,7 @@ useEffect(() => {
 
 
 
+ 
 
 
 
@@ -252,8 +248,15 @@ useEffect(() => {
 
 
 
- 
-  const phone = sessionStorage.getItem("phone") || Cookies.get("mobile");
+
+
+
+
+
+
+
+
+
 
 const fetchHistory = async () => {
   try {

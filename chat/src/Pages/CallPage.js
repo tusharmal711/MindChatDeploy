@@ -29,6 +29,7 @@ const [isLoudSpeaker, setIsLoudSpeaker] = useState(false);
   const myPhone=sessionStorage.getItem("myPhone");
   const roomId=sessionStorage.getItem("roomId");
     const contactPhone=sessionStorage.getItem("contactPhone");
+        const targetPhone=sessionStorage.getItem("contactPhone");
     const [outputDevice, setOutputDevice] = useState("speaker"); 
   useEffect(() => {
     const dp = sessionStorage.getItem("contactDp") 
@@ -270,10 +271,11 @@ const toggleRingtoneVolume = () => {
 
  
 useEffect(() => {
- if (!roomId || !myPhone) return;
+  
+ if (!roomId || !myPhone || !targetPhone) return;
    if (!socket.hasJoined) {
    
-    socket.emit("join_call", { roomId, myPhone });
+    socket.emit("join_call", { roomId, myPhone ,targetPhone});
     socket.hasJoined = true;   // custom flag
   }
 
@@ -324,6 +326,10 @@ socket.on("you-are-callee", () => {
 socket.on("another-call", () => {
    setStatus("On another call");
    
+  });
+  socket.on("incoming-call", () => {
+  alert("incomming-call from ");
+   console.log("incomming-cal");
   });
  socket.on("duration", ({ duration }) => {
     setCallDuration(duration); // update from caller broadcast
@@ -417,8 +423,9 @@ socket.on("offer", async ({ offer }) => {
     socket.off("end-call");
     socket.off("another-call");
     socket.off("duration");
+     socket.off("incoming-call");
   };
-}, [roomId , myPhone]);
+}, [roomId , myPhone , targetPhone]);
 
 
 // camera rotation is starting from here 

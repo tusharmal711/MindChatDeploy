@@ -1,5 +1,5 @@
 import { io } from "socket.io-client";
-
+import Cookies from "js-cookie";
 export const socket = io("https://mindchatdeploy-2.onrender.com/", {
   transports: ["websocket"], // Forces WebSocket connection
   withCredentials: true, // Allows cross-origin credentials
@@ -9,3 +9,11 @@ export const socket = io("https://mindchatdeploy-2.onrender.com/", {
 });
 
 
+  const myPhone = Cookies.get("mobile");
+
+
+
+  console.log("Connected with ID:", socket); 
+  socket.emit("register", myPhone); 
+
+ 

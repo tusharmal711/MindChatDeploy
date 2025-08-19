@@ -70,7 +70,7 @@ const isLogin = async (e) => {
       Cookies.set("mobile", phone); // Persist login
       sessionStorage.setItem("phone", phone);
       localStorage.setItem("phone", phone);
-      socket.emit("register", phone);
+      
 
      navigate("/chatboard");
     }

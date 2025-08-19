@@ -154,12 +154,9 @@ const Messages = mongoose.model("Messages", messageSchema);
 export default Messages;
 // Socket.io connection
 const roomUsers = {};
+const phoneToSocket = new Map();
+const ongoingCalls = new Map();
 io.on("connection", async (socket) => {
-
-socket.on("register", (phone) => {
-  socket.phone = phone; 
-  console.log("phone",socket.phone);
-});
 
 
 
@@ -226,19 +223,98 @@ socket.on("message_seen", ({ messageId, room }) => {
 
 
 
-socket.on("join_call", async ({ roomId, myPhone }) => {
-   if (!roomId || !myPhone) return;
+
+
+// socket.on("join_call", ({ myPhone, targetPhone }) => {
+//   console.log(`[JOIN_CALL] ${myPhone} is trying to call ${targetPhone}`);
+
+//   if (!myPhone || !targetPhone) {
+//     console.log(`[JOIN_CALL] Missing myPhone or targetPhone`);
+//     return;
+//   }
+
+//   const mySocket = phoneToSocket.get(myPhone);
+//   const targetSocket = phoneToSocket.get(targetPhone);
+
+//   console.log(`[JOIN_CALL] mySocket:`, mySocket ? mySocket : "undefined");
+//   console.log(`[JOIN_CALL] targetSocket:`, targetSocket ? targetSocket : "undefined");
+
+//   if (!mySocket || !targetSocket) {
+//     const offlineType = !mySocket ? "caller-offline" : "target-offline";
+//     console.log(`[JOIN_CALL] ${offlineType} emitted`);
+//     socket.emit(offlineType);
+//     return;
+//   }
+
+//   // Check if target is already in a call
+//   if (ongoingCalls.has(targetPhone)) {
+//     console.log(`[JOIN_CALL] Target ${targetPhone} is already in a call with ${ongoingCalls.get(targetPhone)}`);
+    
+//   }
+
+//   ongoingCalls.set(myPhone, targetPhone);
+//   ongoingCalls.set(targetPhone, myPhone);
+//   io.to(mySocket).emit("you-are-caller");
+//   console.log(`[JOIN_CALL] Emitting 'you-are-caller' to ${myPhone}`);
+  
+// io.to(targetSocket).emit("you-are-callee");
+//   console.log(`[JOIN_CALL] Emitting 'you-are-callee' to ${targetPhone}`);
+
+
+//   console.log(`[JOIN_CALL] ${mySocket} is calling ${targetSocket} successfully`);
+// });
+
+// socket.on("end_call", () => {
+//   const otherPhone = ongoingCalls.get(socket.phone);
+//   if (otherPhone) {
+//     const otherSocket = phoneToSocket.get(otherPhone);
+//     if (otherSocket)  io.to(otherSocket).emit("call-ended");
+//     ongoingCalls.delete(otherPhone);
+//   }
+//   ongoingCalls.delete(socket.phone);
+//   console.log(`${socket.phone} ended the call`);
+// });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+socket.on("register", (phone) => { 
+  socket.phone = phone; 
+  phoneToSocket.set(phone, socket.id); 
+  console.log(`[REGISTER] Phone ${phone} registered with socket ID ${socket.id}`);
+});
+
+
+socket.on("join_call", async ({ roomId, myPhone , targetPhone}) => {
+ 
+   if (!roomId || !myPhone || !targetPhone) return;
    socket.phone = myPhone;
+   
   if (socket.alreadyJoined) return;
   socket.alreadyJoined = true;
 
-
+ console.log("join_call called");
 
 const [phone1, phone2] = roomId.split("_"); // both numbers in this call
 console.log("socket.phone =", socket.phone);
 
 console.log(roomId);
-  const contactPhone = phone1 === socket.phone ? phone2 : phone1; // determine the target contact
+  const contactPhone = targetPhone;
 console.log(contactPhone);
  const allSockets = Array.from(io.sockets.sockets.values()); // all connected sockets
   for (let clientSocket of allSockets) {
@@ -258,8 +334,29 @@ console.log(contactPhone);
 
 
 
+  const mySocket = phoneToSocket.get(myPhone);
+  const targetSocket = phoneToSocket.get(targetPhone);
 
 
+
+  console.log(`[JOIN_CALL] mySocket:`, mySocket ? mySocket : "undefined");
+  console.log(`[JOIN_CALL] targetSocket:`, targetSocket ? targetSocket : "undefined");
+
+  if (!mySocket || !targetSocket) {
+    const offlineType = !mySocket ? "caller-offline" : "target-offline";
+    console.log(`[JOIN_CALL] ${offlineType} emitted`);
+    socket.emit(offlineType);
+    return;
+  }
+
+  // Check if target is already in a call
+  if (ongoingCalls.has(contactPhone)) {
+    console.log(`[JOIN_CALL] Target ${targetPhone} is already in a call with ${ongoingCalls.get(targetPhone)}`);
+    
+  }
+
+ ongoingCalls.set(myPhone, targetPhone);
+  ongoingCalls.set(targetPhone, myPhone);
 
 
 
@@ -272,6 +369,11 @@ console.log(contactPhone);
   if (clients.length === 1) {
     console.log("caller joined");
     socket.emit("you-are-caller"); // first user becomes caller
+    console.log(`[JOIN_CALL] Trying to alert ${contactPhone} on socket ${targetSocket}`);
+console.log("All phoneToSocket entries:", Array.from(phoneToSocket.entries()));
+ 
+     io.to(targetSocket).emit("incoming-call");
+     console.log("incomming-call from ${myPhone}");
   } else if (clients.length === 2) {
     console.log("callee joined");
 
@@ -342,13 +444,8 @@ socket.on('delete_for_everyone', ({ room }) => {
     }
 
 
- if (socket.room) {
-      io.to(socket.room).emit("call_ended");
-    }
 
 
-
-  
 
 
 
