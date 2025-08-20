@@ -31,7 +31,7 @@ import CallPage from "./Pages/CallPage.js";
 import Incoming from "./Pages/Incoming-call.js";
 import { socket } from "./Pages/Socket";
 // import VideoCall from "./Pages/Videocall.js";
- 
+ const backendUrl = process.env.REACT_APP_BACKEND_URL; 
 function HomeRedirect() {
   const navigate = useNavigate();
   const [checked, setChecked] = useState(false);
@@ -106,7 +106,7 @@ const fetchContacts = async () => {
     }
 
     // 2. Always fetch fresh data in the background
-    const res = await fetch(`http://localhost:3001/api/fetch`, {
+    const res = await fetch(`${backendUrl}api/fetch`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ phone }),
@@ -212,7 +212,7 @@ useEffect(() => {
 
  try {
     //  Fetch caller details (DP) from backend
-    const res = await fetch("http://localhost:3001/api/phoneDp", {
+    const res = await fetch(`${backendUrl}api/phoneDp`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ phone: callerPhone }),

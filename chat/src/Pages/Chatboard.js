@@ -1500,7 +1500,7 @@ useEffect(() => {
     [phone, c.mobile].sort().join("_")
   );
 
-  fetch("http://localhost:3001/api/getLastMessages", {
+  fetch(`${backendUrl}api/getLastMessages`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ rooms })
