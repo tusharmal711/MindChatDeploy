@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, useLocation, useNavigate , Navigate } from "react-router-dom";
 import Cookies from "js-cookie";
-import { Profiler, useEffect ,useState} from "react";
+import { Profiler, useEffect ,useState ,useRef} from "react";
+
 import PrivateRoute from "./Pages/PrivateRoute";
 import Home from './Pages/Home.js';
 import Signup from './Pages/Signup.js';
@@ -27,7 +28,10 @@ import Notification from "./Pages/Friend-subpages/Notification.js";
 import FriendRequest from "./Pages/Friend-subpages/FriendRequest.js";
 import AddFriend from "./Pages/Friend-subpages/AddFriend.js";
 import CallPage from "./Pages/CallPage.js";
+import Incoming from "./Pages/Incoming-call.js";
+import { socket } from "./Pages/Socket";
 // import VideoCall from "./Pages/Videocall.js";
+ 
 function HomeRedirect() {
   const navigate = useNavigate();
   const [checked, setChecked] = useState(false);
@@ -72,11 +76,249 @@ const MainRoutes = () => {
   // Define paths where Navbar should NOT be visible
   const hideNavbarRoutes = ["/", "/signup", "/login", "/dash","/forgotpassword","/reset","/call"];
   const shouldShowNavbar = !hideNavbarRoutes.includes(location.pathname);
+ 
+
+
+ const [inComingCall, setInComingCall] = useState(false); // for Incoming UI
+  const [contacts, setContacts] = useState([]); // contacts list
+  const [dpMap, setDpMap] = useState({}); // contact dp map
+
+
+
+
+const [contactDp,setContactDp]=useState("");
+
+
+  const navigate = useNavigate();
+
+
+useEffect(() => {
+
+
+const fetchContacts = async () => {
+
+
+  try {
+    const phone = sessionStorage.getItem("phone") || Cookies.get("mobile");
+    if (!phone) {
+      console.warn("No phone number found in session or cookies.");
+      return;
+    }
+
+    // 2. Always fetch fresh data in the background
+    const res = await fetch(`http://localhost:3001/api/fetch`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone }),
+    });
+
+    if (!res.ok) throw new Error("Failed to fetch contacts");
+
+    const freshContacts = await res.json();
+
+   
+      setContacts(freshContacts);
+
+    
+  } catch (error) {
+    console.error("Error fetching contacts:", error);
+  }
+};
+
+
+  fetchContacts();
+
+ 
+}, []);
+
+
+
+const [calPhone,setCalPhone]=useState("");
+const [calUsername,setCalUsername]=useState("");
+const [calDp,setCalDp]=useState({});
+
+const [callerInfo, setCallerInfo] = useState({ username: "", dp: "", phone: "" });
+const ringingSoundRef = useRef(null);
+
+
+
+
+
+
+useEffect(() => { 
+  const unlockAudio = () =>
+     { if (ringingSoundRef.current) 
+      { ringingSoundRef.current .play() 
+        .then(() => { 
+          ringingSoundRef.current.pause(); 
+          ringingSoundRef.current.currentTime = 0;
+           console.log("Audio unlocked for autoplay"); }) 
+           .catch(() => {}); } window.removeEventListener("click", unlockAudio);
+            window.removeEventListener("keydown", unlockAudio); };
+             window.addEventListener("click", unlockAudio); 
+             window.addEventListener("keydown", unlockAudio); 
+             return () => { window.removeEventListener("click", unlockAudio);
+               window.removeEventListener("keydown", unlockAudio); 
+              }; }, []);
+
+
+
+// Initialize audio
+useEffect(() => {
+  ringingSoundRef.current = new Audio("./Sounds/ringing-sound.mp3");
+  ringingSoundRef.current.loop = true;
+  ringingSoundRef.current.volume = 1.0;
+}, []);
+
+// 3️ Handle incoming calls
+
+
+
+useEffect(() => {
+  if (!socket) return;
+
+  socket.off("ping-test");
+ socket.off("caller-canceled");
+   socket.on("caller-canceled", ({ from }) => {
+     if (ringingSoundRef.current) {
+      ringingSoundRef.current.pause();
+      ringingSoundRef.current.currentTime = 0;
+    }
+   
+    setInComingCall(false);
+   
+  });
+  const handlePingTest = async (callerPhone) => {
+    console.log("Ping-test received:", callerPhone);
+   setCalPhone(callerPhone);
+    // Play ringtone
+   if (ringingSoundRef.current) {
+    ringingSoundRef.current.play()
+      .then(() => console.log("Ringtone playing..."))
+      .catch((e) => console.log("Audio play failed:", e));
+  }
+    // Show incoming call prompt
+
+  
+    setInComingCall(true);
+    // Stop ringtone immediately
+   
+
+
+
+
+
+
+
+ try {
+    //  Fetch caller details (DP) from backend
+    const res = await fetch("http://localhost:3001/api/phoneDp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone: callerPhone }),
+    });
+
+    if (!res.ok) throw new Error("Failed to fetch caller DP");
+
+    const data = await res.json();
+
+
+
+    // Use DP from DB, fallback to contacts dp or default
+    const targetDp = data.dp || callerContact?.dp || "fallback_dp.png";
+
+    console.log("Fetched caller DP:", targetDp);
+
+   
+    const callerContact = contacts.find((c) => c.mobile === callerPhone);
+    console.log("callerContact : ",callerContact);
+    const callerUsername = callerContact ? callerContact.username : "Unknown";
+   
+    // if (accept) {
+    //   handleCallClick(callerPhone, callerUsername, callerDp);
+    // }else{
+    //   socket.emit("reject", { targetPhone: callerPhone });
+    // }
+    setCalUsername(callerUsername);
+    setCallerInfo({ username: callerUsername, dp: targetDp, phone: callerPhone });
+      sessionStorage.setItem("contactDp", targetDp);
+  } catch (error) {
+    console.error("Error fetching caller DP:", error);
+  }
+
+
+  };
+  
+  socket.on("ping-test", handlePingTest);
+
+
+  return () => {
+    socket.off("ping-test", handlePingTest);
+    socket.off("caller-canceled");
+  };
+}, [socket, contacts, dpMap]);
+
+
+
+
+ const myPhone = sessionStorage.getItem("phone") || Cookies.get("mobile");
+ const handleAccept = () => {
+    if (!myPhone) {
+      alert("No phone number found! Please login.");
+      return;
+    }
+ if (ringingSoundRef.current) {
+      ringingSoundRef.current.pause();
+      ringingSoundRef.current.currentTime = 0;
+    }
+    
+    const room = [myPhone, calPhone].sort().join("_");
+
+    sessionStorage.setItem("contactPhone", calPhone);
+    sessionStorage.setItem("myPhone", myPhone);
+    sessionStorage.setItem("roomId", room);
+    sessionStorage.setItem("callusername", calUsername);
+    sessionStorage.setItem("isCaller", "false"); // callee
+  
+
+    setContactDp(calDp);
+
+    socket.emit("join_call", room);
+    setInComingCall(false);
+    navigate("/call");
+
+
+  };
+
+const handleReject=()=>{
+  setInComingCall(false);
+  socket.emit("reject", { targetPhone: calPhone });
+   if (ringingSoundRef.current) {
+      ringingSoundRef.current.pause();
+      ringingSoundRef.current.currentTime = 0;
+    }
+}
+
+
+
+
+
+
+
+
 
   return (
     <>
       {/* Conditionally render Navbar */}
+      {inComingCall && <Incoming callerInfo={callerInfo} onAccept={handleAccept} onReject={handleReject}/>}
+     
+     
+     
+     
+     
       {shouldShowNavbar && <Navbar />}
+      
+     
 
       <Routes>
         <Route exact path="/" element={<HomeRedirect />} />
@@ -110,7 +352,7 @@ const MainRoutes = () => {
         
         </Route>
         
-        <Route exact path="/calls" element={<Calls />} />
+        <Route exact path="/calls" element={<Calls setContactDp={setContactDp}/>} />
         <Route exact path="/reset" element={<ResetPassword />} />
         <Route exact path="/forgotpassword" element={<ForgotPassword />} />
 
@@ -125,6 +367,7 @@ const MainRoutes = () => {
   }
 />
         <Route exact path="/navbar" element={<Navbar />} />
+        <Route exact path="/incoming-call" element={<Incoming />} />
       </Routes>
     </>
   );

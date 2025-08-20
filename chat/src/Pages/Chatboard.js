@@ -1490,6 +1490,33 @@ const getBorderColor = () => {
 
 
 
+const [lastMessagesMap, setLastMessagesMap] = useState({});
+
+useEffect(() => {
+  const phone = sessionStorage.getItem("phone") || Cookies.get("mobile");
+  if (!phone) return;
+
+  const rooms = filteredContacts.map(c =>
+    [phone, c.mobile].sort().join("_")
+  );
+
+  fetch("http://localhost:3001/api/getLastMessages", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ rooms })
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        const map = {};
+        rooms.forEach((room, idx) => {
+          map[room] = data.lastMessages[idx];
+        });
+        setLastMessagesMap(map);
+      }
+    })
+    .catch(err => console.error(err));
+}, [filteredContacts]);
 
 
 
@@ -1917,8 +1944,8 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
       const contactMessages = chats.filter(msg => msg.room === contactRoom);
       
       // Get the last message (if any exists)
-      const lastMessage = contactMessages.length > 0 ? contactMessages[contactMessages.length - 1] : null;
-
+     const lastMessage = lastMessagesMap[contactRoom];
+    
       return (
         <li 
           key={contact._id} 
@@ -1948,6 +1975,15 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
               <span className="typing-indicator">{typingUser}</span>
             ) : (
               <p id="msg">
+                <span className="msg-username">
+                  
+            {lastMessage?.userName 
+  ? (lastMessage.userName !== pro_uname ? `${lastMessage.userName} : ` : "You : ") 
+  : ""}
+
+
+
+                </span>
                 {lastMessage ? (
                   // Handle different message types
                   lastMessage.text?.includes("uploads/") ? 
@@ -1960,6 +1996,11 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
                      "📁 File") 
                   : lastMessage.text
                 ) : "Join the chat"}
+                <span className="msg-time-show">
+                  
+                {lastMessage?.timeStamp}
+                </span>
+                
               </p>
             )}
           </div>

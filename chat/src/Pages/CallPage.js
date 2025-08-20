@@ -119,8 +119,11 @@ setIsVideoOff(true);
   // -------------------------------
   // End call
   // -------------------------------
+  
 const endCall = () => {
- 
+  if (!isConnected && targetPhone) {
+    socket.emit("caller-canceled", { from: myPhone, to: contactPhone });
+  }
   if (roomId) {
     socket.emit("end-call", { roomId });
   }
@@ -346,6 +349,7 @@ socket.on("another-call", () => {
 
 
 
+
 //  socket.on("incoming-call", ({ from }) => {
 //     console.log("📞 Incoming call from:", from);
 
@@ -387,7 +391,7 @@ socket.on("offer", async ({ offer }) => {
       };
     }
 
-    // ✅ Always grab local stream BEFORE setting remote desc (mobile needs this)
+    // Always grab local stream BEFORE setting remote desc (mobile needs this)
     if (!localStreamRef.current) {
       localStreamRef.current = await navigator.mediaDevices.getUserMedia({
         audio: true,
@@ -410,12 +414,12 @@ socket.on("offer", async ({ offer }) => {
       });
     }
 
-    // ✅ Always set remote description (don’t skip)
+    // Always set remote description (don’t skip)
     await peerConnectionRef.current.setRemoteDescription(
       new RTCSessionDescription(offer)
     );
 
-    // ✅ Create and send answer (only if not already answered)
+    //  Create and send answer (only if not already answered)
     if (!peerConnectionRef.current.currentLocalDescription) {
       const answer = await peerConnectionRef.current.createAnswer();
       await peerConnectionRef.current.setLocalDescription(answer);
@@ -441,6 +445,23 @@ socket.on("offer", async ({ offer }) => {
       console.error("Error adding ICE candidate", err);
     }
   });
+  socket.on("reject", () => {
+   
+    setStatus("Call rejected");
+       setTimeout(() => {
+    endCall();
+  }, 3000);
+       
+  });
+
+
+
+
+
+
+
+
+
 
   socket.on("end-call", () => {
     endCall();
@@ -455,7 +476,7 @@ socket.on("offer", async ({ offer }) => {
     socket.off("end-call");
     socket.off("another-call");
     socket.off("duration");
-   
+    socket.off("reject");
    
   };
 }, [roomId , myPhone , targetPhone,socket]);
@@ -707,7 +728,7 @@ const hasVideo = localStreamRef.current?.getVideoTracks().some(track => track.en
       pointerEvents: isConnected ? "auto" : "none",
       opacity: isConnected ? 1 : 0.5,
       WebkitTapHighlightColor: "transparent",
-      boxShadow: "0px 2px 6px rgba(0,0,0,0.3)" // 👈 সুন্দর shadow
+      boxShadow: "0px 2px 6px rgba(0,0,0,0.3)" 
 
 
 

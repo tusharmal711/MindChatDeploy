@@ -323,7 +323,6 @@ console.log(targetPhone);
   const targetSocket = phoneToSocket.get(targetPhone);
 
 
-
   console.log(`[JOIN_CALL] mySocket:`, mySocket ? mySocket : "undefined");
   console.log(`[JOIN_CALL] targetSocket:`, targetSocket ? targetSocket : "undefined");
 
@@ -376,6 +375,32 @@ socket.on("duration",({duration , roomId})=>{
 socket.to(roomId).emit("duration",{duration});
 })
 
+
+
+
+// Backend
+socket.on("reject", ({ targetPhone }) => {
+    const targetSocket = phoneToSocket.get(targetPhone);
+    if (targetSocket) {
+        io.to(targetSocket).emit("reject");
+        console.log(`[CALL_REJECTED] ${socket.phone} rejected call to ${targetPhone}`);
+    }
+    // Reset ongoing call if necessary
+    ongoingCalls.delete(socket.phone);
+});
+
+
+
+ socket.on("missed-call", ({ targetPhone }) => {
+    const targetSocketId = onlineUsers.get(targetPhone);
+    if (targetSocketId) {
+      io.to(targetSocketId).emit("call-missed", { from: socket.id });
+    }
+  });
+
+
+
+
    // Relay WebRTC offer
 socket.on("offer", ({ offer, roomId }) => {
   console.log("offer-received-from server side");
@@ -390,7 +415,12 @@ socket.on("ice-candidate", ({ candidate, roomId }) => {
   socket.to(roomId).emit("ice-candidate", { candidate });
 });
 
+socket.on("caller-canceled", ({from,to}) => {
+    const targetSocket = phoneToSocket.get(to);
 
+     socket.to(targetSocket).emit("caller-canceled",{from});
+     console.log("missed-call");
+})
   // End call
   socket.on("end-call", ({roomId}) => {
     console.log("caller-exit");
@@ -632,6 +662,27 @@ app.post('/api/deleteMsg', async (req, res) => {
 
 
 
+// GET last message for multiple rooms
+app.post("/api/getLastMessages", async (req, res) => {
+  const { rooms } = req.body; // rooms = ["123_456", "123_789", ...]
+
+  try {
+    const lastMessages = await Promise.all(
+      rooms.map(async (room) => {
+        const message = await Messages.find({ room })
+          .sort({  _id: -1 })
+          .limit(1)
+          .lean();
+        return message[0] || null;
+      })
+    );
+
+    res.json({ success: true, lastMessages });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
 
 
 
@@ -657,6 +708,23 @@ room:room,
 });
 
 
+
+app.post('/api/phoneDp', async (req, res) => {
+  try {
+    const { phone } = req.body;
+    const user = await User.findOne({ phone });
+
+    if (!user) {
+      return res.status(404).json({ dp: null });
+    }
+
+    console.log("User DP:", user.dp);
+    return res.status(200).json({ dp: user.dp }); // ✅ return here
+  } catch (error) {
+    console.error("Error in /api/phoneDp:", error.message);
+    return res.status(500).json({ message: error.message });
+  }
+});
 
 
 

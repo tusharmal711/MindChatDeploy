@@ -1,6 +1,6 @@
 import express from "express";
 
-import {Register,sendOTP,FriendRequest,VerifyOtp,isLogin,deleteDp,sendLoginOTP,VerifyLoginOtp,editAbout,sendFpOTP, countContactsByMobile, fetch, fetchId, delContact, fetchYou, addNewContact,editContact, fetchDp , fetchOtherDp, fetchHistory, ResetPassword, fetchalluser, SentRequestUser, SentRequestAllUser, CancelRequest, ReceivedRequestUser} from "./userController.js";
+import {Register,sendOTP,FriendRequest,VerifyOtp,isLogin,deleteDp,FetchAllMessage,sendLoginOTP,VerifyLoginOtp,editAbout,sendFpOTP, countContactsByMobile, fetch, fetchId, delContact, fetchYou, addNewContact,editContact, fetchDp , fetchOtherDp, fetchHistory, ResetPassword, fetchalluser, SentRequestUser, SentRequestAllUser, CancelRequest, ReceivedRequestUser} from "./userController.js";
 
 const router = express.Router();
 router.post("/register",Register);
@@ -33,7 +33,7 @@ router.delete("/cancelrequest",CancelRequest);
 // router.post("/fetchfrienduser",fetchFriendUser);
 router.post("/countContactsByMobile",countContactsByMobile);
 
-
+router.post("/fetchAllMessage",FetchAllMessage);
 
 
 

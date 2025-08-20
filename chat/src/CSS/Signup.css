@@ -581,7 +581,7 @@ margin: 4rem;
     position: fixed;
     height:100vh;
     margin-left: 6%;
-    min-width:38%;
+    width:38%;
     background-color: white;
     box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
 }
@@ -697,23 +697,39 @@ ul{
 .textChat{
     padding-left: 0.85rem;
   margin-top: 0.3rem;
+
+ width:77%;
+ overflow: none;
 }
 #msg{
     
-    min-width:50%;
-    max-width:77.8%;
+   overflow: none ;
     font-size: 0.87rem;
     font-family: sans-serif;
     color:rgb(94, 94, 94);
    
-    white-space: nowrap; /* Prevent text from wrapping */
+    white-space: nowrap;        /* Prevent text from wrapping */
+  overflow: hidden;           /* Hide the overflowing text */
+  text-overflow: ellipsis;
    
-    text-overflow: ellipsis; /* Add "..." if text is too long */
+  
+ 
    
+  
+ 
 }
 
+.msg-username{
+    color:#024d62;
+     font-size: 0.87rem;
+}
+.msg-time-show{
+    color:rgb(57, 57, 57);
+     font-size: 0.87rem;
+   
+    float: right;
 
-
+}
 
 
 #dp-default{
@@ -3119,7 +3135,7 @@ body {
    
   }
 .photo-overlay2{
-    z-index: 99999999999999999999;
+    z-index: 999999999;
 }
 
 
@@ -3361,7 +3377,7 @@ flex-direction: column;
     display: flex;
    
     align-items: center;
-    z-index: 999999999999999999999;
+    z-index: 99999999999999999999;
     flex-direction: column;
 }
 .overlay-moment-nav{
@@ -4992,3 +5008,112 @@ width:100%;
 
 
 /* oncall part is ending here */
+
+
+
+
+
+
+/* Modal container */
+.incoming-call-main-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.8); /* Dark semi-transparent overlay */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.6rem;
+  z-index: 99999999999999999999999999;
+  background-size: cover;
+  background-position: center;
+}
+
+/* Text styling */
+.incoming-call-main-container h1 {
+   font-size: 1.6rem;
+  color: white;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.incoming-call-main-container p {
+  color: white;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 1.3rem;
+}
+
+/* Caller profile image */
+.caller-dp {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid white;
+}
+
+/* Action buttons container */
+.incoming-call-actions.incomming-button {
+  display: flex;
+  gap: 20px;
+  margin-top: 10px;
+}
+
+/* Base button style */
+@keyframes bounceUp {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translate(0%, 0);
+  }
+  40% {
+    transform: translate(0%, -20px);
+  }
+  60% {
+    transform: translate(0%, -5px);
+  }
+}
+.incoming-call-actions button {
+   -webkit-tap-highlight-color: transparent;
+  padding: 16px 16PX;
+  border: none;
+  border-radius: 50%;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease; /* Smooth swipe animation */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  user-select: none;
+  touch-action: none; /* For mobile swipe */
+    animation: bounceUp 1s infinite;
+}
+.incoming-call-actions button::after {
+
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 18px;
+  opacity: 0.7;
+  animation: bounceUp 1s infinite; /* Bounce animation */
+}
+/* Accept button */
+.incoming-call-actions .accept {
+  background-color: #4caf50;
+  color: white;
+}
+
+/* Reject button */
+.incoming-call-actions .reject {
+  background-color: #f44336;
+  color: white;
+}
+
+/* Optional: button hover effects */
+.incoming-call-actions button:hover {
+  transform: scale(1.05);
+}
+.incoming-call-actions{
+    display: flex;
+    margin-top: 3rem;
+    gap:2.5rem;
+}

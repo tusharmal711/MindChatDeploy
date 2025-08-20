@@ -681,3 +681,23 @@ export const CancelRequest = async (req, res) => {
 }
 
 
+
+export const FetchAllMessage = async (req, res) => {
+  try {
+    const { room } = req.body;
+
+    if (!room) {
+      return res.status(400).json({ message: "Room is required" });
+    }
+
+    // Only fetch the 'message' field
+    const messages = await Contact.find({ room }, { message: 1, _id: 0 });
+    // message: 1 → include 'message'
+    // _id: 0 → exclude _id
+
+    res.status(200).json(messages);
+  } catch (error) {
+    console.error("Error fetching messages:", error);
+    res.status(500).json({ message: error.message });
+  }
+};

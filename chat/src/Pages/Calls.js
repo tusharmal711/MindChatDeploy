@@ -12,7 +12,7 @@ import { socket } from './Socket.js';
 
 const backendUrl = process.env.REACT_APP_BACKEND_URL; 
 
-const Calls = ()=>{
+const Calls = ({setInComingCall,setContactDp})=>{
 
 
 
@@ -231,12 +231,13 @@ const scrollRef = useRef(null);
   const navigate = useNavigate();
   const myPhone = sessionStorage.getItem("phone") || Cookies.get("mobile");
   const [callUsername,setCallUsername]=useState("");
+  
   const handleCallClick = (phone,username,dp) => {
     if (!myPhone) {
       alert("No phone number found! Please login.");
       return;
     }
-
+   
     const room = [myPhone, phone].sort().join("_");
     sessionStorage.setItem("contactPhone", phone);
     sessionStorage.setItem("myPhone", myPhone);
@@ -244,94 +245,21 @@ const scrollRef = useRef(null);
      sessionStorage.setItem("callusername", username);
     sessionStorage.setItem("isCaller", "true"); // mark caller
     sessionStorage.setItem("contactDp", dp);
+    setContactDp(dp);
     // Join room before going to call page
     socket.emit("join_call", room);
-   
+    const callerDp = dpMap[phone] || "https://res.cloudinary.com/dnd9qzxws/image/upload/v1743764088/image_dp_uwfq2g.png";
+    console.log(callerDp);
+    sessionStorage.setItem("contactDp",callerDp)
+    
     // Go to Call Page
     navigate("/call");
   };
 
+   
 
-const ringingSoundRef = useRef(null);
 
 // 1️⃣ Unlock audio once on first user interaction
-useEffect(() => {
-  const unlockAudio = () => {
-    if (ringingSoundRef.current) {
-      ringingSoundRef.current
-        .play()
-        .then(() => {
-          ringingSoundRef.current.pause();
-          ringingSoundRef.current.currentTime = 0;
-          console.log("Audio unlocked for autoplay");
-        })
-        .catch(() => {});
-    }
-    window.removeEventListener("click", unlockAudio);
-    window.removeEventListener("keydown", unlockAudio);
-  };
-
-  window.addEventListener("click", unlockAudio);
-  window.addEventListener("keydown", unlockAudio);
-
-  return () => {
-    window.removeEventListener("click", unlockAudio);
-    window.removeEventListener("keydown", unlockAudio);
-  };
-}, []);
-
-// 2️⃣ Initialize audio
-useEffect(() => {
-  ringingSoundRef.current = new Audio("./Sounds/ringing-sound.mp3");
-  ringingSoundRef.current.loop = true;
-  ringingSoundRef.current.volume = 1.0;
-}, []);
-
-// 3️⃣ Handle incoming calls
-useEffect(() => {
-  if (!socket) return;
-
-  socket.off("ping-test");
-
-  const handlePingTest = async (callerPhone) => {
-    console.log("Ping-test received:", callerPhone);
-
-    // Play ringtone
-    if (ringingSoundRef.current) {
-      ringingSoundRef.current
-        .play()
-        .then(() => console.log("Audio is ringing"))
-        .catch((e) => console.log("Audio play failed:", e));
-    }
-
-    // Show incoming call prompt
-    const accept = window.confirm(
-      `Incoming call from: ${callerPhone}\nDo you want to accept?`
-    );
-
-    // Stop ringtone immediately
-    if (ringingSoundRef.current) {
-      ringingSoundRef.current.pause();
-      ringingSoundRef.current.currentTime = 0;
-    }
-
-    const callerContact = contacts.find((c) => c.mobile === callerPhone);
-    const callerUsername = callerContact ? callerContact.username : "Unknown";
-    const callerDp =
-      dpMap[callerPhone] ||
-      "https://res.cloudinary.com/dnd9qzxws/image/upload/v1743764088/image_dp_uwfq2g.png";
-
-    if (accept) {
-      handleCallClick(callerPhone, callerUsername, callerDp);
-    }
-  };
-
-  socket.on("ping-test", handlePingTest);
-
-  return () => {
-    socket.off("ping-test", handlePingTest);
-  };
-}, [socket, contacts, dpMap]);
 
 
 

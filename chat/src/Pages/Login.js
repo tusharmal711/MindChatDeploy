@@ -71,7 +71,11 @@ const isLogin = async (e) => {
       sessionStorage.setItem("phone", phone);
       localStorage.setItem("phone", phone);
       
- 
+      socket.on("connect", () => {
+       
+        socket.emit("register", phone);            
+      });
+      
  
 
      navigate("/chatboard");
