@@ -5027,7 +5027,7 @@ width:100%;
   justify-content: center;
   align-items: center;
   gap: 0.6rem;
-  z-index: 999;
+  z-index: 99999999999999999999999999;
   background-size: cover;
   background-position: center;
 }
