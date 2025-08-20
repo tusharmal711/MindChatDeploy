@@ -313,14 +313,12 @@ const handleReject=()=>{
       {inComingCall && <Incoming callerInfo={callerInfo} onAccept={handleAccept} onReject={handleReject}/>}
      
      
-     
-     
-     
       {shouldShowNavbar && <Navbar />}
       
      
 
       <Routes>
+         <Route exact path="/incoming-call" element={<Incoming />} />
         <Route exact path="/" element={<HomeRedirect />} />
        
        
@@ -367,7 +365,7 @@ const handleReject=()=>{
   }
 />
         <Route exact path="/navbar" element={<Navbar />} />
-        <Route exact path="/incoming-call" element={<Incoming />} />
+       
       </Routes>
     </>
   );
