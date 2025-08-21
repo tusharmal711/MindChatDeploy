@@ -450,7 +450,7 @@ socket.on("offer", async ({ offer }) => {
     setStatus("Call rejected");
        setTimeout(() => {
     endCall();
-  }, 3000);
+  }, 2000);
        
   });
 
@@ -464,6 +464,7 @@ socket.on("offer", async ({ offer }) => {
 
 
   socket.on("end-call", () => {
+   
     endCall();
   });
 

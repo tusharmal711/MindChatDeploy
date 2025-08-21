@@ -17,6 +17,7 @@ import io from "socket.io-client";
 import { LuSticker } from "react-icons/lu";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { MdEdit } from "react-icons/md";
+import { MdCall } from "react-icons/md";
 import { IoIosShareAlt } from "react-icons/io";
 import { IoMdDownload } from "react-icons/io";
 import { FaArrowLeft, FaBullseye } from "react-icons/fa";
@@ -1969,7 +1970,16 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
   }
   </div>
           <div className="textChat">
-            <p id="username">{contact.username}</p>
+            <p id="username">{contact.username}             
+
+               <span className="msg-time-show">
+                  
+                {lastMessage?.timeStamp}
+                </span>
+
+
+
+            </p>
             
             {typingUser && activeContact === contact._id ? (
               <span className="typing-indicator">{typingUser}</span>
@@ -1980,9 +1990,6 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
             {lastMessage?.userName 
   ? (lastMessage.userName !== pro_uname ? `${lastMessage.userName} : ` : "You : ") 
   : ""}
-
-
-
                 </span>
                 {lastMessage ? (
                   // Handle different message types
@@ -1996,10 +2003,7 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
                      "📁 File") 
                   : lastMessage.text
                 ) : "Join the chat"}
-                <span className="msg-time-show">
-                  
-                {lastMessage?.timeStamp}
-                </span>
+               
                 
               </p>
             )}
@@ -2112,6 +2116,7 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
   }
 
 
+<MdCall className="md-call"/>
 
 
               <div className="chat-header" onClick={()=>{setThird(true)}}>
@@ -2284,10 +2289,10 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
         src={`${msg.text}`}
         id="image-view"
         style={{ userSelect: "none" }}
-            onMouseDown={() => handleTextMessageClick(msg.messageId)}
-             onTouchStart={() => handleTextMessageClick(msg.messageId)}
-            onMouseUp={stopAction}
-            onMouseLeave={stopAction} 
+            // onMouseDown={() => handleTextMessageClick(msg.messageId)}
+            
+            // onMouseUp={stopAction}
+            // onMouseLeave={stopAction} 
           onClick={() => {
   handleMessageClick(msg.text);
  
@@ -2304,10 +2309,10 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
       <div className="audio-view">
       <audio controls  id="audio-view">
         <source src={`${msg.text}`} id="audio-view-child"   style={{ userSelect: "none" }}
-            onMouseDown={() => handleTextMessageClick(msg.messageId)}
-             onTouchStart={() => handleTextMessageClick(msg.messageId)}
-            onMouseUp={stopAction}
-            onMouseLeave={stopAction} 
+            // onMouseDown={() => handleTextMessageClick(msg.messageId)}
+            //  onTouchStart={() => handleTextMessageClick(msg.messageId)}
+            // onMouseUp={stopAction}
+            // onMouseLeave={stopAction} 
           onClick={() => {
   
   stopAction(msg.messageId);
@@ -2441,10 +2446,10 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
         id="image-view"
        
            style={{ userSelect: "none" }}
-            onMouseDown={() => handleTextMessageClick(msg.messageId)}
-             onTouchStart={() => handleTextMessageClick(msg.messageId)}
-            onMouseUp={stopAction}
-            onMouseLeave={stopAction} 
+            // onMouseDown={() => handleTextMessageClick(msg.messageId)}
+            //  onTouchStart={() => handleTextMessageClick(msg.messageId)}
+            // onMouseUp={stopAction}
+            // onMouseLeave={stopAction} 
           onClick={() => {
   handleMessageClick(msg.text);
  
@@ -2506,10 +2511,10 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
           {msg.text?.match(/https?:\/\/(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[^\s]+/i) ? (
           <div
            style={{ userSelect: "none" }}
-            onMouseDown={() => handleTextMessageClick(msg.messageId)}
-             onTouchStart={() => handleTextMessageClick(msg.messageId)}
-            onMouseUp={stopAction}
-            onMouseLeave={stopAction} 
+            // onMouseDown={() => handleTextMessageClick(msg.messageId)}
+            //  onTouchStart={() => handleTextMessageClick(msg.messageId)}
+            // onMouseUp={stopAction}
+            // onMouseLeave={stopAction} 
           onClick={() => {
   handleMessageClick(msg.text);
  
@@ -2572,10 +2577,10 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
           ) :  msg.text?.match(/https?:\/\/(www\.)?(facebook\.com\/(?:watch\/\?v=\d+|[^\/]+\/videos\/\d+|reel\/\d+)|fb\.watch\/[a-zA-Z0-9]+)/i) ? (
             <div
              style={{ userSelect: "none" }}
-            onMouseDown={() => handleTextMessageClick(msg.messageId)}
-             onTouchStart={() => handleTextMessageClick(msg.messageId)}
-            onMouseUp={stopAction}
-            onMouseLeave={stopAction} 
+            // onMouseDown={() => handleTextMessageClick(msg.messageId)}
+            //  onTouchStart={() => handleTextMessageClick(msg.messageId)}
+            // onMouseUp={stopAction}
+            // onMouseLeave={stopAction} 
           onClick={() => {
   handleMessageClick(msg.text);
  
@@ -2642,10 +2647,10 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
           ):msg.text?.match(/https?:\/\/(www\.)?(youtube\.com\/(watch\?v=|shorts\/)|youtu\.be\/)[^\s]+/i) ? (
             <div
              style={{ userSelect: "none" }}
-            onMouseDown={() => handleTextMessageClick(msg.messageId)}
-             onTouchStart={() => handleTextMessageClick(msg.messageId)}
-            onMouseUp={stopAction}
-            onMouseLeave={stopAction} 
+            // onMouseDown={() => handleTextMessageClick(msg.messageId)}
+            //  onTouchStart={() => handleTextMessageClick(msg.messageId)}
+            // onMouseUp={stopAction}
+            // onMouseLeave={stopAction} 
           onClick={() => {
   handleMessageClick(msg.text);
  
@@ -2712,10 +2717,10 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
             <div id="chat-text" 
 
              style={{ userSelect: "none" }}
-            onMouseDown={() => handleTextMessageClick(msg.messageId)}
-             onTouchStart={() => handleTextMessageClick(msg.messageId)}
+          //   onMouseDown={() => handleTextMessageClick(msg.messageId)}
+          //    onTouchStart={() => handleTextMessageClick(msg.messageId)}
            
-           onClick={()=>stopAction(msg.messageId)}
+          //  onClick={()=>stopAction(msg.messageId)}
             
             
             

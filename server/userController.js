@@ -1,5 +1,6 @@
 import User from "./User.js";
 import Contact from "./Contact.js";
+import CallContact from "./CallContact.js";
 import crypto from "crypto";
 import express from "express";
 import nodemailer from "nodemailer";
@@ -701,3 +702,65 @@ export const FetchAllMessage = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+
+
+
+
+export const CallList = async (req, res) => {
+  try {
+    const { caller, callee, time} = req.body;
+    const newCall = new CallContact({caller,callee,time});
+    await newCall.save();
+
+    res.status(201).json({ success: true, message: "callee saved" });
+  } catch (error) {
+    console.error("Error during call saved", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
+export const FetchCallList = async (req, res) => {
+  try {
+    const { myNumber } = req.body;
+
+    // Find all calls where user is either caller or callee
+    const calls = await CallContact.find({
+      $or: [{ caller: myNumber }, { callee: myNumber }],
+    }).sort({ createdAt: -1 }); // newest first (if you have timestamps)
+
+    if (!calls || calls.length === 0) {
+      return res.status(404).json({ message: "No calls found" });
+    }
+
+    // Return number + time
+    const callList = calls.map((call) => ({
+      phone: call.caller === myNumber ? call.callee : call.caller,
+      time: call.time,  // assuming your schema has a "time" field
+      direction: call.caller === myNumber ? "outgoing" : "incoming"
+    }));
+    
+    res.status(200).json(callList);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
+
+
+
+
+
+// API to Get All Contacts
+export const fetchCallUsername = async (req, res) => {
+  try {
+    const {phone,mobile}=req.body;
+    const addedUser = await Contact.findOne({phone ,mobile});
+    res.status(200).json(addedUser);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+

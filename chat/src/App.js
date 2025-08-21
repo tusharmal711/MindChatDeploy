@@ -30,6 +30,7 @@ import AddFriend from "./Pages/Friend-subpages/AddFriend.js";
 import CallPage from "./Pages/CallPage.js";
 import Incoming from "./Pages/Incoming-call.js";
 import { socket } from "./Pages/Socket";
+import NewCall from "./Pages/NewCall.js";
 // import VideoCall from "./Pages/Videocall.js";
  const backendUrl = process.env.REACT_APP_BACKEND_URL; 
 function HomeRedirect() {
@@ -172,7 +173,7 @@ useEffect(() => {
 
 // 3️ Handle incoming calls
 
-
+const [accept,setAccept]=useState(false);
 
 useEffect(() => {
   if (!socket) return;
@@ -180,6 +181,7 @@ useEffect(() => {
   socket.off("ping-test");
  socket.off("caller-canceled");
    socket.on("caller-canceled", ({ from }) => {
+    
      if (ringingSoundRef.current) {
       ringingSoundRef.current.pause();
       ringingSoundRef.current.currentTime = 0;
@@ -261,6 +263,7 @@ useEffect(() => {
 
 
 
+
  const myPhone = sessionStorage.getItem("phone") || Cookies.get("mobile");
  const handleAccept = () => {
     if (!myPhone) {
@@ -286,13 +289,12 @@ useEffect(() => {
     socket.emit("join_call", room);
     setInComingCall(false);
     navigate("/call");
-
-
   };
 
 const handleReject=()=>{
   setInComingCall(false);
   socket.emit("reject", { targetPhone: calPhone });
+  
    if (ringingSoundRef.current) {
       ringingSoundRef.current.pause();
       ringingSoundRef.current.currentTime = 0;
@@ -350,7 +352,8 @@ const handleReject=()=>{
         
         </Route>
         
-        <Route exact path="/calls" element={<Calls setContactDp={setContactDp}/>} />
+        <Route exact path="/calls" element={<Calls setContactDp={setContactDp} accept={accept}/>} />
+        <Route exact path="/new-calls" element={<NewCall />} />
         <Route exact path="/reset" element={<ResetPassword />} />
         <Route exact path="/forgotpassword" element={<ForgotPassword />} />
 

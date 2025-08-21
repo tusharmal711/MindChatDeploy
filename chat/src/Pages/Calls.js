@@ -7,14 +7,16 @@ import { RiVideoOnAiFill } from "react-icons/ri";
 import { MdCallMade } from "react-icons/md";
 import { MdAddIcCall } from "react-icons/md";
 import { useScrollContext } from '../ScrollContext.js';
+import { MdCallReceived } from "react-icons/md";
 import io from "socket.io-client";
+import TimeAgo from "./TimeAgo.js";
 import { socket } from './Socket.js';
 
 const backendUrl = process.env.REACT_APP_BACKEND_URL; 
 
-const Calls = ({setInComingCall,setContactDp})=>{
+const Calls = ({setInComingCall,setContactDp,accept})=>{
 
-
+const [callStatus,setCallStatus]=useState("Accept");
 
 const [contacts,setContacts]=useState([]);
 
@@ -58,21 +60,123 @@ const fetchContacts = async () => {
 }, []);
 
 
+
+
+
+const [recentCalls,setRecentCalls]=useState([]);
+
+useEffect(() => {
+
+
+const fetchRecentCalls = async () => {
+
+
+  try {
+    const phone = sessionStorage.getItem("phone") || Cookies.get("mobile");
+    if (!phone) {
+      console.warn("No phone number found in session or cookies.");
+      return;
+    }
+
+    // 2. Always fetch fresh data in the background
+    const res = await fetch(`${backendUrl}api/fetchCallList`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ myNumber:phone }),
+    });
+
+    if (!res.ok) throw new Error("Failed to fetch contacts");
+
+    const data = await res.json();
+
+    setRecentCalls(data);
+      console.log(data);
+     
+    
+  } catch (error) {
+    console.error("Error fetching contacts:", error);
+  }
+};
+
+
+  fetchRecentCalls();
+ const interval = setInterval(fetchRecentCalls, 1000); // fetch every 5s
+  return () => clearInterval(interval); 
+ 
+}, []);
+
+
+
+
+
+const [callName,setCallName]=useState("");
+
+const [callNameMap, setCallNameMap] = useState({});
+
+const fetchUsername = async (contactPhone) => {
+
+
+  try {
+   
+ const phone = sessionStorage.getItem("phone") || Cookies.get("mobile");
+    // 2. Always fetch fresh data in the background
+    const res = await fetch(`${backendUrl}api/fetchCallUsername`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone ,mobile : contactPhone}),
+    });
+
+    if (!res.ok) throw new Error("Failed to fetch contacts");
+
+    const user = await res.json();
+
+     setCallNameMap(prev => ({
+      ...prev,
+      [contactPhone]: user.username
+    }));
+
+  } catch (error) {
+    console.error("Error fetching contacts:", error);
+  }
+};
+
+useEffect(() => {
+
+  if (recentCalls.length > 0) {
+    recentCalls.forEach(contactPhone => {
+      fetchUsername(contactPhone.phone);
+    });
+  }
+}, [recentCalls]);
+
+
+
+
+
+
+
+
 const [searchTerm,setSearchTerm]=useState("");
 const [searchTerm2,setSearchTerm2]=useState("");
  const filteredContacts = contacts.filter((contacts) =>
     contacts.username.toLowerCase().includes(searchTerm.toLowerCase())
   );
- const filteredContacts2 = contacts.filter((contacts) =>
-    contacts.username.toLowerCase().includes(searchTerm2.toLowerCase())
-  );
+//  const filteredContacts2 = recentCalls.filter((contacts) =>
+//     contacts.username.toLowerCase().includes(searchTerm2.toLowerCase())
+//   );
 
 const [dpMap, setDpMap] = useState({});
 const [aboutMap, setAboutMap] = useState({});
   const prevFilteredContacts = useRef([]);
+
+
+
+  
 useEffect(() => {
   // Memoize the previous filteredContacts to avoid unnecessary re-fetches
-
+  if(accept===true){
+   
+  }
   
   const fetchDps = async () => {
     // Skip if contacts haven't changed
@@ -192,11 +296,28 @@ const [currentTime, setCurrentTime] = useState('');
     };
 
     updateTime();
-    // const intervalId = setInterval(updateTime, 1000); 
+    const intervalId = setInterval(updateTime, 1000); 
 
-    // return () => clearInterval(intervalId); 
+    return () => clearInterval(intervalId); 
   }, []);
 
+
+function timeAgo(dateString) {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diff = Math.floor((now - date) / 1000); // seconds
+
+  if (diff < 60) return `${diff}s ago`;
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+
+  // If more than 1 day → show actual date
+  return date.toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+}
 
 
 
@@ -232,7 +353,7 @@ const scrollRef = useRef(null);
   const myPhone = sessionStorage.getItem("phone") || Cookies.get("mobile");
   const [callUsername,setCallUsername]=useState("");
   
-  const handleCallClick = (phone,username,dp) => {
+  const handleCallClick = async(phone,username,dp) => {
     if (!myPhone) {
       alert("No phone number found! Please login.");
       return;
@@ -254,12 +375,31 @@ const scrollRef = useRef(null);
     
     // Go to Call Page
     navigate("/call");
+
+
+
+        try {
+      
+      const response = await fetch(`${backendUrl}api/callList`,{
+         method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({caller : myPhone , callee : phone , time : new Date().toISOString() }),
+      });
+
+      if (response.status === 201) {
+       console.log("call-saved");
+      }
+    } catch (error) {
+     console.log("call-not-saved");
+    }
+
+
   };
 
    
 
 
-// 1️⃣ Unlock audio once on first user interaction
+// 1️Unlock audio once on first user interaction
 
 
 
@@ -274,13 +414,26 @@ const scrollRef = useRef(null);
 
 
     const [startCallPopup,setStartCallPopup]=useState(false);
+  const [shrink, setShrink] = useState(false);
+ 
 
-
-
-
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShrink(true);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
     return(
         <SwipeNavigator>
           <div className='call-container'>
+
+
+            <div
+      className={`new-call ${shrink ? "shrink" : ""}`}
+      onClick={() => shrink && navigate("/new-calls")}
+    >
+      {shrink ? <MdCall className="new-call-icon" /> : <p>New Call</p>}
+    </div>
 
 
 
@@ -348,27 +501,38 @@ const scrollRef = useRef(null);
                   
                 <div className='call-contact' ref={scrollRef}>
                       {
-                        filteredContacts2.map((contacts)=>(
+                         recentCalls.map((contactPhone)=>(
                           <div className='each-contact'>
                               <div className='each-contact-img'>
                                  <img
-                                    src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${dpMap[contacts.mobile]}`}
+                                    src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${dpMap[contactPhone.phone]}`}
                                    
 
                                     onError={(e) => {
                                     e.target.src = "https://res.cloudinary.com/dnd9qzxws/image/upload/v1743764088/image_dp_uwfq2g.png";
                                   }}/>
                               </div>
-                              <div className='each-contact-text'>
-                                {contacts.username}
-                                <p><MdCallMade className='outgoing-call'/>{currentTime}</p>
+                              <div className='each-contact-text' >
+                                  {callNameMap[contactPhone.phone] || "Unknown"} <br/>
+                                 <span className='call-contact-phone'>+91 {contactPhone.phone}</span>
+                               
+                               
+                                <p>
+                                  
+                                  <span className='call-time'>
+                                     {contactPhone.direction === "outgoing" 
+                                   ? <MdCallMade className="outgoing-call"/> 
+                                   : <MdCallReceived className="incoming-call"/>}
+                                  </span>
+                                  
+                                  <span className='call-time'>{<TimeAgo dateString={contactPhone.time} />}</span></p>
                                 </div>
                                 <div className='each-contact-icon'>
                                    <MdCall 
                                   onClick={() => handleCallClick(
-                                    contacts.mobile,
-                                    contacts.username,
-                                    dpMap[contacts.mobile] || "https://res.cloudinary.com/dnd9qzxws/image/upload/v1743764088/image_dp_uwfq2g.png"
+                                    contactPhone.phone,
+                                    callNameMap[contactPhone.phone],
+                                    dpMap[contactPhone.phone] || "https://res.cloudinary.com/dnd9qzxws/image/upload/v1743764088/image_dp_uwfq2g.png"
                                   )}
                                 />
                                   {/* <RiVideoOnAiFill /> */}

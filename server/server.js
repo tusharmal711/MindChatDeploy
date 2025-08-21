@@ -368,6 +368,21 @@ console.log(targetPhone);
     console.log("connected");
     // Notify the existing user that a peer joined
     socket.to(roomId).emit("user-joined");
+     
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
   }
 });
 
