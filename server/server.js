@@ -147,15 +147,16 @@ const messageSchema = new mongoose.Schema({
   text: String,
   room: String,
   msgStatus : String,
-  timeStamp: String,
+  
  
-});
+}, { timestamps: true }); 
 const Messages = mongoose.model("Messages", messageSchema);
 export default Messages;
 // Socket.io connection
 const roomUsers = {};
 const phoneToSocket = new Map();
 const ongoingCalls = new Map();
+const onlineUsers = new Map();
 io.on("connection", async (socket) => {
 
 
@@ -171,14 +172,14 @@ io.on("connection", async (socket) => {
     const clients = await io.in(room).fetchSockets();
    
     // If more than 1 user is in the room, notify everyone they're online
-    if (clients.length > 1) {
-     console.log("bc");
-      io.to(room).emit("show_online", "Online");
-    } else {
-       socket.emit("show_online", "Offline"); // Only user in room
+    // if (clients.length > 1) {
+    //  console.log("bc");
+    //   io.to(room).emit("show_online", "Online");
+    // } else {
+    //    socket.emit("show_online", "Offline"); // Only user in room
        
      
-    }
+    // }
 
     // Fetch and send previous messages for the room
     const messages = await Messages.find({ room }).sort({ timeStamp: 1 }).limit(50);
@@ -186,10 +187,10 @@ io.on("connection", async (socket) => {
   });
 
   socket.on("send_message", async (data) => {
-    const {messageId,userName, text, room, msgStatus, timeStamp } = data;
+    const {messageId,userName, text, room, msgStatus} = data;
 
     // Save text message to MongoDB
-    const newMessage = new Messages({messageId, userName, text, room, msgStatus,timeStamp });
+    const newMessage = new Messages({messageId, userName, text, room, msgStatus});
     await newMessage.save();
 
     // Broadcast to the roomd
@@ -207,6 +208,16 @@ io.on("connection", async (socket) => {
     socket.to(room).emit("hide_typing");
   });
 
+
+
+socket.on("sendMsg", ({ to, from,name,message }) => {
+  const targetSocket = phoneToSocket.get(to);
+
+  if (targetSocket) {
+    // deliver message directly
+    io.to(targetSocket).emit("receiveMessage", {to,from,name, message });
+  }
+});
 
 
 
@@ -300,6 +311,16 @@ socket.on("register", (phone) => {
 });
 
 
+
+
+ socket.on("checkStatus", (mobile, callback) => {
+    callback(phoneToSocket.has(mobile)); 
+  });
+
+
+
+
+
 socket.on("join_call", async ({ roomId, myPhone , targetPhone}) => {
  
    if (!roomId || !myPhone || !targetPhone) return;
@@ -321,7 +342,8 @@ console.log(targetPhone);
 
   const mySocket = phoneToSocket.get(myPhone);
   const targetSocket = phoneToSocket.get(targetPhone);
-
+  
+  
 
   console.log(`[JOIN_CALL] mySocket:`, mySocket ? mySocket : "undefined");
   console.log(`[JOIN_CALL] targetSocket:`, targetSocket ? targetSocket : "undefined");
@@ -369,18 +391,6 @@ console.log(targetPhone);
     // Notify the existing user that a peer joined
     socket.to(roomId).emit("user-joined");
      
-    
-
-
-
-
-
-
-
-
-
-
-
 
 
   }
@@ -461,6 +471,22 @@ socket.on("mute-status", ({ isMuted , roomId }) => {
 socket.on('delete_for_everyone', ({ room }) => {
   socket.to(room).emit('chats_deleted', { room });
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -743,6 +769,21 @@ app.post('/api/phoneDp', async (req, res) => {
 
 
 
+
+
+
+app.post('/api/msgUsername', async (req, res) => {
+  try {
+    const { phone , mobile } = req.body;
+    const user = await Contact.findOne({ phone , mobile});
+     
+    return res.status(200).json({username : user.username}); 
+   
+  } catch (error) {
+   
+    return res.status(500).json({ message: error.message });
+  }
+});
 
 
 

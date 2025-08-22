@@ -75,6 +75,7 @@ const isLogin = async (e) => {
        
         socket.emit("register", phone);            
       });
+       
       
  
 

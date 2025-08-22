@@ -20,6 +20,33 @@ const backendUrl = process.env.REACT_APP_BACKEND_URL;
 const NewCall=()=>{
     const navigate=useNavigate();
     const [contacts,setContacts]=useState([]);
+
+const navscrollRef = useRef(null);
+  const { setShowNavbar } = useScrollContext();
+  const lastScrollTop = useRef(0);
+
+
+  useEffect(() => {
+    const scrollableDiv = navscrollRef.current;
+
+    const handleScroll = () => {
+      const currentScrollTop = scrollableDiv.scrollTop;
+
+      if (currentScrollTop > lastScrollTop.current) {
+        setShowNavbar(false); // Scroll down → hide
+      } else {
+        setShowNavbar(true);  // Scroll up → show
+      }
+
+      lastScrollTop.current = currentScrollTop <= 0 ? 0 : currentScrollTop;
+    };
+
+    scrollableDiv?.addEventListener('scroll', handleScroll);
+    return () => scrollableDiv?.removeEventListener('scroll', handleScroll);
+  }, [setShowNavbar]);
+
+
+
 useEffect(() => {
 
 
@@ -227,16 +254,13 @@ return(
 
 
 
-
-
-
                <div className='new-call-left'>
                 <nav> 
                    <h2>Calls</h2>
                    <input type="text" placeholder='Search calls...' value={searchTerm} onChange={(e)=>{setSearchTerm(e.target.value)}}/>
                 </nav>
                   
-                <div className='call-contact'>
+                <div className='call-contact' ref={navscrollRef}>
                       {
                         filteredContacts.map((contacts)=>(
                           <div className='each-contact'>

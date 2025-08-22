@@ -24,7 +24,7 @@ import Photos from "./Pages/Profile-subpages/Photos.js";
 import Videos from "./Pages/Profile-subpages/Videos.js";
 import Reels from "./Pages/Profile-subpages/Reels.js";
 import SentRequest from "./Pages/Friend-subpages/SentRequest.js";
-import Notification from "./Pages/Friend-subpages/Notification.js";
+import NotificationPage from "./Pages/Friend-subpages/NotificationPage.js";
 import FriendRequest from "./Pages/Friend-subpages/FriendRequest.js";
 import AddFriend from "./Pages/Friend-subpages/AddFriend.js";
 import CallPage from "./Pages/CallPage.js";
@@ -140,12 +140,6 @@ const [calDp,setCalDp]=useState({});
 
 const [callerInfo, setCallerInfo] = useState({ username: "", dp: "", phone: "" });
 const ringingSoundRef = useRef(null);
-
-
-
-
-
-
 useEffect(() => { 
   const unlockAudio = () =>
      { if (ringingSoundRef.current) 
@@ -170,6 +164,41 @@ useEffect(() => {
   ringingSoundRef.current.loop = true;
   ringingSoundRef.current.volume = 1.0;
 }, []);
+
+
+
+
+
+const ringingSoundRef2 = useRef(null);
+useEffect(() => { 
+  const unlockAudio = () =>
+     { if (ringingSoundRef2.current) 
+      { ringingSoundRef2.current .play() 
+        .then(() => { 
+          ringingSoundRef2.current.pause(); 
+          ringingSoundRef2.current.currentTime = 0;
+           console.log("Audio unlocked for autoplay"); }) 
+           .catch(() => {}); } window.removeEventListener("click", unlockAudio);
+            window.removeEventListener("keydown", unlockAudio); };
+             window.addEventListener("click", unlockAudio); 
+             window.addEventListener("keydown", unlockAudio); 
+             return () => { window.removeEventListener("click", unlockAudio);
+               window.removeEventListener("keydown", unlockAudio); 
+              }; }, []);
+
+
+
+// Initialize audio
+useEffect(() => {
+  ringingSoundRef2.current = new Audio("./Sounds/notification-sound.mp3");
+  ringingSoundRef2.current.loop = false;
+  ringingSoundRef2.current.volume = 1.0;
+}, []);
+
+
+
+
+
 
 // 3️ Handle incoming calls
 
@@ -305,6 +334,64 @@ const handleReject=()=>{
 
 
 
+const [incomingPopup, setIncomingPopup] = useState(null);
+
+useEffect(() => {
+  if (!socket) return;
+
+  socket.on("receiveMessage", async({to,from,name, message }) => {
+    // show popup
+ if (ringingSoundRef2.current) {
+    ringingSoundRef2.current.play()
+      .then(() => console.log("Ringtone playing..."))
+      .catch((e) => console.log("Audio play failed:", e));
+  }
+
+ try {
+    //  Fetch caller details (DP) from backend
+    const res = await fetch(`${backendUrl}api/phoneDp`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone: from }),
+    });
+
+    if (!res.ok) throw new Error("Failed to fetch caller DP");
+
+    const data = await res.json();
+
+
+
+    // Use DP from DB, fallback to contacts dp or default
+    const targetDp = data.dp || "fallback_dp.png";
+   setIncomingPopup({ from,name,message ,targetDp});
+  
+  } catch (error) {
+    console.error("Error fetching caller DP:", error);
+  }
+
+
+   
+    // hide popup after 3s
+setTimeout(() => {
+  setIncomingPopup(null);
+
+}, 3000);
+
+
+
+  });
+
+  return () => {
+    socket.off("receiveMessage");
+  };
+}, [socket]);
+
+
+
+
+
+
+
 
 
 
@@ -317,6 +404,37 @@ const handleReject=()=>{
      
       {shouldShowNavbar && <Navbar />}
       
+
+
+       {incomingPopup && (
+  <div className="incoming-msg">
+    <div>
+       <img
+       className="msger-dp"
+        src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${incomingPopup.targetDp}`}
+        onError={(e) => {
+          e.target.src =
+            "https://res.cloudinary.com/dnd9qzxws/image/upload/v1743764088/image_dp_uwfq2g.png";
+        }}
+        alt="Sender DP"
+      />
+
+    </div>
+    <p><span>{incomingPopup.name}</span><br/>{incomingPopup.message}</p>
+  </div>
+)}
+
+
+
+
+
+
+
+
+
+
+
+
      
 
       <Routes>
@@ -346,7 +464,7 @@ const handleReject=()=>{
         <Route exact path="/connect" element={<Connect />}>
         <Route exact path="sent-request" element={<SentRequest />} />
         <Route exact path="friend-request" element={<FriendRequest />} />
-        <Route exact path="notification" element={<Notification />} />
+        <Route exact path="notification" element={<NotificationPage />} />
           <Route exact path="add-friend" element={<AddFriend />} />
         
         

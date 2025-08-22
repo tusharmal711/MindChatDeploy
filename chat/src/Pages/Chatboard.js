@@ -131,8 +131,9 @@ useEffect(() => {
    setSelectedContact(null);
    setRoom(null);
     setSelectedTextMessage(null);
+    setCheckOnlineStatus(null);
   };
-
+ 
   window.addEventListener("popstate", handleBackButton);
 
   return () => {
@@ -173,9 +174,6 @@ async function notifyUser(mobileNumber,senderName,text) {
     console.error("Notification Error:", error);
   }
 }
-
-
-
 
 
 
@@ -324,17 +322,17 @@ const messageWithId = {
     setChats((prevChats) => {
       const updatedChats = [...prevChats, messageWithId];
 
-      // 🔁 Update seen flag here if this user has seen it
+      //  Update seen flag here if this user has seen it
       const finalChats = updatedChats.map((msg) =>
         msg.messageId === data.messageId && !isSender && isTabActive 
           ? { ...msg, seen: true }
           : msg
       );
 
-      // 💾 Cache messages
+      //  Cache messages
       localStorage.setItem(`chats_${room}`, JSON.stringify(finalChats));
 
-      // 🖼️ If it's an image message
+      //  If it's an image message
       if (data.text.match(/\.(jpg|jpeg|png|gif)$/i)) {
         setImageBuffer((prev) => [...prev, data.text]);
       } else {
@@ -366,8 +364,9 @@ const messageWithId = {
     }, 100);
   }
 
-    // ✅ Notify other users
-   if (!isSender && (!isSameRoom || document.hidden)) {
+    // Notify other users
+   if (isSender && (!isSameRoom || document.hidden)) {
+
   if ("Notification" in window && Notification.permission === "granted") {
    notifyUser(selectedContact.mobile,data.userName,data.text);
    return;
@@ -690,14 +689,14 @@ const sendMessage = async (req, res) => {
   }
 
   // Add new contact
-  await fetch(`${backendUrl}api/addNewContact`, {
+  await fetch(`${backendUrl}addNewContact`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       phone: selectedContact?.mobile,
       username: "Unknown",
       mobile: contactNo,
-     
+      
     }),
   });
 
@@ -755,7 +754,46 @@ const sendMessage = async (req, res) => {
     socket.emit("send_message", messageData);
      setIsSeen(false); 
     console.log("Text message sent successfully!");
+
+
+
+
+
+    
+
+
+     try {
+    //  Fetch caller details (DP) from backend
+    const res = await fetch(`${backendUrl}api/msgUsername`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone: selectedContact.mobile , mobile : phone}),
+    });
+
+    if (!res.ok) throw new Error("Failed to fetch caller DP");
+
+    const data = await res.json();
+  
+    socket.emit("sendMsg", {
+    to: selectedContact.mobile,
+    from: phone,
+    name : data.username,
+    message: chat
+  });
+
+  
+  } catch (error) {
+    console.error("Error fetching caller DP:", error);
   }
+
+
+  }
+
+
+
+
+
+
 
   // Clear input fields
   setChat("");
@@ -814,7 +852,6 @@ useEffect(() => {
     scrollableDiv?.addEventListener('scroll', handleScroll);
     return () => scrollableDiv?.removeEventListener('scroll', handleScroll);
   }, [setShowNavbar]);
-
 
 
 
@@ -974,7 +1011,7 @@ const addContact = async (e) => {
     if (res.ok) {
       const updatedContacts = await res.json();
       setContacts(updatedContacts); // Update state
-      sessionStorage.setItem("contacts", JSON.stringify(updatedContacts)); // ✅ Update cache
+      
     }
 
   } catch (error) {
@@ -1003,11 +1040,6 @@ useEffect(() => {
 };
 
 const fetchContacts = async () => {
-  // 1. Load cached contacts first
-  const cachedContacts = sessionStorage.getItem("contacts");
-  if (cachedContacts) {
-    setContacts(JSON.parse(cachedContacts));
-  }
 
   try {
     const phone = sessionStorage.getItem("phone") || Cookies.get("mobile");
@@ -1027,12 +1059,10 @@ const fetchContacts = async () => {
 
     const freshContacts = await res.json();
 
-    // 3. Compare fresh contacts with cached contacts
-    if (!cachedContacts || hasContactChanged(JSON.parse(cachedContacts), freshContacts)) {
-      // Update state and cache if there's a change
+   
       setContacts(freshContacts);
-      sessionStorage.setItem("contacts", JSON.stringify(freshContacts));
-    }
+     
+    
   } catch (error) {
     console.error("Error fetching contacts:", error);
   }
@@ -1041,15 +1071,20 @@ const fetchContacts = async () => {
 
   fetchContacts();
 
-  const interval = setInterval(() => {
-    const cachedContacts = sessionStorage.getItem("contacts");
-    if (!cachedContacts) {
-      forceUpdate(); // ✅ Force re-fetch if cache is cleared
-    }
-  }, 1000);
-
-  return () => clearInterval(interval);
+ const interval = setInterval(fetchContacts, 1000); // fetch every 5s
+  return () => clearInterval(interval); 
 }, [update]);
+
+
+
+
+
+
+
+
+
+
+
 
 const deleteMessage = ()=>{
    setThird(false);
@@ -1066,12 +1101,34 @@ const deleteMessage = ()=>{
     setSecond(false);
   setActiveContact(null);
    setSelectedContact(null);
+   setCheckOnlineStatus(null);
    setRoom("");
    }
+
+
+
+
+
+const [checkOnlineStatus,setCheckOnlineStatus]=useState(null);
+
+const checkOnline = (mobile) => {
+  if (!socket) return;
+  socket.emit("checkStatus", mobile, (isOnline) => {
+    console.log(`${mobile} is ${isOnline ? "online" : "offline"}`);
+   setCheckOnlineStatus(isOnline ? "Online" : "");
+  });
+};
+
+
+
+
+
+
+
   // Fetch selected contact details
   const handleContactClick = async (contactId) => {
    
-     
+    
   
     try {
       if (!contactId) {
@@ -1096,6 +1153,7 @@ const deleteMessage = ()=>{
       const data = await res.json();
       setSelectedContact(data);
       sessionStorage.setItem("mobileNumber",data.mobile);
+        checkOnline(data.mobile);
       // Generate unique room ID based on session phone and selected contact's mobile
      const phone = sessionStorage.getItem("phone") || Cookies.get("mobile");
 const newRoom = [phone, data.mobile].sort().join("_");
@@ -1274,7 +1332,53 @@ const newRoom = [phone, data.mobile].sort().join("_");
 
 
 
+  const myPhone = sessionStorage.getItem("phone") || Cookies.get("mobile");
+ 
+  
+  const handleCallClick = async(phone,username,dp) => {
+    if (!myPhone) {
+      alert("No phone number found! Please login.");
+      return;
+    }
+   
+    const room = [myPhone, phone].sort().join("_");
+    sessionStorage.setItem("contactPhone", phone);
+    sessionStorage.setItem("myPhone", myPhone);
+    sessionStorage.setItem("roomId", room);
+     sessionStorage.setItem("callusername", username);
+    sessionStorage.setItem("isCaller", "true"); // mark caller
 
+      sessionStorage.setItem("contactDp",dp)
+    // Join room before going to call page
+    socket.emit("join_call", room);
+    const callerDp = dpMap[phone] || "https://res.cloudinary.com/dnd9qzxws/image/upload/v1743764088/image_dp_uwfq2g.png";
+    console.log(callerDp);
+    sessionStorage.setItem("contactDp",callerDp)
+    
+    // Go to Call Page
+    navigate("/call");
+
+
+
+        try {
+      
+      const response = await fetch(`${backendUrl}api/callList`,{
+         method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({caller : myPhone , callee : phone , time : new Date().toISOString() }),
+      });
+
+      if (response.status === 201) {
+       console.log("call-saved");
+      }
+    } catch (error) {
+     console.log("call-not-saved");
+    }
+
+
+  };
+
+   
 
 
 
@@ -1540,15 +1644,69 @@ const handleMessageClick = (imageUrl) => {
 
 
 
+
+const formatMessageTime = (dateString) => {
+  if (!dateString) return "";
+
+  const date = new Date(dateString);
+
+  // Convert to IST
+  const istDate = new Date(date.toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
+
+  const now = new Date();
+  const today = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
+
+
+  const istDay = new Date(istDate.getFullYear(), istDate.getMonth(), istDate.getDate());
+  const todayDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+  const diffDays = (todayDay - istDay) / (1000 * 60 * 60 * 24);
+
+  if (diffDays === 0) {
+ 
+    return istDate.toLocaleTimeString("en-IN", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false, // 24hr format
+    });
+  } else if (diffDays === 1) {
+   
+    return "Yesterday";
+  } else {
+   
+    return istDate.toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 const [viewContact,setViewContact]=useState(false);
 const [dchat,setDchat]=useState(false);
-// const [lastMessages, setLastMessages] = useState({});
-     
-// useEffect(() => {
-//   if (chats.length > 0) {
-//     setLastMessage(chats.at(-1)); // Gets the last message in chats
-//   }
-// }, [chats]); // Runs when `chats` updates
+
+
+
+
+  
+
+
+
+
+
 
   return (
    <SwipeNavigator>
@@ -1974,7 +2132,7 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
 
                <span className="msg-time-show">
                   
-                {lastMessage?.timeStamp}
+                {formatMessageTime(lastMessage?.createdAt)}
                 </span>
 
 
@@ -1988,7 +2146,7 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
                 <span className="msg-username">
                   
             {lastMessage?.userName 
-  ? (lastMessage.userName !== pro_uname ? `${lastMessage.userName} : ` : "You : ") 
+  ? (lastMessage.userName !== pro_uname ? `` : "You : ") 
   : ""}
                 </span>
                 {lastMessage ? (
@@ -2116,7 +2274,21 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
   }
 
 
-<MdCall className="md-call"/>
+<MdCall className="md-call" 
+
+
+onClick={() => handleCallClick(
+              selectedContact.mobile,
+             selectedContact.username,
+             dpMap[selectedContact.mobile] || "https://res.cloudinary.com/dnd9qzxws/image/upload/v1743764088/image_dp_uwfq2g.png"
+            )}
+
+
+
+
+
+
+/>
 
 
               <div className="chat-header" onClick={()=>{setThird(true)}}>
@@ -2126,14 +2298,11 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
               <p>{selectedContact.username}<br/>
                        {typingUser ? (
   <span className="typing-indicator">{typingUser}</span>
-) : online === "Online" ? (
+) :(
   <span className="typing-indicator online" id="online">
-    <GoDotFill /> Online
+    {checkOnlineStatus}
   </span>
-) : (
-  <span className="typing-indicator offline" id="offline">
-    <GoDotFill /> Offline
-  </span>
+
 )}
 
 

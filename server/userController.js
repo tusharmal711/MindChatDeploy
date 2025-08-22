@@ -354,8 +354,11 @@ export const addNewContact = async (req, res) => {
     // Check if the contact (receiver) exists in the sender's contact list
     const isExist = await Contact.findOne({ phone,mobile });
 
+        const room = [phone, mobile].sort().join("_");
+
+
     if (!isExist) {
-      const newUser = new Contact({ phone, username, mobile });
+      const newUser = new Contact({ phone, username, mobile , room });
       await newUser.save();
     }
 
@@ -363,7 +366,7 @@ export const addNewContact = async (req, res) => {
     const isReverseExist = await Contact.findOne({ phone: mobile, mobile: phone });
 
     if (!isReverseExist) {
-      const newContact = new Contact({ phone: mobile, username: "Unknown", mobile: phone });
+      const newContact = new Contact({ phone: mobile, username: "Unknown", mobile: phone , room });
       await newContact.save();
     }
 
@@ -377,18 +380,43 @@ export const addNewContact = async (req, res) => {
 
 
 
-
-// API to Get All Contacts
 export const fetch = async (req, res) => {
   try {
-    const {phone}=req.body;
-    const addedUser = await Contact.find({"phone" : phone});
-    res.status(200).json(addedUser);
+    const { phone } = req.body;
+    if (!phone) {
+      return res.status(400).json({ message: "Phone number required" });
+    }
+
+    // 1. Get all contacts of this user
+    const contacts = await Contact.find({ phone });
+
+    // 2. For each contact, get latest message in their room
+    const results = await Promise.all(
+      contacts.map(async (contact) => {
+        const lastMessage = await Messages.findOne({ room: contact.room })
+          .sort({ createdAt: -1 }) // latest message first
+          .lean();
+
+        return {
+          ...contact.toObject(),
+          lastMessage: lastMessage || null,
+        };
+      })
+    );
+
+    // 3. Sort contacts by lastMessage.createdAt
+    results.sort((a, b) => {
+      const timeA = a.lastMessage ? new Date(a.lastMessage.createdAt) : 0;
+      const timeB = b.lastMessage ? new Date(b.lastMessage.createdAt) : 0;
+      return timeB - timeA; // latest first
+    });
+
+    res.status(200).json(results);
   } catch (error) {
+    console.error("Error fetching contacts with latest message:", error);
     res.status(500).json({ message: error.message });
   }
 };
-
 
 
 export const fetchDp = async (req, res) => {

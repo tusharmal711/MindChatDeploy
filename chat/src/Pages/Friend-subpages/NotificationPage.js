@@ -1,7 +1,7 @@
 import { useState,useEffect } from "react";
 import { FaRegClock } from "react-icons/fa";
 const backendUrl = process.env.REACT_APP_BACKEND_URL; 
-const Notification = ()=>{
+const NotificationPage = ()=>{
       const [senderPhones, setSenderPhones] = useState([]);
       const [users, setUsers] = useState([]);
       const [requests, setRequests] = useState([]); 

@@ -625,7 +625,12 @@ useEffect(() => {
 const hasVideo = localStreamRef.current?.getVideoTracks().some(track => track.enabled);
 
   return (
-    <div className="main-video-call" >
+    <div className="main-video-call"
+     style={{
+        backgroundImage: `url("./Images/call-background.jpg")`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}>
       {/* Video Section */}
      
      
