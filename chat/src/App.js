@@ -38,6 +38,25 @@ function HomeRedirect() {
   const [checked, setChecked] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
 
+
+
+
+
+
+  const myPhone = sessionStorage.getItem("phone") || Cookies.get("mobile") || localStorage.getItem("phone");
+socket.on("connect", () => {
+  console.log("Connected with ID:", socket.id); 
+  socket.emit("register", myPhone);            
+});
+
+
+
+
+
+
+
+
+
   useEffect(() => {
     const phone = sessionStorage.getItem("phone") || Cookies.get("mobile") || localStorage.getItem("phone");
 
