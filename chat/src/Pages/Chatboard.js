@@ -43,6 +43,12 @@ import { FaCheckDouble } from "react-icons/fa6";
 import SwipeNavigator from './SwipeNavigator';
 import { messaging } from "./firebase-config"; // adjust path if needed
 import { socket } from "./Socket";
+
+socket.on("connect", () => {
+  console.log("Connected with ID:", socket.id); 
+  socket.emit("register", myPhone);            
+});
+
 const backendUrl = process.env.REACT_APP_BACKEND_URL; 
 
 

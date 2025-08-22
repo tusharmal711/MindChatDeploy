@@ -43,11 +43,6 @@ function HomeRedirect() {
 
 
 
-  const myPhone = sessionStorage.getItem("phone") || Cookies.get("mobile") || localStorage.getItem("phone");
-socket.on("connect", () => {
-  console.log("Connected with ID:", socket.id); 
-  socket.emit("register", myPhone);            
-});
 
 
 
@@ -57,6 +52,7 @@ socket.on("connect", () => {
 
 
 
+  
   useEffect(() => {
     const phone = sessionStorage.getItem("phone") || Cookies.get("mobile") || localStorage.getItem("phone");
 
