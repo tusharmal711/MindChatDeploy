@@ -193,6 +193,12 @@ useEffect(() => {
 
 
  
+socket.on("connect", () => {
+  console.log("Connected with ID:", socket.id); 
+  socket.emit("register", myPhone);            
+});
+
+
 
 
 
@@ -511,12 +517,6 @@ const deleteMsg = async (deleteType = "forMe", selectedTextMessage) => {
 
 
 
-
-
-socket.on("connect", () => {
-  console.log("Connected with ID:", socket.id); 
-  socket.emit("register", myPhone);            
-});
 
 
 

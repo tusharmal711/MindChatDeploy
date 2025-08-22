@@ -9,9 +9,9 @@ export const socket = io("https://mindchatdeploy-2.onrender.com/", {
   reconnectionDelay: 2000
 });
 
-const myPhone = Cookies.get("mobile") || sessionStorage.getItem("phone");
+// const myPhone = Cookies.get("mobile") || sessionStorage.getItem("phone");
 
-socket.on("connect", () => {
-  console.log("Connected with ID:", socket.id); 
-  socket.emit("register", myPhone);            
-});
+// socket.on("connect", () => {
+//   console.log("Connected with ID:", socket.id); 
+//   socket.emit("register", myPhone);            
+// });
