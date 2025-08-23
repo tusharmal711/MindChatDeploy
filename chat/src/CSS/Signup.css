@@ -1023,7 +1023,7 @@ ul{
     padding:0.6rem;
 }
 .items input::placeholder{
-    color:rgb(85, 85, 85);
+    color:white;
 }
 #img-send{
     color:rgb(53, 53, 53);
@@ -2481,11 +2481,14 @@ width:100%;
     .items {
         font-size: 1.2rem;
         gap: 0.5rem;
+       
     }
     
     .items input {
         width: 70%;
         font-size: 0.9rem;
+        background-color: black;
+        color:white;
     }
 }
 
@@ -2976,18 +2979,22 @@ iframe{
 .items{
     gap:0.3rem;
 }
-.type-msg{
+.type-msg {
+    width: 97%;
     position: absolute;
+    bottom: 0.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+
     display: flex;
     align-items: center;
-    height:4rem;
-    border-radius: none;
     justify-content: center;
+
+    height: 3.8rem;
     background-color: black;
-  
-  
-  
+    border-radius: 3.5rem;
 }
+
 html,
 body {
   height: 100%;
