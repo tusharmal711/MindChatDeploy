@@ -90,7 +90,7 @@ const fetchRecentCalls = async () => {
     const data = await res.json();
 
     setRecentCalls(data);
-      console.log(data);
+    
      
     
   } catch (error) {
@@ -378,21 +378,6 @@ const scrollRef = useRef(null);
 
 
 
-        try {
-      
-      const response = await fetch(`${backendUrl}api/callList`,{
-         method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({caller : myPhone , callee : phone , time : new Date().toISOString() }),
-      });
-
-      if (response.status === 201) {
-       console.log("call-saved");
-      }
-    } catch (error) {
-     console.log("call-not-saved");
-    }
-
 
   };
 
@@ -408,7 +393,7 @@ const scrollRef = useRef(null);
 
 
 
-
+const { showNavbar } = useScrollContext();
 
 
 
@@ -428,8 +413,8 @@ const scrollRef = useRef(null);
           <div className='call-container'>
 
 
-            <div
-      className={`new-call ${shrink ? "shrink" : ""}`}
+            <div className={`new-call ${showNavbar ? "show" : "hide"} ${shrink ? "shrink" : ""}`}
+
       onClick={() => shrink && navigate("/new-calls")}
     >
       {shrink ? <MdCall className="new-call-icon" /> : <p>New Call</p>}
@@ -522,21 +507,54 @@ const scrollRef = useRef(null);
                                   <span className='call-time'>
                                      {contactPhone.direction === "outgoing" 
                                    ? <MdCallMade className="outgoing-call"/> 
-                                   : <MdCallReceived className="incoming-call"/>}
+                                   : <MdCallReceived 
+                              className={`incoming-call ${contactPhone.status==="accept" ? "accept" : "reject"}`}
+                            />}
                                   </span>
                                   
                                   <span className='call-time'>{<TimeAgo dateString={contactPhone.time} />}</span></p>
                                 </div>
-                                <div className='each-contact-icon'>
-                                   <MdCall 
+
+
+
+
+                               {contactPhone.direction === "outgoing" 
+                                   ? (
+                                        <div className='each-contact-icon'>
+                                   <MdCall   
                                   onClick={() => handleCallClick(
                                     contactPhone.phone,
                                     callNameMap[contactPhone.phone],
                                     dpMap[contactPhone.phone] || "https://res.cloudinary.com/dnd9qzxws/image/upload/v1743764088/image_dp_uwfq2g.png"
                                   )}
                                 />
-                                  {/* <RiVideoOnAiFill /> */}
+                                  
                                 </div>
+                                   ):(
+                                     <div className={`each-contact-icon ${contactPhone.status==="accept" ? "accept" : "reject"}`}>
+                                   <MdCall   
+                                  onClick={() => handleCallClick(
+                                    contactPhone.phone,
+                                    callNameMap[contactPhone.phone],
+                                    dpMap[contactPhone.phone] || "https://res.cloudinary.com/dnd9qzxws/image/upload/v1743764088/image_dp_uwfq2g.png"
+                                  )}
+                                />
+                                  
+                                </div>
+                                   ) 
+                                  }
+
+
+
+
+                               
+
+
+
+
+
+
+
                               
                           </div>
                         ))

@@ -43,12 +43,14 @@ import { FaCheckDouble } from "react-icons/fa6";
 import SwipeNavigator from './SwipeNavigator';
 import { messaging } from "./firebase-config"; // adjust path if needed
 import { socket } from "./Socket";
-
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 
 const backendUrl = process.env.REACT_APP_BACKEND_URL; 
 
 
-const Chatboard = ({ user, contact , message ,src, alt, ...props}) => {
+const Chatboard = ({ user,  contact , message ,src, alt, ...props}) => {
   const navigate = useNavigate();
   // const location = useLocation();
   const [loading, setLoading] = useState(true);
@@ -151,6 +153,42 @@ useEffect(() => {
 }, []);
 
 
+
+
+
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+const formatTime = (utcDate) => {
+  return dayjs(utcDate).tz("Asia/Kolkata").format("HH:mm");
+};
+
+const formatDateHeader = (utcDate) => {
+  const date = dayjs(utcDate).tz("Asia/Kolkata");
+  const today = dayjs().tz("Asia/Kolkata");
+  const yesterday = today.subtract(1, "day");
+
+  if (date.isSame(today, "day")) return "Today";
+  if (date.isSame(yesterday, "day")) return "Yesterday";
+  return date.format("DD/MM/YYYY");
+};
+
+const groupedMessages = chats.reduce((groups, msg) => {
+  const header = formatDateHeader(msg.createdAt);
+  if (!groups[header]) groups[header] = [];
+  groups[header].push(msg);
+  return groups;
+}, {});
+
+
+
+
+
+
+
+
+
 const [status,setStatus]=useState(null);
 
 
@@ -203,7 +241,7 @@ socket.on("connect", () => {
 
 
 
- 
+ const [same,setSame]=useState(false);
 
 
 
@@ -325,7 +363,7 @@ const messageWithId = {
 
   // Always update messages if it's the same room
   if (isSameRoom) {
-
+   setSame(true);
     console.log("In same room ");
     setChats((prevChats) => {
       const updatedChats = [...prevChats, messageWithId];
@@ -391,6 +429,10 @@ const messageWithId = {
      socket.off("show_online");
       socket.off("message_seen_update");
   };
+
+
+
+  
 }, [room]);
 
 
@@ -766,9 +808,11 @@ const sendMessage = async (req, res) => {
 
 
 
-    
+   
 
 
+
+      
      try {
     //  Fetch caller details (DP) from backend
     const res = await fetch(`${backendUrl}api/msgUsername`, {
@@ -792,6 +836,9 @@ const sendMessage = async (req, res) => {
   } catch (error) {
     console.error("Error fetching caller DP:", error);
   }
+    
+
+
 
 
   }
@@ -1164,7 +1211,7 @@ const checkOnline = (mobile) => {
       // Generate unique room ID based on session phone and selected contact's mobile
      const phone = sessionStorage.getItem("phone") || Cookies.get("mobile");
 const newRoom = [phone, data.mobile].sort().join("_");
-      
+     
       // Clear previous chat history
       setChats([]);
       setTypingUser("");
@@ -1173,7 +1220,7 @@ const newRoom = [phone, data.mobile].sort().join("_");
       setRoom(newRoom);
         currentViewedRoomRef.current = newRoom;
       socket.emit("join_room", newRoom);
-    
+     
       // UI state updates
       setIsPopup(false);
       setSecond(true);
@@ -1188,7 +1235,11 @@ const newRoom = [phone, data.mobile].sort().join("_");
   };
   
 
-
+useEffect(()=>{
+ const interval = setInterval(handleContactClick, 1000); // fetch every 5s
+  return () => clearInterval(interval); 
+ 
+},[]);
 
 
  
@@ -2369,6 +2420,17 @@ onClick={() => handleCallClick(
 
 
 
+
+
+
+
+
+
+
+
+
+
+
   {
     delMsg &&(
       <div className="delMsg">
@@ -2431,6 +2493,17 @@ onClick={() => handleCallClick(
       <div className="chat-box" id="chat-box" onClick={secondDiv}>
         <div   className="messages" id="messages" onClick={removeSticker}>
           {chats.map((msg, index) => (
+
+
+
+          
+
+
+
+
+
+
+
            <div  style={{ userSelect: "none" }}
             key={msg._id}
             onClick={()=>stopAction(msg.messageId)}
@@ -2477,7 +2550,7 @@ onClick={() => handleCallClick(
        
         alt="User Video"
       />
-      <span id="vid-msg-time">{msg.timeStamp}</span>
+      <span id="vid-msg-time">{formatTime(msg.createdAt)}</span>
       </div>
     );
   } else if(msg.text?.match(/\.(mp3|mpeg)$/)){
@@ -2497,7 +2570,7 @@ onClick={() => handleCallClick(
         />
          
       </audio>
-      <span id="ppt-time">{msg.timeStamp}</span>
+      <span id="ppt-time">{formatTime(msg.createdAt)}</span>
       </div>
      
      )
@@ -2528,7 +2601,7 @@ onClick={() => handleCallClick(
         <MdOutlineDownloadForOffline id="download-logo"/>
       </button>
       </div>
-      <span id="ppt-time">{msg.timeStamp}</span>
+      <span id="ppt-time">{formatTime(msg.createdAt)}</span>
     </div>
     
     )
@@ -2555,7 +2628,7 @@ onClick={() => handleCallClick(
         <MdOutlineDownloadForOffline id="download-logo"/>
       </button>
       </div>
-      <span id="ppt-time">{msg.timeStamp}</span>
+      <span id="ppt-time">{formatTime(msg.createdAt)}</span>
       
     </div>
     
@@ -2586,7 +2659,7 @@ onClick={() => handleCallClick(
       </button>
      
       </div>
-      <span id="ppt-time">{msg.timeStamp}</span>
+      <span id="ppt-time">{formatTime(msg.createdAt)}</span>
     </div>
     
     
@@ -2633,7 +2706,7 @@ onClick={() => handleCallClick(
         onError={(e) => (e.target.style.display = "none")}
         alt="User Image"
       />
-      <span id="img-msg-time" >{msg.timeStamp}
+      <span id="img-msg-time" >{formatTime(msg.createdAt)}
          <div className="msg-time">
 
             {
@@ -2714,7 +2787,7 @@ onClick={() => handleCallClick(
           {msg.text}
         </a>
        <div className="msg-time">
-       <span id="msg-time">{msg.timeStamp}
+       <span id="msg-time">{formatTime(msg.createdAt)}
          <div className="msg-time">
 
             {
@@ -2784,7 +2857,7 @@ onClick={() => handleCallClick(
               {msg.text}
             </a>
             <div className="msg-time">
-              <span id="msg-time">{msg.timeStamp}
+              <span id="msg-time">{formatTime(msg.createdAt)}
                 <div className="msg-time">
 
             {
@@ -2854,7 +2927,7 @@ onClick={() => handleCallClick(
             {msg.text}
           </a>
          <div className="msg-time">
-         <span id="msg-time">{msg.timeStamp}
+         <span id="msg-time">{formatTime(msg.createdAt)}
            <div className="msg-time">
 
             {
@@ -2917,7 +2990,7 @@ onClick={() => handleCallClick(
     MozUserSelect: "none",
     msUserSelect: "none",
     userSelect: "none"
-  }}>{msg.timeStamp}</span>
+  }}>{formatTime(msg.createdAt)}</span>
             </div>
              <div className="msg-time">
 
@@ -2968,7 +3041,15 @@ onClick={() => handleCallClick(
            
             </div>
               </div>
-          ))}
+          ))
+          
+          
+          
+          
+          
+          
+          
+          }
           <div ref={messagesEndRef}></div>
         </div>
       </div>

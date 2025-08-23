@@ -224,14 +224,30 @@ useEffect(() => {
 
   socket.off("ping-test");
  socket.off("caller-canceled");
-   socket.on("caller-canceled", ({ from }) => {
-    
+
+   socket.on("caller-canceled", async({ from }) => {
+  
      if (ringingSoundRef.current) {
       ringingSoundRef.current.pause();
       ringingSoundRef.current.currentTime = 0;
     }
    
     setInComingCall(false);
+
+      try {
+          
+          const response = await fetch(`${backendUrl}api/callList`,{
+             method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({caller : from , callee : myPhone , time : new Date().toISOString() , status:"missed" }),
+          });
+    
+          if (response.status === 201) {
+           console.log("call-saved");
+          }
+        } catch (error) {
+         console.log("call-not-saved");
+        }
    
   });
   const handlePingTest = async (callerPhone) => {
@@ -277,7 +293,7 @@ useEffect(() => {
 
    
     const callerContact = contacts.find((c) => c.mobile === callerPhone);
-    console.log("callerContact : ",callerContact);
+   
     const callerUsername = callerContact ? callerContact.username : "Unknown";
    
     // if (accept) {
@@ -309,7 +325,7 @@ useEffect(() => {
 
 
  const myPhone = sessionStorage.getItem("phone") || Cookies.get("mobile");
- const handleAccept = () => {
+ const handleAccept = async() => {
     if (!myPhone) {
       alert("No phone number found! Please login.");
       return;
@@ -328,6 +344,24 @@ useEffect(() => {
     sessionStorage.setItem("isCaller", "false"); // callee
   
 
+    
+        try {
+      
+      const response = await fetch(`${backendUrl}api/callList`,{
+         method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({caller : calPhone , callee : myPhone , time : new Date().toISOString() , status:"accept" }),
+      });
+
+      if (response.status === 201) {
+       console.log("call-saved");
+      }
+    } catch (error) {
+     console.log("call-not-saved");
+    }
+
+
+
     setContactDp(calDp);
 
     socket.emit("join_call", room);
@@ -335,14 +369,19 @@ useEffect(() => {
     navigate("/call");
   };
 
-const handleReject=()=>{
+const [isReject,setIsReject]=useState("false");
+const handleReject=async()=>{
   setInComingCall(false);
   socket.emit("reject", { targetPhone: calPhone });
-  
+  setIsReject(true);
+
    if (ringingSoundRef.current) {
       ringingSoundRef.current.pause();
       ringingSoundRef.current.currentTime = 0;
     }
+
+
+
 }
 
 
@@ -356,11 +395,7 @@ useEffect(() => {
 
   socket.on("receiveMessage", async({to,from,name, message }) => {
     // show popup
- if (ringingSoundRef2.current) {
-    ringingSoundRef2.current.play()
-      .then(() => console.log("Ringtone playing..."))
-      .catch((e) => console.log("Audio play failed:", e));
-  }
+
 
  try {
     //  Fetch caller details (DP) from backend
@@ -391,6 +426,23 @@ setTimeout(() => {
   setIncomingPopup(null);
 
 }, 3000);
+
+
+
+
+
+ if (ringingSoundRef2.current) {
+    ringingSoundRef2.current.play()
+      .then(() => console.log("Ringtone playing..."))
+      .catch((e) => console.log("Audio play failed:", e));
+  }
+
+
+
+
+
+
+
 
 
 
@@ -496,7 +548,7 @@ setTimeout(() => {
   path="/chatboard"
   element={
     <PrivateRoute>
-      <Chatboard />
+      <Chatboard/>
     </PrivateRoute>
   }
 />

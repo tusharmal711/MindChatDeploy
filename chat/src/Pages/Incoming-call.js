@@ -46,7 +46,7 @@ const Incoming=({ callerInfo, onAccept, onReject }) =>{
     <div
       className="incoming-call-main-container"
       style={{
-        backgroundImage: `url("./Images/call-background.jpg")`,
+        backgroundImage: `url("./Images/call-background.png")`,
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}

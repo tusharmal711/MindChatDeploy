@@ -120,8 +120,84 @@ setIsVideoOff(true);
   // End call
   // -------------------------------
   
-const endCall = () => {
-  if (!isConnected && targetPhone) {
+
+
+
+const ringingSoundRef = useRef(null);
+
+useEffect(() => {
+  ringingSoundRef.current = new Audio("./Sounds/end-call.mp3");
+  ringingSoundRef.current.loop = false;
+  ringingSoundRef.current.volume = 1.0;
+}, []);
+
+
+
+const [reject,setReject]=useState(false);
+
+const endCall2 = async() => {
+  if(isConnected){
+      if (ringingSoundRef.current) {
+        console.log("end-call");
+    ringingSoundRef.current.play()
+      .then(() => console.log("Ringtone playing..."))
+      .catch((e) => console.log("Audio play failed:", e));
+  }
+  }
+  
+
+
+  if (roomId) {
+    socket.emit("end-call", { roomId });
+  }
+socket.hasJoined=false;
+ if (timerRef.current) {
+    clearInterval(timerRef.current);
+    timerRef.current = null;
+  }
+   setCallDuration("00:00:00");
+
+  if (localStreamRef.current) {
+    localStreamRef.current.getTracks().forEach(track => track.stop());
+    localStreamRef.current = null;
+  }
+
+ 
+  if (peerConnectionRef.current) {
+    peerConnectionRef.current.close();
+    peerConnectionRef.current = null;
+  }
+
+
+  sessionStorage.removeItem("roomId");
+  sessionStorage.removeItem("contactPhone");
+  sessionStorage.removeItem("callusername");
+  sessionStorage.removeItem("contactDp");
+
+
+  setIsConnected(false);
+  setIsVideoOff(true);
+  setIsMuted(false);
+  setStatus("Calling...");
+
+  navigate("/calls");
+
+
+};
+
+
+const endCall = async() => {
+  if(isConnected){
+      if (ringingSoundRef.current) {
+        console.log("end-call");
+    ringingSoundRef.current.play()
+      .then(() => console.log("Ringtone playing..."))
+      .catch((e) => console.log("Audio play failed:", e));
+  }
+  }
+  
+  
+  if (!isConnected && !reject && targetPhone) {
     socket.emit("caller-canceled", { from: myPhone, to: contactPhone });
   }
   if (roomId) {
@@ -157,8 +233,14 @@ socket.hasJoined=false;
   setIsMuted(false);
   setStatus("Calling...");
 
-
   navigate("/calls");
+
+
+
+
+
+
+
 };
 
 
@@ -245,7 +327,7 @@ useEffect(() => {
 const [callDuration, setCallDuration] = useState("00:00:00");
 const startTimeRef = useRef(null);
 const timerRef = useRef(null);
-
+const durationRef=useRef(null);
 
 
  const [isCaller, setIsCaller] = useState(false);
@@ -291,6 +373,33 @@ useEffect(() => {
   }
 }, [status]);
 
+
+
+
+
+const timeRef = useRef(null);
+
+useEffect(() => {
+  // cleanup on unmount
+  return () => {
+    if (timeRef.current) clearTimeout(timeRef.current);
+  };
+}, []);
+
+
+
+
+const autoEndTimerRef = useRef(null); 
+const isConnectedRef = useRef(false);
+
+useEffect(() => {
+  isConnectedRef.current = isConnected;
+  if (isConnected && timerRef.current) {
+    clearTimeout(timerRef.current); // cancel auto-end if connected
+    timerRef.current = null;
+  }
+}, [isConnected]);
+
  
 useEffect(() => {
   
@@ -306,9 +415,19 @@ useEffect(() => {
 socket.on("you-are-caller", () => {
   setIsCaller(true);
   isCallerRef.current = true;
- 
   setStatus("Ringing...");
 
+
+
+if (timerRef.current) {
+  clearTimeout(timerRef.current); // clear old timer if exists
+}
+
+timerRef.current = setTimeout(() => {
+  if (!isConnectedRef.current) {
+    endCall2();
+  }
+}, 30000);
 });
 
 socket.on("user-joined", () => {
@@ -319,7 +438,7 @@ socket.on("user-joined", () => {
     startCall(); // guaranteed to run for the caller
   }
    startTimeRef.current = new Date();
-  timerRef.current = setInterval(() => {
+  durationRef.current = setInterval(() => {
     const now = new Date();
     const diff = Math.floor((now - startTimeRef.current) / 1000); // seconds
 
@@ -351,7 +470,7 @@ socket.on("another-call", () => {
 
 
 //  socket.on("incoming-call", ({ from }) => {
-//     console.log("📞 Incoming call from:", from);
+//     console.log(" Incoming call from:", from);
 
 //     // ekhane alert ba UI popup show koro
 //     alert(`Incoming call from ${from}`);
@@ -446,7 +565,7 @@ socket.on("offer", async ({ offer }) => {
     }
   });
   socket.on("reject", () => {
-   
+   setReject(true);
     setStatus("Call rejected");
        setTimeout(() => {
     endCall();
@@ -456,16 +575,11 @@ socket.on("offer", async ({ offer }) => {
 
 
 
-
-
-
-
-
-
-
-  socket.on("end-call", () => {
+  socket.on("end-call", async() => {
    
     endCall();
+  
+
   });
 
   return () => {
@@ -480,7 +594,7 @@ socket.on("offer", async ({ offer }) => {
     socket.off("reject");
    
   };
-}, [roomId , myPhone , targetPhone,socket]);
+}, [roomId , myPhone , targetPhone,socket , isConnected,reject]);
 
 
 // camera rotation is starting from here 
@@ -627,7 +741,7 @@ const hasVideo = localStreamRef.current?.getVideoTracks().some(track => track.en
   return (
     <div className="main-video-call"
      style={{
-        backgroundImage: `url("./Images/call-background.jpg")`,
+        backgroundImage: isRemoteVideoOff  && `url("./Images/call-background.png")` ,
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}>
@@ -682,7 +796,19 @@ const hasVideo = localStreamRef.current?.getVideoTracks().some(track => track.en
         />
        {
         isRemoteVideoOff &&(
-            <div className="other-video-off">
+            <div className="other-video-off"
+            
+            
+            style={{
+        backgroundImage: `url("./Images/call-background.png")` ,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}>
+            
+            
+            
+            
+            
            <img  src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${contactDp}`} className="call-dp" alt="not found" />
       <h1>{callusername}</h1>
       <p>+91 {contactPhone}</p>

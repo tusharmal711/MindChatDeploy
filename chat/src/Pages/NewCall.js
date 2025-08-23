@@ -240,12 +240,14 @@ useEffect(() => {
   };
 
 
+const { showNavbar } = useScrollContext();
+
 return(
  <SwipeNavigator>
           <div className='call-container'>
                   
 
-            <div className='new-call2' onClick={()=>navigate("/calls")}>
+            <div className={`new-call2 ${showNavbar ? 'show' : 'hide'}`} onClick={()=>navigate("/calls")}>
             <FaAnglesLeft className='new-call-icon2'/>
              </div>
 
