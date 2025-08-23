@@ -737,8 +737,8 @@ export const FetchAllMessage = async (req, res) => {
 
 export const CallList = async (req, res) => {
   try {
-    const { caller, callee, time} = req.body;
-    const newCall = new CallContact({caller,callee,time});
+    const { caller, callee, time,status} = req.body;
+    const newCall = new CallContact({caller,callee,time,status});
     await newCall.save();
 
     res.status(201).json({ success: true, message: "callee saved" });
@@ -761,14 +761,18 @@ export const FetchCallList = async (req, res) => {
     if (!calls || calls.length === 0) {
       return res.status(404).json({ message: "No calls found" });
     }
+    
 
     // Return number + time
     const callList = calls.map((call) => ({
       phone: call.caller === myNumber ? call.callee : call.caller,
       time: call.time,  // assuming your schema has a "time" field
-      direction: call.caller === myNumber ? "outgoing" : "incoming"
+       status : call.status,
+      direction: call.caller === myNumber ? "outgoing" : "incoming",
+     
     }));
     
+  
     res.status(200).json(callList);
   } catch (err) {
     res.status(500).json({ error: err.message });
