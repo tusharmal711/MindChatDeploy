@@ -1772,31 +1772,6 @@ const [dchat,setDchat]=useState(false);
 
 
 
- useEffect(() => {
-    const chatBody = document.querySelector(".chat-body");
-
-    if (window.visualViewport) {
-      const handleResize = () => {
-        const viewportHeight = window.visualViewport.height;
-        const fullHeight = window.innerHeight;
-        const keyboardHeight = fullHeight - viewportHeight;
-
-        if (keyboardHeight > 150) {
-          // Keyboard is open
-          chatBody.style.height = `${viewportHeight - 60}px`; 
-          // adjust `-100` if you want to leave space for input-bar
-        } else {
-          // Keyboard closed -> reset
-          chatBody.style.height = "auto";
-        }
-      };
-
-      window.visualViewport.addEventListener("resize", handleResize);
-      return () =>
-        window.visualViewport.removeEventListener("resize", handleResize);
-    }
-  }, []);
-
 
 
 
