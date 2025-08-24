@@ -3529,15 +3529,14 @@ flex-direction: column;
 
 .chat-container{
     display: flex;
-    height: 100dvh;
+    height: var(--app-height, 100vh);
+     overflow: hidden;
+     flex-direction: column;
 }
 
 .second-nav{
      flex: 0 0 auto;
      position: sticky;
-}
-.chat-container {
-  height: var(--app-height); /* dynamic height */
 }
 
 .chat-body{
