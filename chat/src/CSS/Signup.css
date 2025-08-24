@@ -3028,7 +3028,7 @@ body {
     font-size: 1rem;
 }
 #entered-msg{
-    font-size: 1.03rem;
+    font-size: 1.02rem;
   }
   .items textarea{
     width:65%;
@@ -3527,25 +3527,7 @@ flex-direction: column;
     padding-top: 0.8rem;
 }
 
-.second{
-    display: flex;
-    height: var(--app-height, 100vh);
-     overflow: hidden;
-     flex-direction: column;
-}
 
-.chat-header{
-     flex: 0 0 auto;
-     position: sticky;
-}
-
-.chat-body{
-      flex: 1 1 auto;
-  overflow-y: auto;
-}
-.type-msg{
-  flex: 0 0 auto;
-}
 }
 
 
@@ -5407,3 +5389,24 @@ width:100%;
 }
 
 
+@media (max-width: 675px) {
+    .second{
+    display: flex;
+    height: var(--app-height, 100vh);
+     overflow: hidden;
+     flex-direction: column;
+}
+
+.chat-header{
+     flex: 0 0 auto;
+     position: sticky;
+}
+
+.chat-body{
+      flex: 1 1 auto;
+  overflow-y: auto;
+}
+.type-msg{
+  flex: 0 0 auto;
+}
+}
