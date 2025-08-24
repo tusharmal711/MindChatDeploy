@@ -5397,10 +5397,11 @@ width:100%;
      flex-direction: column;
 }
 
-.chat-header{
+.second-nav{
      flex: 0 0 auto;
      position: sticky;
       transition: transform 0.2s ease;
+      
 }
 .message{
        animation: fadeIn 0.2s ease;
