@@ -5391,38 +5391,23 @@ width:100%;
 
 @media (max-width: 675px) {
    
-.second{
-   
-  display: flex;
-  flex-direction: column;
-  height: 100vh; /* Full screen */
 
-}
 .second-nav{
     flex: 0 0 auto;
-  background: #f84040;
-position: absolute;
-z-index: 999999;
 
-      
 }
 
-.chat-body{
+.messages{
    flex: 1 1 auto;
   overflow-y: auto;
   
     
 }
-/* .messages{
-      flex: 1 1 auto;
-  overflow-y: auto;
-  padding-bottom: 60px;
- 
-} */
+
 
 .type-msg{
   flex: 0 0 auto;
-    transition: transform 0.25s ease;
+   
     
 }
 }
