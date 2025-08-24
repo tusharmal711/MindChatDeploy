@@ -20,6 +20,12 @@ const [callStatus,setCallStatus]=useState("Accept");
 
 const [contacts,setContacts]=useState([]);
 
+
+socket.on("connect", () => {
+  console.log("Connected with ID:", socket.id); 
+  socket.emit("register", myPhone);            
+});
+
 useEffect(() => {
 
 
@@ -148,7 +154,6 @@ useEffect(() => {
     });
   }
 }, [recentCalls]);
-
 
 
 

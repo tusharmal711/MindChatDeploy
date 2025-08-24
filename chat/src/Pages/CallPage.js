@@ -327,7 +327,7 @@ useEffect(() => {
 const [callDuration, setCallDuration] = useState("00:00:00");
 const startTimeRef = useRef(null);
 const timerRef = useRef(null);
-const durationRef=useRef(null);
+
 
 
  const [isCaller, setIsCaller] = useState(false);
@@ -377,28 +377,12 @@ useEffect(() => {
 
 
 
-const timeRef = useRef(null);
-
-useEffect(() => {
-  // cleanup on unmount
-  return () => {
-    if (timeRef.current) clearTimeout(timeRef.current);
-  };
-}, []);
 
 
 
 
-const autoEndTimerRef = useRef(null); 
-const isConnectedRef = useRef(false);
 
-useEffect(() => {
-  isConnectedRef.current = isConnected;
-  if (isConnected && timerRef.current) {
-    clearTimeout(timerRef.current); // cancel auto-end if connected
-    timerRef.current = null;
-  }
-}, [isConnected]);
+
 
  
 useEffect(() => {
@@ -419,15 +403,7 @@ socket.on("you-are-caller", () => {
 
 
 
-if (timerRef.current) {
-  clearTimeout(timerRef.current); // clear old timer if exists
-}
 
-timerRef.current = setTimeout(() => {
-  if (!isConnectedRef.current) {
-    endCall2();
-  }
-}, 30000);
 });
 
 socket.on("user-joined", () => {
@@ -438,7 +414,7 @@ socket.on("user-joined", () => {
     startCall(); // guaranteed to run for the caller
   }
    startTimeRef.current = new Date();
-  durationRef.current = setInterval(() => {
+  timerRef.current = setInterval(() => {
     const now = new Date();
     const diff = Math.floor((now - startTimeRef.current) / 1000); // seconds
 

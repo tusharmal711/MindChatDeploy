@@ -233,7 +233,7 @@ useEffect(() => {
  
 socket.on("connect", () => {
   console.log("Connected with ID:", socket.id); 
-  socket.emit("register", myPhone);            
+  socket.emit("register", phone);            
 });
 
 
