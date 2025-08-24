@@ -3534,7 +3534,7 @@ flex-direction: column;
      flex-direction: column;
 }
 
-.second-nav{
+.chat-header{
      flex: 0 0 auto;
      position: sticky;
 }
