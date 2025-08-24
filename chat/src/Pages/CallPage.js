@@ -135,55 +135,55 @@ useEffect(() => {
 
 const [reject,setReject]=useState(false);
 
-const endCall2 = async() => {
-  if(isConnected){
-      if (ringingSoundRef.current) {
-        console.log("end-call");
-    ringingSoundRef.current.play()
-      .then(() => console.log("Ringtone playing..."))
-      .catch((e) => console.log("Audio play failed:", e));
-  }
-  }
+// const endCall2 = async() => {
+//   if(isConnected){
+//       if (ringingSoundRef.current) {
+//         console.log("end-call");
+//     ringingSoundRef.current.play()
+//       .then(() => console.log("Ringtone playing..."))
+//       .catch((e) => console.log("Audio play failed:", e));
+//   }
+//   }
   
 
 
-  if (roomId) {
-    socket.emit("end-call", { roomId });
-  }
-socket.hasJoined=false;
- if (timerRef.current) {
-    clearInterval(timerRef.current);
-    timerRef.current = null;
-  }
-   setCallDuration("00:00:00");
+//   if (roomId) {
+//     socket.emit("end-call", { roomId });
+//   }
+// socket.hasJoined=false;
+//  if (timerRef.current) {
+//     clearInterval(timerRef.current);
+//     timerRef.current = null;
+//   }
+//    setCallDuration("00:00:00");
 
-  if (localStreamRef.current) {
-    localStreamRef.current.getTracks().forEach(track => track.stop());
-    localStreamRef.current = null;
-  }
+//   if (localStreamRef.current) {
+//     localStreamRef.current.getTracks().forEach(track => track.stop());
+//     localStreamRef.current = null;
+//   }
 
  
-  if (peerConnectionRef.current) {
-    peerConnectionRef.current.close();
-    peerConnectionRef.current = null;
-  }
+//   if (peerConnectionRef.current) {
+//     peerConnectionRef.current.close();
+//     peerConnectionRef.current = null;
+//   }
 
 
-  sessionStorage.removeItem("roomId");
-  sessionStorage.removeItem("contactPhone");
-  sessionStorage.removeItem("callusername");
-  sessionStorage.removeItem("contactDp");
+//   sessionStorage.removeItem("roomId");
+//   sessionStorage.removeItem("contactPhone");
+//   sessionStorage.removeItem("callusername");
+//   sessionStorage.removeItem("contactDp");
 
 
-  setIsConnected(false);
-  setIsVideoOff(true);
-  setIsMuted(false);
-  setStatus("Calling...");
+//   setIsConnected(false);
+//   setIsVideoOff(true);
+//   setIsMuted(false);
+//   setStatus("Calling...");
 
-  navigate("/calls");
+//   navigate("/calls");
 
 
-};
+// };
 
 
 const endCall = async() => {
