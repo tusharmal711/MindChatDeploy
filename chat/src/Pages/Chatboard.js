@@ -250,7 +250,7 @@ const [currentViewedRoom, setCurrentViewedRoom] = useState(null);
 const[onlineNow,setOnlineNow]=useState(false);
 const [online,setOnline]=useState("offline");
 
-  // const chatInputRef = useRef(null);
+  const chatInputRef = useRef(null);
 useEffect(() => {
   if (!room ){
     return ; 
@@ -727,9 +727,9 @@ const [imageLoading,setImageLoading]=useState(false);
  const messageId = Date.now().toString();
 const sendMessage = async (req, res) => {
   
-  //    setTimeout(() => {
-  //   chatInputRef.current?.focus();
-  // }, 100); // 50–100ms is enough
+     setTimeout(() => {
+    chatInputRef.current?.focus();
+  }, 100); // 50–100ms is enough
   setShowIcon(false);
  
   setViewUpload(false);
@@ -1186,7 +1186,7 @@ const checkOnline = (mobile) => {
   
     try {
       if (!contactId) {
-        console.error("Error: Invalid contact ID");
+       
         return;
       }
   
@@ -1615,14 +1615,28 @@ const removeSticker =()=>{
 
   const handleFocus = () => {
     setIsFocused(true);
+   
+
   };
 
   const handleBlur = () => {
     setIsFocused(false);
+     
   };
 
+useEffect(() => {
+  const plus = document.getElementById("plus");
 
+  if (!plus) return; // prevent error if null
 
+  if (chat !== "") {
+    plus.classList.add("plus-none");
+  
+  } else {
+    plus.classList.remove("plus-none");
+   
+  }
+}, [chat]);
 
 
 
@@ -3076,7 +3090,7 @@ onClick={() => handleCallClick(
   
   
   
-              {/* <div className={isFocused ? 'type-msg extra' : 'type-msg'}>
+              <div className="type-msg">
               
               
                 
@@ -3097,7 +3111,20 @@ onClick={() => handleCallClick(
                          <input type="file" id="audio-send" name="image" onChange={imageSet} accept=".mp3, .wav, .ogg , .mpeg" />
                          <input type="file" id="camera-send" name="image" onChange={imageSet} capture="user" accept="image/*"/>
                          <input type="file" id="document-send" name="image" onChange={imageSet} accept=".pdf, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .txt"/>
-                         <LuSticker onClick={fileSticker} id="emoji"  /><input type="text" placeholder="Type a message..."  onKeyDown={handleKeyDown} id="entered-msg" value={chat}  onChange={handleChange} onClick={secondDiv}   ref={chatInputRef}  onFocus={handleFocus} onBlur={handleBlur} />
+                         <LuSticker onClick={fileSticker} id="emoji"  />
+      <textarea
+  placeholder="Type a message..."
+  onKeyDown={handleKeyDown}
+  id="entered-msg"
+  value={chat}
+  onChange={handleChange}
+  onClick={secondDiv}
+  ref={chatInputRef}
+  onFocus={handleFocus}
+  onBlur={handleBlur}
+  rows={1}   // starts with 1 row
+  className="chat-input"
+/>
                       
                     
                         {
@@ -3110,7 +3137,7 @@ onClick={() => handleCallClick(
                  </div>
               </div>
     
-     */}
+    
     
     
     
@@ -3224,7 +3251,7 @@ onClick={() => handleCallClick(
 <FaArrowLeft id="edit-arrow" onClick={hideEditProfile}/><h2 id="eph">Edit Contact</h2>
 <form onSubmit={updateContacts}>
   <div className="input-sec">
-  <input type="text" placeholder="First name" id="first-name"  value={firstName} onChange={(e)=>{setFirstName(e.target.value)}} required/>
+  <input type="text" placeholder="First name" id="first-name" autoFocus value={firstName} onChange={(e)=>{setFirstName(e.target.value)}} required/>
   <input type="text" placeholder="Last name" id="last-name" value={lastName} onChange={(e)=>{setLastName(e.target.value)}}/>
   </div>
 
