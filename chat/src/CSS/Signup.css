@@ -3028,7 +3028,7 @@ body {
     font-size: 1rem;
 }
 #entered-msg{
-    font-size: 1.05rem;
+    font-size: 1.03rem;
   }
   .items textarea{
     width:65%;
@@ -3534,8 +3534,11 @@ flex-direction: column;
 
 .second-nav{
      flex: 0 0 auto;
+     position: sticky;
 }
-
+.chat-container {
+  height: var(--app-height); /* dynamic height */
+}
 
 .chat-body{
       flex: 1 1 auto;

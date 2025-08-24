@@ -1773,7 +1773,13 @@ const [dchat,setDchat]=useState(false);
 
 
 
-  
+  function setAppHeight() {
+  const doc = document.documentElement
+  doc.style.setProperty('--app-height', `${window.innerHeight}px`)
+}
+window.addEventListener('resize', setAppHeight)
+setAppHeight()
+
 
 
 
