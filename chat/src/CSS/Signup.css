@@ -5393,8 +5393,10 @@ width:100%;
    
 
 .second-nav{
-   flex: 0 0 auto;
-  background: #fff;
+    flex: 0 0 auto;
+  background: #f84040;
+position: absolute;
+z-index: 999999;
 
       
 }
