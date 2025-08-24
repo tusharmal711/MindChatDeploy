@@ -5391,7 +5391,13 @@ width:100%;
 
 @media (max-width: 675px) {
    
+.second{
+   
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* Full screen */
 
+}
 .second-nav{
     flex: 0 0 auto;
   background: #f84040;
@@ -5401,18 +5407,18 @@ z-index: 999999;
       
 }
 
-/* .chat-body{
+.chat-body{
    flex: 1 1 auto;
   overflow-y: auto;
-  transition: height 0.2s ease;
+  
     
-} */
-.messages{
+}
+/* .messages{
       flex: 1 1 auto;
   overflow-y: auto;
   padding-bottom: 60px;
  
-}
+} */
 
 .type-msg{
   flex: 0 0 auto;
