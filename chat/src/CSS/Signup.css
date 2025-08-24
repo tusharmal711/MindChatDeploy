@@ -5390,33 +5390,30 @@ width:100%;
 
 
 @media (max-width: 675px) {
-
+    .second{
+   
+}
 
 .second-nav{
-     flex: 0 0 auto;
-     position: sticky;
-       top: 0;
-  z-index: 10;
-      background-color: white;
+    position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #fff;
+  transition: transform 0.25s ease;
       
 }
-.message{
-       animation: fadeIn 0.2s ease;
-        flex: 1 1 auto;
-  overflow-y: auto;
-}
 
-.chat-body{
-     display: flex;
-    height: var(--app-height, 100dvh);
-     overflow: hidden;
-     flex-direction: column;
-     
+
+.message{
+      flex: 1 1 auto;
+  overflow-y: auto;
+  padding-bottom: 60px;
  
 }
 
 .type-msg{
   flex: 0 0 auto;
     transition: transform 0.25s ease;
+    
 }
 }

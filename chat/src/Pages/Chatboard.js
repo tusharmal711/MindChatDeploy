@@ -1773,37 +1773,29 @@ const [dchat,setDchat]=useState(false);
 
 
 
-  function setAppHeight() {
-  const doc = document.documentElement
-  doc.style.setProperty('--app-height', `${window.innerHeight}px`)
-}
-window.addEventListener('resize', setAppHeight)
-setAppHeight()
-
 useEffect(() => {
   const inputBar = document.querySelector(".type-msg");
+  const navBar = document.querySelector(".second-nav");
 
   const handleResize = () => {
-    // window.innerHeight shrinks when keyboard opens (on mobile)
     const visibleHeight = window.innerHeight;
     const fullHeight = window.screen.height;
-
     const keyboardHeight = fullHeight - visibleHeight;
 
     if (keyboardHeight > 100) {
       // keyboard opened
       inputBar.style.transform = `translateY(-${keyboardHeight}px)`;
+      navBar.style.transform = `translateY(-${keyboardHeight / 2}px)`; // optional: shift navbar slightly
     } else {
       // keyboard closed
       inputBar.style.transform = "translateY(0)";
+      navBar.style.transform = "translateY(0)";
     }
   };
 
   window.addEventListener("resize", handleResize);
   return () => window.removeEventListener("resize", handleResize);
 }, []);
-
-
 
 
 
