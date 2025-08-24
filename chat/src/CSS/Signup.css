@@ -5404,7 +5404,7 @@ width:100%;
 }
 
 
-.messages{
+.chat-box{
       flex: 1 1 auto;
   overflow-y: auto;
   padding-bottom: 60px;
