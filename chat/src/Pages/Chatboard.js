@@ -1780,6 +1780,28 @@ const [dchat,setDchat]=useState(false);
 window.addEventListener('resize', setAppHeight)
 setAppHeight()
 
+useEffect(() => {
+  const inputBar = document.querySelector(".type-msg");
+
+  const handleResize = () => {
+    // window.innerHeight shrinks when keyboard opens (on mobile)
+    const visibleHeight = window.innerHeight;
+    const fullHeight = window.screen.height;
+
+    const keyboardHeight = fullHeight - visibleHeight;
+
+    if (keyboardHeight > 100) {
+      // keyboard opened
+      inputBar.style.transform = `translateY(-${keyboardHeight}px)`;
+    } else {
+      // keyboard closed
+      inputBar.style.transform = "translateY(0)";
+    }
+  };
+
+  window.addEventListener("resize", handleResize);
+  return () => window.removeEventListener("resize", handleResize);
+}, []);
 
 
 
@@ -2435,7 +2457,7 @@ onClick={() => handleCallClick(
              
     
     
-              <div className="chat-body" id="chat-body" style={{ backgroundImage: `url(${" ./Images/bg.png"})` }}>
+<div className="chat-body" id="chat-body" style={{ backgroundImage: `url(${" ./Images/bg.png"})` }}>
               
 
 

@@ -5395,12 +5395,15 @@ width:100%;
     height: var(--app-height, 100dvh);
      overflow: hidden;
      flex-direction: column;
+     
 }
 
 .second-nav{
      flex: 0 0 auto;
      position: sticky;
-      transition: transform 0.2s ease;
+       top: 0;
+  z-index: 10;
+      background-color: white;
       
 }
 .message{
@@ -5417,5 +5420,6 @@ width:100%;
 
 .type-msg{
   flex: 0 0 auto;
+    transition: transform 0.25s ease;
 }
 }
