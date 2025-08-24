@@ -1780,7 +1780,50 @@ const [dchat,setDchat]=useState(false);
 window.addEventListener('resize', setAppHeight)
 setAppHeight()
 
-
+function setAppHeight() {
+            const doc = document.documentElement;
+            doc.style.setProperty('--app-height', `${window.innerHeight}px`);
+        }
+        
+        window.addEventListener('resize', setAppHeight);
+        window.addEventListener('load', setAppHeight);
+        
+        // Focus the textarea when clicking anywhere in the type-msg area
+        document.querySelector('.type-msg').addEventListener('click', function() {
+            document.querySelector('.text-input').focus();
+        });
+        
+        // Handle sending messages
+        document.querySelector('.send-button').addEventListener('click', function() {
+            const textInput = document.querySelector('.text-input');
+            const message = textInput.value.trim();
+            
+            if (message) {
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('message', 'sent');
+                messageElement.textContent = message;
+                
+                document.querySelector('.chat-body').appendChild(messageElement);
+                textInput.value = '';
+                
+                // Scroll to bottom
+                document.querySelector('.chat-body').scrollTop = document.querySelector('.chat-body').scrollHeight;
+            }
+        });
+        
+        // Allow pressing Enter to send (but Shift+Enter for new line)
+        document.querySelector('.text-input').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                document.querySelector('.send-button').click();
+            }
+        });
+        
+        // Add some demo messages on load
+        window.addEventListener('load', function() {
+            const chatBody = document.querySelector('.chat-body');
+            chatBody.scrollTop = chatBody.scrollHeight;
+        });
 
 
 
