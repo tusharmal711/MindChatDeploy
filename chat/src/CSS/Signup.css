@@ -5412,7 +5412,7 @@ width:100%;
 .chat-body{
       flex: 1 1 auto;
   overflow-y: auto;
-   -webkit-overflow-scrolling: touch;
+  -webkit-overflow-scrolling: touch;
 }
 
 .type-msg{
