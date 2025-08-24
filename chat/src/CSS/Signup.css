@@ -5390,13 +5390,7 @@ width:100%;
 
 
 @media (max-width: 675px) {
-    .second{
-    display: flex;
-    height: var(--app-height, 100dvh);
-     overflow: hidden;
-     flex-direction: column;
-     
-}
+
 
 .second-nav{
      flex: 0 0 auto;
@@ -5413,8 +5407,11 @@ width:100%;
 }
 
 .chat-body{
-      flex: 1 1 auto;
-  overflow-y: auto;
+     display: flex;
+    height: var(--app-height, 100dvh);
+     overflow: hidden;
+     flex-direction: column;
+     
  
 }
 
