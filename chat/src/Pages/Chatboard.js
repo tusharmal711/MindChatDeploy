@@ -229,12 +229,23 @@ useEffect(() => {
 
 
 
+useEffect(() => {
+  const mySocket = sessionStorage.getItem("phone") || Cookies.get("mobile") || localStorage.getItem("phone");
 
- 
-socket.on("connect", () => {
-  console.log("Connected with ID:", socket.id); 
-  socket.emit("register", phone);            
-});
+  socket.on("connect", () => {
+    console.log("Fetched Phone:", mySocket);
+    console.log("Connected with ID:", socket.id);
+    if (mySocket) {
+      socket.emit("register", mySocket);
+    } else {
+      console.warn("Phone not found in storage");
+    }
+  });
+
+  return () => {
+    socket.off("connect");
+  };
+}, []);
 
 
 
@@ -738,7 +749,7 @@ const sendMessage = async (req, res) => {
   }
 
   // Add new contact
-  await fetch(`${backendUrl}addNewContact`, {
+  await fetch(`${backendUrl}api/addNewContact`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({

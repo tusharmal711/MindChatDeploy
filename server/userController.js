@@ -194,7 +194,7 @@ export const sendFpOTP = async (req, res) => {
 
 
 // login credential is starting from here 
-export const isLogin = async (req, res) => {
+export const isLogin = async(req, res) => {
   try {
       const { phone, password } = req.body;
 

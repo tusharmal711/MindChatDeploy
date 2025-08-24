@@ -53,41 +53,25 @@ const Login = () =>{
 
 
 const isLogin = async (e) => {
- 
-
   try {
     const response = await axios.post(`${backendUrl}api/login`, {
       phone,
       password,
     });
-  
-    // Store token in localStorage (or sessionStorage)
-  //   localStorage.setItem("token", response.data.token);
-    if(response!==400 || response!==401 || response!==500){
-      sessionStorage.setItem("phone",phone);
-      toast.success("Successfully logged in!", { position: "top-right" });
-      // Cookies.set("mobile", phone, { expires: 7 }); // expires in 7 days
-      Cookies.set("mobile", phone); // Persist login
+
+    if (response.status === 200) {   //  Proper check
       sessionStorage.setItem("phone", phone);
       localStorage.setItem("phone", phone);
-      
-      socket.on("connect", () => {
-       
-        socket.emit("register", phone);            
-      });
-       
-      
- 
+      Cookies.set("mobile", phone, { expires: 7 });
 
-     navigate("/chatboard");
+      toast.success("Successfully logged in!", { position: "top-right" });
+      navigate("/chatboard");
     }
-   
-    // Redirect to dashboard after login
   } catch (error) {
     toast.error("Invalid credentials !", { position: "top-right" });
-    }  
-  
+  }
 };
+
 
   const togglePassword = () => {
     setShowPassword(prev => !prev);
