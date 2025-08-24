@@ -250,7 +250,7 @@ const [currentViewedRoom, setCurrentViewedRoom] = useState(null);
 const[onlineNow,setOnlineNow]=useState(false);
 const [online,setOnline]=useState("offline");
 
-  const chatInputRef = useRef(null);
+  // const chatInputRef = useRef(null);
 useEffect(() => {
   if (!room ){
     return ; 
@@ -727,9 +727,9 @@ const [imageLoading,setImageLoading]=useState(false);
  const messageId = Date.now().toString();
 const sendMessage = async (req, res) => {
   
-     setTimeout(() => {
-    chatInputRef.current?.focus();
-  }, 100); // 50–100ms is enough
+  //    setTimeout(() => {
+  //   chatInputRef.current?.focus();
+  // }, 100); // 50–100ms is enough
   setShowIcon(false);
  
   setViewUpload(false);
