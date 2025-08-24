@@ -3076,7 +3076,7 @@ onClick={() => handleCallClick(
   
   
   
-              <div className={isFocused ? 'type-msg extra' : 'type-msg'}>
+              {/* <div className={isFocused ? 'type-msg extra' : 'type-msg'}>
               
               
                 
@@ -3110,7 +3110,7 @@ onClick={() => handleCallClick(
                  </div>
               </div>
     
-    
+     */}
     
     
     
