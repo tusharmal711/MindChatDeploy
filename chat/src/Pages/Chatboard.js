@@ -1783,7 +1783,7 @@ const [dchat,setDchat]=useState(false);
 
         if (keyboardHeight > 150) {
           // Keyboard is open
-          chatBody.style.height = `${viewportHeight - 100}px`; 
+          chatBody.style.height = `${viewportHeight - 60}px`; 
           // adjust `-100` if you want to leave space for input-bar
         } else {
           // Keyboard closed -> reset
