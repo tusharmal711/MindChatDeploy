@@ -1772,30 +1772,30 @@ const [dchat,setDchat]=useState(false);
 
 
 
+ useEffect(() => {
+    const chatBody = document.querySelector(".chat-body");
 
-useEffect(() => {
-  const inputBar = document.querySelector(".type-msg");
-  const navBar = document.querySelector(".second-nav");
+    if (window.visualViewport) {
+      const handleResize = () => {
+        const viewportHeight = window.visualViewport.height;
+        const fullHeight = window.innerHeight;
+        const keyboardHeight = fullHeight - viewportHeight;
 
-  const handleResize = () => {
-    const visibleHeight = window.innerHeight;
-    const fullHeight = window.screen.height;
-    const keyboardHeight = fullHeight - visibleHeight;
+        if (keyboardHeight > 150) {
+          // Keyboard is open
+          chatBody.style.height = `${viewportHeight - 100}px`; 
+          // adjust `-100` if you want to leave space for input-bar
+        } else {
+          // Keyboard closed -> reset
+          chatBody.style.height = "auto";
+        }
+      };
 
-    if (keyboardHeight > 100) {
-      // keyboard opened
-      inputBar.style.transform = `translateY(-${keyboardHeight}px)`;
-      navBar.style.transform = `translateY(-${keyboardHeight / 2}px)`; // optional: shift navbar slightly
-    } else {
-      // keyboard closed
-      inputBar.style.transform = "translateY(0)";
-      navBar.style.transform = "translateY(0)";
+      window.visualViewport.addEventListener("resize", handleResize);
+      return () =>
+        window.visualViewport.removeEventListener("resize", handleResize);
     }
-  };
-
-  window.addEventListener("resize", handleResize);
-  return () => window.removeEventListener("resize", handleResize);
-}, []);
+  }, []);
 
 
 

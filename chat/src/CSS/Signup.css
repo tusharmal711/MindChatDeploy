@@ -5391,20 +5391,26 @@ width:100%;
 
 @media (max-width: 675px) {
     .second{
-   
+    display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .second-nav{
-    position: sticky;
-  top: 0;
-  z-index: 100;
+   flex: 0 0 auto;
   background: #fff;
-  transition: transform 0.25s ease;
+
       
 }
 
-
 .chat-body{
+   flex: 1 1 auto;
+  overflow-y: auto;
+  transition: height 0.2s ease;
+    
+}
+.messages{
       flex: 1 1 auto;
   overflow-y: auto;
   padding-bottom: 60px;
