@@ -3527,7 +3527,7 @@ flex-direction: column;
     padding-top: 0.8rem;
 }
 
-.chat-container{
+.second{
     display: flex;
     height: var(--app-height, 100vh);
      overflow: hidden;
