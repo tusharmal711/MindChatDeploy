@@ -1026,6 +1026,7 @@ ul{
        -webkit-appearance: none; /* iOS Safari */
   -moz-appearance: none;    /* Firefox */
   appearance: none;
+   resize: none; 
 }
 .items textarea::-webkit-scrollbar {
   display: none;             /* Chrome, Safari, Edge */
@@ -2498,6 +2499,9 @@ width:100%;
         background-color:black;
         color:white;
         font-family: sans-serif;
+          -webkit-appearance: none; /* iOS Safari */
+  -moz-appearance: none;    /* Firefox */
+  appearance: none;
     }
      .plus-none{
         display: none;
@@ -3003,7 +3007,7 @@ iframe{
     align-items: center;
     justify-content: center;
 
-    height: 3.5rem;
+    height: 3.4rem;
     background-color: black;
     border-radius: 3.5rem;
 }

@@ -545,7 +545,7 @@ socket.on("offer", async ({ offer }) => {
     setStatus("Call rejected");
        setTimeout(() => {
     endCall();
-  }, 2000);
+  }, 1000);
        
   });
 
