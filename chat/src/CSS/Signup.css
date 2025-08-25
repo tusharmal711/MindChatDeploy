@@ -5334,8 +5334,8 @@ width:100%;
 /* Action buttons container */
 .incoming-call-actions.incomming-button {
   display: flex;
-  gap: 20px;
-  margin-top: 10px;
+  gap: 25px;
+  margin-top: 15px;
 }
 
 /* Base button style */
@@ -5352,7 +5352,7 @@ width:100%;
 }
 .incoming-call-actions button {
    -webkit-tap-highlight-color: transparent;
-  padding: 16px 16PX;
+  padding: 20px 20PX;
   border: none;
   border-radius: 50%;
   font-weight: bold;
@@ -5392,7 +5392,7 @@ width:100%;
 .incoming-call-actions{
     display: flex;
     margin-top: 3rem;
-    gap:2.5rem;
+    gap:2.7rem;
 }
 
 
