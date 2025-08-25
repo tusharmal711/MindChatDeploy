@@ -1784,24 +1784,6 @@ const formatMessageTime = (dateString) => {
 
 
 
-  const [keyboardOpen, setKeyboardOpen] = useState(false);
-
-  useEffect(() => {
-    const initialHeight = window.innerHeight;
-
-    const handleResize = () => {
-      const currentHeight = window.innerHeight;
-      // if height reduces by more than 150px → assume keyboard is open
-      if (initialHeight - currentHeight > 150) {
-        setKeyboardOpen(true);
-      } else {
-        setKeyboardOpen(false);
-      }
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
 
 
@@ -2369,7 +2351,7 @@ const contactRoom = [phone, contact.mobile].sort().join("_");
             <div className="chat second">
             {
               selectedContact && (
-                <div className={`second-nav ${keyboardOpen ? "shifted" : ""}`}>
+                <div className="second-nav">
                 <FaArrowLeft  onClick={sec} className="second-nav-arrow"/>
        {         
     selectedTextMessage &&(
