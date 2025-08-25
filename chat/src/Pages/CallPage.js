@@ -570,7 +570,7 @@ socket.on("offer", async ({ offer }) => {
     socket.off("reject");
    
   };
-}, [roomId , myPhone , targetPhone,socket , isConnected,reject]);
+}, [roomId , myPhone , targetPhone,socket]);
 
 
 // camera rotation is starting from here 
