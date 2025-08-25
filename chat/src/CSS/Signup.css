@@ -5402,14 +5402,15 @@ width:100%;
 
 
 /* Fixed navigation bar */
-/* .second-nav {
+.second-nav {
   position: sticky;
   top: 0;
   z-index: 100;
   background: white;
+  padding:2px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  transform: translateY(-50rem);
-} */
+ 
+}
 
 
 .type-msg{
