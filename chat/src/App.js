@@ -234,20 +234,20 @@ useEffect(() => {
    
     setInComingCall(false);
 
-      try {
+      // try {
           
-          const response = await fetch(`${backendUrl}api/callList`,{
-             method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({caller : from , callee : myPhone , time : new Date().toISOString() , status:"missed" }),
-          });
+      //     const response = await fetch(`${backendUrl}api/callList`,{
+      //        method: "POST",
+      //     headers: { "Content-Type": "application/json" },
+      //     body: JSON.stringify({caller : from , callee : myPhone , time : new Date().toISOString() , status:"missed" }),
+      //     });
     
-          if (response.status === 201) {
-           console.log("call-saved");
-          }
-        } catch (error) {
-         console.log("call-not-saved");
-        }
+      //     if (response.status === 201) {
+      //      console.log("call-saved");
+      //     }
+      //   } catch (error) {
+      //    console.log("call-not-saved");
+      //   }
    
   });
   const handlePingTest = async (callerPhone) => {
