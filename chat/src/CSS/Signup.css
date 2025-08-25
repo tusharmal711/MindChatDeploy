@@ -5423,7 +5423,7 @@ width:100%;
 .chat-body{
   flex: 1;
   overflow-y:scroll;
-  margin-bottom: 60px; /* Space for input area */
+  margin-top: 100px; /* Space for input area */
 }
 
 /* Input area at bottom */
