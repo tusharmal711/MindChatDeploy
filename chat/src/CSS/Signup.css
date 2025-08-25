@@ -5420,7 +5420,7 @@ width:100%;
 }
 
 /* Message area that scrolls independently */
-.messages{
+.chat-body{
   flex: 1;
   overflow-y: auto;
   padding-bottom: 60px; /* Space for input area */
