@@ -767,29 +767,27 @@ export const FetchCallList = async (req, res) => {
     // Find all calls where user is either caller or callee
     const calls = await CallContact.find({
       $or: [{ caller: myNumber }, { callee: myNumber }],
-    }).sort({ createdAt: -1 }); // newest first (if you have timestamps)
+    })
+      .sort({ createdAt: -1 }) // newest first
+      .limit(30);              // fetch only latest 30
 
     if (!calls || calls.length === 0) {
       return res.status(404).json({ message: "No calls found" });
     }
-    
 
     // Return number + time
     const callList = calls.map((call) => ({
       phone: call.caller === myNumber ? call.callee : call.caller,
       time: call.time,  // assuming your schema has a "time" field
-       status : call.status,
+      status: call.status,
       direction: call.caller === myNumber ? "outgoing" : "incoming",
-     
     }));
-    
-  
+
     res.status(200).json(callList);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
-
 
 
 
