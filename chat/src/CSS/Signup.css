@@ -5422,8 +5422,8 @@ width:100%;
 /* Message area that scrolls independently */
 .chat-body{
   flex: 1;
-  overflow-y: auto;
-  padding-bottom: 60px; /* Space for input area */
+  overflow-y:scroll;
+  margin-bottom: 60px; /* Space for input area */
 }
 
 /* Input area at bottom */
@@ -5441,7 +5441,7 @@ width:100%;
 
 .type-msg{
   flex: 0 0 auto;
-margin-bottom: 1rem;
+
     
 }
 }
