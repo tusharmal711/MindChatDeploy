@@ -5403,15 +5403,17 @@ width:100%;
 
 /* Fixed navigation bar */
 .second-nav {
-  position: sticky;
+  position: fixed;
   top: 0;
   z-index: 100;
   background: white;
-
+display: flex;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
- 
+  transition: transform 0.3s ease-in-out;
 }
-
+.second-nav.shifted {
+  transform: translateY(60px); /* push down by half (60px/2 = 30px) */
+}
 
 .type-msg{
   flex: 0 0 auto;
