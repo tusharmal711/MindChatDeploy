@@ -22,7 +22,7 @@ const SwipeNavigator = ({ children }) => {
     },
     preventScrollOnSwipe: true,
     trackMouse: true,
-    delta: 80,      // 👈 minimum swipe distance in px (default is 10)
+    delta: 100,      // 👈 minimum swipe distance in px (default is 10)
     velocity: 0.5   // 👈 minimum swipe speed (default is 0.3)
   });
 
