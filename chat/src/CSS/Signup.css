@@ -5406,6 +5406,13 @@ width:100%;
   flex-direction: column;
   overflow: hidden;
 }
+.second{
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
 
 /* Fixed navigation bar */
 .second-nav {
