@@ -1772,7 +1772,7 @@ const formatMessageTime = (dateString) => {
 useEffect(() => {
   const handleResize = () => {
     // Adjust layout when keyboard appears/disappears
-    const chatBody = document.querySelector('.chat-body');
+    const chatBody = document.querySelector('.messages');
     if (chatBody) {
       chatBody.scrollTop = chatBody.scrollHeight;
     }
