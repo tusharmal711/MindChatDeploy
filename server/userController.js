@@ -737,16 +737,27 @@ export const FetchAllMessage = async (req, res) => {
 
 export const CallList = async (req, res) => {
   try {
-    const { caller, callee, time,status} = req.body;
-    const newCall = new CallContact({caller,callee,time,status});
+    const { caller, callee, time, status } = req.body;
+
+    // If status is not provided, don't save
+    if (!status) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Call not saved because status is missing" 
+      });
+    }
+
+    const newCall = new CallContact({ caller, callee, time, status });
     await newCall.save();
 
-    res.status(201).json({ success: true, message: "callee saved" });
+    res.status(201).json({ success: true, message: "Call saved successfully" });
+
   } catch (error) {
-    console.error("Error during call saved", error);
+    console.error("Error during call save", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 
 export const FetchCallList = async (req, res) => {
