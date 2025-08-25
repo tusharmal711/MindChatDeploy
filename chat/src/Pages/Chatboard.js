@@ -1768,7 +1768,27 @@ const formatMessageTime = (dateString) => {
 
 
 
+// Add this useEffect to handle keyboard events
+useEffect(() => {
+  const handleResize = () => {
+    // Adjust layout when keyboard appears/disappears
+    const chatBody = document.querySelector('.chat-body');
+    if (chatBody) {
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
+  };
 
+  window.addEventListener('resize', handleResize);
+  return () => window.removeEventListener('resize', handleResize);
+}, []);
+
+// Ensure messages scroll to bottom when new messages arrive
+useEffect(() => {
+  const chatBody = document.querySelector('.chat-body');
+  if (chatBody) {
+    chatBody.scrollTop = chatBody.scrollHeight;
+  }
+}, [chats]);
 
 
 

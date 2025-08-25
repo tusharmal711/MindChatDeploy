@@ -5399,11 +5399,41 @@ width:100%;
 @media (max-width: 675px) {
    
 
-.second-nav{
-    flex: 0 0 auto;
-
+/* Ensure the chat container takes full viewport height */
+.chatContainer {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
+/* Fixed navigation bar */
+.second-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: white;
+  padding: 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Message area that scrolls independently */
+.chat-body {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 60px; /* Space for input area */
+}
+
+/* Input area at bottom */
+.type-msg {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  padding: 10px;
+  border-top: 1px solid #ddd;
+}
 
 
 
