@@ -1769,18 +1769,18 @@ const formatMessageTime = (dateString) => {
 
 
 // Add this useEffect to handle keyboard events
-useEffect(() => {
-  const handleResize = () => {
-    // Adjust layout when keyboard appears/disappears
-    const chatBody = document.querySelector('.chat-box');
-    if (chatBody) {
-      chatBody.scrollTop = chatBody.scrollHeight;
-    }
-  };
+// useEffect(() => {
+//   const handleResize = () => {
+//     // Adjust layout when keyboard appears/disappears
+//     const chatBody = document.querySelector('.chat-box');
+//     if (chatBody) {
+//       chatBody.scrollTop = chatBody.scrollHeight;
+//     }
+//   };
 
-  window.addEventListener('resize', handleResize);
-  return () => window.removeEventListener('resize', handleResize);
-}, []);
+//   window.addEventListener('resize', handleResize);
+//   return () => window.removeEventListener('resize', handleResize);
+// }, []);
 
 
 
