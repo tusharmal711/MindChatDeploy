@@ -5401,7 +5401,7 @@ width:100%;
 
 /* Ensure the chat container takes full viewport height */
 .second{
-  height: 100vh;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -5441,7 +5441,7 @@ width:100%;
 
 .type-msg{
   flex: 0 0 auto;
-   
+margin-bottom: 1rem;
     
 }
 }
