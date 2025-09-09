@@ -333,6 +333,7 @@ useEffect(() => {
 
 
     return(
+      
         <div className="profile-container">
             <div className="profile-main">
                     <div className="profile-top">
@@ -352,11 +353,12 @@ useEffect(() => {
                         <div className="profile-middle-second">
                                <h1>{friendName}</h1>
                                <p onClick={()=>setViewSection(3)}>{friendCount} friends</p>
-                        </div>
-                        <div className="profile-middle-third">
+                                <div className="profile-middle-third">
                             <button>Add friend</button>
-                            <button>Edit profile</button>
+                           
                         </div>
+                        </div>
+                       
                         
                         
                         
