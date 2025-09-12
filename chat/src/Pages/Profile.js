@@ -1,5 +1,9 @@
+import SwipeNavigator from './SwipeNavigator';
+import { useScrollContext } from '../ScrollContext.js';
 import { useState , useEffect , useRef } from "react";
+import { FaPlus } from "react-icons/fa6";
 import { IoMdCamera } from "react-icons/io";
+import { RxCross2 } from "react-icons/rx";
 import { useNavigate ,useParams , useLocation , Outlet , Link} from "react-router-dom";
 const backendUrl = process.env.REACT_APP_BACKEND_URL; 
 const Profile=()=>{
@@ -12,8 +16,49 @@ const Profile=()=>{
        const [friendPhone,setFriendPhone]=useState("");
        const [friendAbout,setFriendAbout]=useState("");
 
-
+const [view, setView] = useState(false);
   
+  const scrollRef = useRef(null);
+    const { setShowNavbar } = useScrollContext();
+    const lastScrollTop = useRef(0);
+  
+    useEffect(() => {
+  const handleScroll = () => {
+    const currentScrollTop = window.scrollY;
+
+    if (currentScrollTop > lastScrollTop.current) {
+      setShowNavbar(false); // scrolling down → hide
+    } else {
+      
+      setShowNavbar(true);  // scrolling up → show
+    }
+
+    lastScrollTop.current = currentScrollTop <= 0 ? 0 : currentScrollTop;
+  };
+
+  window.addEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, [setShowNavbar]);
+
+
+
+
+// hide/show navbar when photo view is toggled
+useEffect(() => {
+  if (!view) {
+    setShowNavbar(true); // hide navbar when viewing photo
+  }else{
+    setShowNavbar(false);
+  }
+}, [view, setShowNavbar]);
+
+
+
+
+
+
+
+
 
 
 useEffect(() => {
@@ -330,11 +375,35 @@ useEffect(() => {
 
 
 
+const [selectedPhoto, setSelectedPhoto] = useState("");
+
 
 
     return(
       
-        <div className="profile-container">
+        <div className="profile-container"  ref={scrollRef}  style={{ position: view ? "fixed" : "" }}>
+
+
+
+           {view && (
+  <div className="photo-overlay">
+    <div className="photo-nav">
+     
+      <div className="right-profile-nav" onClick={() => setView(false)}>
+        <RxCross2 className="right-cross"/>
+      </div>
+    </div>
+
+    <div className="view-photo">
+      <img src={selectedPhoto} alt="Profile" />
+    </div>
+  </div>
+)}
+
+           
+           
+          
+
             <div className="profile-main">
                     <div className="profile-top">
                       
@@ -345,7 +414,16 @@ useEffect(() => {
                            
                                
                           
-                          <img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${friendDp}`} />
+                          <img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${friendDp}`} 
+                           onClick={() => {
+                       setSelectedPhoto(`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${friendDp}`);
+                        setView(true);
+                          }}
+                          
+                          
+                          
+                          
+                          />
                            
                             
                           
@@ -354,7 +432,7 @@ useEffect(() => {
                                <h1>{friendName}</h1>
                                <p onClick={()=>setViewSection(3)}>{friendCount} friends</p>
                                 <div className="profile-middle-third">
-                            <button>Add friend</button>
+                            <button className='add-fri-btn'><FaPlus />Add friend</button>
                            
                         </div>
                         </div>
@@ -376,9 +454,7 @@ useEffect(() => {
   <div className="profile-photos-link">
     <Link to="photos" onClick={() => setViewSection(4)}>Photos</Link>
   </div>
-  <div className="profile-videos-link">
-    <Link to="videos" onClick={() => setViewSection(5)}>Videos</Link>
-  </div>
+  
   <div className="profile-reels-link">
     <Link to="reels" onClick={() => setViewSection(6)}>Reels</Link>
   </div>
@@ -414,7 +490,16 @@ useEffect(() => {
                                     <div className="profile-friends-friend" onClick={()=>redirectAnotherProfile(friend._id)}>
                                         <div className="profile-friends-friend-img">
                                             <img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${dpMap[friend.mobile]}`}  onError={(e) => {
-    e.target.src = "https://res.cloudinary.com/dnd9qzxws/image/upload/v1743764088/image_dp_uwfq2g.png"} }/>
+    e.target.src = "https://res.cloudinary.com/dnd9qzxws/image/upload/v1743764088/image_dp_uwfq2g.png"} }
+    
+    
+    
+    onClick={(e) => {
+    setSelectedPhoto(e.target.src); 
+    setView(true);
+  }}
+    
+    />
                                         </div>
                                         <div className="profile-friends-friend-username">
                                             <p>{usernameMap[friend.mobile] || "No Name"}</p>
@@ -435,13 +520,7 @@ useEffect(() => {
                                 </nav>
                             
                         </div>
-                        ) : viewSection===5?(
-                           <div className="profile-videos" id="profile-videos">
-                            <nav>
-                               <h2>Videos</h2>
-                            </nav>
-                           
-                        </div>
+                       
                         ) : (
                             <div className="profile-reels" id="profile-reels">
                                 <nav>

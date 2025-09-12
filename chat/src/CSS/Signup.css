@@ -272,7 +272,7 @@ margin: 4rem;
     position: fixed;
     top: 0;
     width: 4.6%;
-    z-index: 1000; /* Lower than popup */
+   
 }
 .logout-popup {
     background: white;
@@ -2656,7 +2656,7 @@ width:100%;
 
 /* Mobile Navbar Styles */
 .mobile-navbar {
-    position: absolute;
+    position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
@@ -3015,7 +3015,7 @@ iframe{
 html,
 body {
   height: 100%;
-  overflow: hidden;
+  
 }
 #emoji{
     color:white;
@@ -4573,7 +4573,10 @@ display: none;
   justify-content: flex-start; /* content starts at top, not middle */
   padding: 0.5rem;
   box-sizing: border-box;
-  padding-bottom: 3rem;
+
+  overflow: hidden;
+   overflow-y:scroll;
+
 }
 
 .profile-main {
@@ -4700,6 +4703,7 @@ display: flex;
   gap: 0.5rem;
   align-items: center;
   padding: 0.5rem;
+  
   box-shadow: rgba(0, 0, 0, 0.2) 0px 15px 10px -20px;
 }
 
@@ -4808,7 +4812,22 @@ display: flex;
   font-size: 0.9rem;
   color: rgb(90, 90, 90);
 }
+.add-fri-btn{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap:0.2rem;
+}
+.right-profile-nav{
+  position: absolute;
+  top:1.5rem;
+  right:1.5rem;
 
+}
+.right-cross{
+  color:white;
+  font-size: 1.7rem;
+}
 /* ==================== RESPONSIVENESS ==================== */
 @media (max-width: 992px) {
  
@@ -4855,10 +4874,26 @@ display: flex;
     justify-content: center;
   }
 
+
+  .profile-middle2 {
+
+  gap: 0.4rem;
+padding:0rem;
+  
+}
+
+
+
+
+
+
+
   .profile-middle2 a {
     font-size: 0.9rem;
     padding: 0.6rem;
   }
+
+
 
   .profile-friends-friend {
     height: auto;
