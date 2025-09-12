@@ -149,10 +149,10 @@ const openLeftFriend = ()=>{
           <div className="request-sent-container">
          {
   loading ? (
-   <div className="loader-container">
+  
   <div className="fb-spinner"></div>
-</div>
-  ) : users.length === 0 && !loading ? (
+
+  ) : users.length === 0 ? (
     <div>
       <p>No friend requests</p>
     </div>

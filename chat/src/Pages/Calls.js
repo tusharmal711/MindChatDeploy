@@ -25,12 +25,12 @@ const [contacts,setContacts]=useState([]);
 //   console.log("Connected with ID:", socket.id); 
 //   socket.emit("register", myPhone);            
 // });
-
+ const [loading, setLoading] = useState(false);
 useEffect(() => {
 
 
 const fetchContacts = async () => {
-
+ setLoading(true);
 
   try {
     const phone = sessionStorage.getItem("phone") || Cookies.get("mobile");
@@ -56,7 +56,9 @@ const fetchContacts = async () => {
     
   } catch (error) {
     console.error("Error fetching contacts:", error);
-  }
+  }finally {
+      setLoading(false); //  stop loading
+    }
 };
 
 
@@ -437,7 +439,14 @@ const { showNavbar } = useScrollContext();
                   
                 <div className='call-contact'>
                       {
-                        filteredContacts.map((contacts)=>(
+                        loading ? (
+  
+                <div className="spinner-wrapper">
+      <div className="fb-spinner"></div>
+    </div>
+
+                  ) :(
+                       filteredContacts.map((contacts)=>(
                           <div className='each-contact'>
                               <div className='each-contact-img'>
                                  <img
@@ -466,6 +475,8 @@ const { showNavbar } = useScrollContext();
                               
                           </div>
                         ))
+                  )
+                      
                       }
                 </div>
 

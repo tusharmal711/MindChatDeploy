@@ -23,8 +23,10 @@ const Connect = ()=>{
 const navigate=useNavigate();
   const [users,setUsers]=useState([]);
 const location=useLocation();
+const [loading, setLoading] = useState(false);
 useEffect(() => {
   const fetchAllUsers = async () => {
+      setLoading(true);
     try {
      
       const res = await fetch(`${backendUrl}api/fetchallusers`, {
@@ -39,6 +41,8 @@ useEffect(() => {
     setUsers(data);
     } catch (error) {
       console.error("Error fetching your profile:", error);
+    }finally {
+      setLoading(false); //  stop loading
     }
   };
 
@@ -530,6 +534,7 @@ useEffect(() => {
     if (senderPhones.length === 0) return; // Don't fetch if no senders
 
     const fetchReceivedUsers = async () => {
+        setLoading(true);
       try {
         const res = await fetch(`${backendUrl}api/sentrequestalluser`, {
           method: "POST",
@@ -544,7 +549,9 @@ useEffect(() => {
         console.log("Users who sent you requests:", data);
       } catch (error) {
         console.error("Error fetching users:", error);
-      }
+      }finally {
+      setLoading(false); //  stop loading
+    }
     };
 
     fetchReceivedUsers();
@@ -795,7 +802,14 @@ useEffect(() => {
                 <div className='right-friend-bottom' id="right-friend-top">
                  
                   {
-                     senders.length===0 ?(
+
+
+                   loading ?(
+               <div className="spinner-wrapper">
+      <div className="fb-spinner"></div>
+    </div>
+
+             ) : senders.length===0 ?(
               <div>
                 <p>No request received</p>
              </div>
@@ -833,7 +847,12 @@ useEffect(() => {
               <div className='right-friend-bottom' id="right-friend-bottom">
                 
                 {
-                  filteredUsers.length===0 ?(
+                     loading ?(
+               <div className="spinner-wrapper">
+      <div className="fb-spinner"></div>
+    </div>
+
+             ):filteredUsers.length===0 ?(
                       <p>Not found</p>
                   ) :(
                         filteredUsers.map((users)=>(

@@ -55,8 +55,11 @@ const [receiver,setReceiver]=useState("");
      console.error("Error sending friend request:", error);
    }
  };
+
+  const [loading, setLoading] = useState(false);
 useEffect(() => {
   const fetchAllUsers = async () => {
+     setLoading(true);
     try {
      
       const res = await fetch(`${backendUrl}api/fetchallusers`, {
@@ -71,6 +74,8 @@ useEffect(() => {
     setUsers(data);
     } catch (error) {
       console.error("Error fetching your profile:", error);
+    }finally {
+      setLoading(false); //  stop loading
     }
   };
 
@@ -115,10 +120,17 @@ const openLeftFriend = ()=>{
                              
                               <input type="text" placeholder='Search here' value={searchValue} onChange={(e)=>{setSearchValue(e.target.value)}} />
                           </div>
-            <h1>AddFriend</h1>
+            <h1>Add Friend</h1>
                <div className='right-friend-bottom' id="right-friend-bottom">
                 {
-                 filteredUsers.map((users)=>(
+
+             loading ?(
+               <div className="spinner-wrapper">
+      <div className="fb-spinner"></div>
+    </div>
+
+             ) : (
+                   filteredUsers.map((users)=>(
                   <div className='all-users'  key={users._id}>
                       <div className='card-img'>
                          <img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${users.dp}`} />
@@ -139,6 +151,9 @@ const openLeftFriend = ()=>{
                   </div>
                  )
                 )
+             )
+              
+              
               }
               </div>
         </div>

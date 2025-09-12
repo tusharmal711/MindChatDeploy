@@ -5625,20 +5625,23 @@ width:100%;
 
 
 /* loader is starting from here */
-.loader-container {
+.spinner-wrapper {
+  grid-column: 1 / -1;         /* take full width of grid */
   display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 120px; /* Adjust based on your UI */
+  justify-content: center;     /* center horizontally */
+  align-items: center;         /* center vertically */
+  min-height: 100px;           /* optional: give some height */
 }
 .fb-spinner {
-  width: 40px;
-  height: 40px;
+ 
+  width: 32px;
+  height: 32px;
   border: 7px solid #d3d3d3;      /* silver background circle */
   border-top: 7px solid #1877f2;   /* blue slice */
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin: auto;
+   transform: translateX(-50%, -50%);
 }
 
 @keyframes spin {

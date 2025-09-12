@@ -32,10 +32,18 @@ const Notification = ()=>{
         fetchReceivedRequest();
       }, []);
     
+
+ const [loading, setLoading] = useState(false);
+
+
       useEffect(() => {
-        if (senderPhones.length === 0) return; // Don't fetch if no senders
+        if (senderPhones.length === 0) {
+    setLoading(false); //
+    return;
+  }
     
         const fetchReceivedUsers = async () => {
+           setLoading(true);
           try {
             const res = await fetch(`${backendUrl}api/sentrequestalluser`, {
               method: "POST",
@@ -57,7 +65,9 @@ const Notification = ()=>{
             console.log("Users who sent you requests:", data);
           } catch (error) {
             console.error("Error fetching users:", error);
-          }
+          }finally {
+      setLoading(false); //  stop loading
+    }
         };
     
         fetchReceivedUsers();
@@ -121,7 +131,14 @@ const formatTime = (dateString) => {
             <h1>Notifications</h1>
             <div className="notification-card-container">
                 {
-                   users.map((user, index) => (
+                     loading ? (
+  
+                <div className="spinner-wrapper">
+      <div className="fb-spinner"></div>
+    </div>
+
+                  ) :(
+                         users.map((user, index) => (
                    <div key={index} className="notification-sent-card">
                      <div>
                         <img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${user.dp}`} className="request-card-image"/>
@@ -134,6 +151,8 @@ const formatTime = (dateString) => {
 
                    </div>
                    ))
+                  )
+               
                    }
             </div>
         </div>
