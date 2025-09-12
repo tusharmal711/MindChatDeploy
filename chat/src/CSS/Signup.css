@@ -5632,8 +5632,8 @@ width:100%;
   min-height: 120px; /* Adjust based on your UI */
 }
 .fb-spinner {
-  width: 60px;
-  height: 60px;
+  width: 45px;
+  height: 45px;
   border: 7px solid #d3d3d3;      /* silver background circle */
   border-top: 7px solid #1877f2;   /* blue slice */
   border-radius: 50%;
