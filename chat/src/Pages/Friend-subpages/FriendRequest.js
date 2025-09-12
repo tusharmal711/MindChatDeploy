@@ -31,30 +31,37 @@ const FriendRequest = () => {
     fetchReceivedRequest();
   }, []);
 
-  useEffect(() => {
-    if (senderPhones.length === 0) return; // Don't fetch if no senders
+ const [loading, setLoading] = useState(false);
 
-    const fetchReceivedUsers = async () => {
-      try {
-        const res = await fetch(`${backendUrl}api/sentrequestalluser`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ phone: senderPhones }), // array of phones
-        });
+useEffect(() => {
+  if (senderPhones.length === 0) {
+    setLoading(false); //
+    return;
+  }
 
-        if (!res.ok) throw new Error("Failed to fetch user data");
+  const fetchReceivedUsers = async () => {
+    setLoading(true); //  start loading
+    try {
+      const res = await fetch(`${backendUrl}api/sentrequestalluser`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: senderPhones }), // array of phones
+      });
 
-        const data = await res.json();
-        setUsers(data); // Should be an array of user objects
-        console.log("Users who sent you requests:", data);
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      }
-    };
+      if (!res.ok) throw new Error("Failed to fetch user data");
 
-    fetchReceivedUsers();
-  }, [senderPhones]);
+      const data = await res.json();
+      setUsers(data); // Should be an array of user objects
+      console.log("Users who sent you requests:", data);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    } finally {
+      setLoading(false); //  stop loading
+    }
+  };
 
+  fetchReceivedUsers();
+}, [senderPhones]);
 
 
 
@@ -140,35 +147,47 @@ const openLeftFriend = ()=>{
                   </div>
           <h1>Requests</h1>
           <div className="request-sent-container">
-            {
-            users.length===0 ?(
-              <div>
-                <p>No friend requests</p>
-             </div>
-            ): filteredUsers.length===0?(
-               <div>
-                <p>Not found</p>
-             </div>
-            ):(
-                      filteredUsers.map((user, index) => (
-            <div key={index} className="request-sent-card">
-               <div>
-                <img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${user.dp}`} className="request-card-image"/>
-                </div>
-                <div>
-                    <h4>{user.username}</h4>
-                    <p>Friends</p>
-                    <div className="received-button">
-                        <button type="button" className="request-card-accept" onClick={() => AcceptRequest(user.phone)}>Accept</button>
-                        <button type="button" className="request-card-cancel" >Cancel</button>
-                    </div>
-                    
-                </div>
-              
-            </div>
-          ))
-            )
-      }
+         {
+  loading ? (
+   <div className="loader-container">
+  <div className="fb-spinner"></div>
+</div>
+  ) : users.length === 0 && !loading ? (
+    <div>
+      <p>No friend requests</p>
+    </div>
+  ) : filteredUsers.length === 0 ? (
+    <div>
+      <p>Not found</p>
+    </div>
+  ) : (
+    filteredUsers.map((user, index) => (
+      <div key={index} className="request-sent-card">
+        <img
+          src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${user.dp}`}
+          className="request-card-image"
+        />
+        <div>
+          <h4>{user.username}</h4>
+          <p>Friends</p>
+          <div className="received-button">
+            <button
+              type="button"
+              className="request-card-accept"
+              onClick={() => AcceptRequest(user.phone)}
+            >
+              Accept
+            </button>
+            <button type="button" className="request-card-cancel">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    ))
+  )
+}
+
           </div>
           
         </div>

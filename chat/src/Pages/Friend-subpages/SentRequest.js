@@ -32,28 +32,36 @@ useEffect(() => {
 
 
   // 2. When `receiver` updates, fetch corresponding user data
-  useEffect(() => {
-   
 
-    const fetchSentUsers = async () => {
-      try {
-        const res = await fetch(`${backendUrl}api/sentrequestalluser`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ phone: receiver }), // phone: array
-        });
+const [loading, setLoading] = useState(true);
 
-        if (!res.ok) throw new Error("Failed to fetch user data");
+useEffect(() => {
+  const fetchSentUsers = async () => {
+    setLoading(true); // start loader
+    try {
+      const res = await fetch(`${backendUrl}api/sentrequestalluser`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: receiver }), // phone: array
+      });
 
-        const data = await res.json();
-        setUsers(data); // Assuming data is an array of user objects
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      }
-    };
+      if (!res.ok) throw new Error("Failed to fetch user data");
 
+      const data = await res.json();
+      setUsers(data); // Assuming data is an array of user objects
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    } finally {
+      setLoading(false); // stop loader no matter what
+    }
+  };
+
+  if (receiver && receiver.length > 0) {
     fetchSentUsers();
-  }, [receiver]); 
+  } else {
+    setLoading(false); // no receivers, no need to fetch
+  }
+}, [receiver]);
 
 
 
@@ -125,32 +133,42 @@ const openLeftFriend = ()=>{
               </div>
       <h1>Sent Requests</h1>
       <div className="request-sent-container">
-         {
-            users.length===0 ?(
-              <div>
-                <p>No requests sent</p>
-             </div>
-
-            ): filteredUsers.length===0 ?(
-             <div>
-                <p>Not found</p>
-             </div>
-            ):(
-              filteredUsers.map((user, index) => (
-        <div key={index} className="request-sent-card">
-           <div>
-            <img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${user.dp}`} className="request-card-image"/>
-            </div>
-            <div>
-                <h4>{user.username}</h4>
-                <p>Friends</p>
-                <button type="button" className="request-card-button"  onClick={() => cancelRequest(user.phone)}>Cancel request <FaLongArrowAltRight /></button>
-            </div>
-          
+     {
+  loading ? (
+    <div className="fb-spinner"></div>
+  ) : users.length === 0 ? (
+    <div>
+      <p>No requests sent</p>
+    </div>
+  ) : filteredUsers.length === 0 ? (
+    <div>
+      <p>Not found</p>
+    </div>
+  ) : (
+    filteredUsers.map((user, index) => (
+      <div key={index} className="request-sent-card">
+        <div>
+          <img
+            src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${user.dp}`}
+            className="request-card-image"
+          />
         </div>
-      ))
-            )
-       }
+        <div>
+          <h4>{user.username}</h4>
+          <p>Friends</p>
+          <button
+            type="button"
+            className="request-card-button"
+            onClick={() => cancelRequest(user.phone)}
+          >
+            Cancel request <FaLongArrowAltRight />
+          </button>
+        </div>
+      </div>
+    ))
+  )
+}
+
       </div>
       
     </div>
