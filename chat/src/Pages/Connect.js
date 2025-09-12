@@ -7,6 +7,7 @@ import { FaChevronLeft } from "react-icons/fa6";
 import { Link, useNavigate , useLocation, Outlet } from 'react-router-dom';
 import { RxCross2 } from "react-icons/rx";
 import { IoPersonAdd } from "react-icons/io5";
+import { FaUserFriends } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
 import { IoIosCall } from "react-icons/io";
 import { FaCircleInfo } from "react-icons/fa6";
@@ -716,6 +717,15 @@ useEffect(() => {
               </nav>
              
               <div className='left-friend-content'>
+                     <Link to="my-friend"  className={`sent-link ${isActive('my-friend') ? 'active-link' : ''}`}>
+                      <p className='frl'><FaUserFriends className='fri'/> My Friend <FaChevronRight className='frla'/></p>
+                      
+                       
+                     </Link>
+
+
+
+
                      <Link to="friend-request"  className={`sent-link ${isActive('friend-request') ? 'active-link' : ''}`}>
                      
                          <p className='frl'> <RiUserReceived2Fill className='fri'/> Friend request <FaChevronRight className='frla'/></p>
@@ -739,24 +749,19 @@ useEffect(() => {
             </div>
 
             <div className='right-friend' ref={scrollRef}>
-              <div className='right-nav-friend-mobile'>
-                 <h3 className='mobile-friend-heading'>Friends</h3>
+             
+                <div className='friend-mobile-topbar'>
+                  <Link to="my-friend"><FaUserFriends  className={`fmt ${isActive('my-friend') ? 'active-link-mob' : ''}`}/></Link>
+                  <Link to="friend-request"><RiUserReceived2Fill  className={`fmt ${isActive('friend-request') ? 'active-link-mob' : ''}`}/></Link>
+                  <Link to="add-friend"><IoPersonAddSharp  className={`fmt ${isActive('add-friend') ? 'active-link-mob' : ''}`}/></Link>
+                 <Link to="sent-request"> <MdChildFriendly  className={`fmt ${isActive('sent-request') ? 'active-link-mob' : ''}`}/></Link>
+                  <Link to="notification"><MdNotifications  className={`fmt ${isActive('notification') ? 'active-link-mob' : ''}`}/></Link>
+                </div>
+
+                      <div className='right-nav-friend-mobile'>
+                 
                   <input type="text" placeholder='Search here' value={searchValue} onChange={(e)=>{setSearchValue(e.target.value)}}/>
               </div>
-                 <div className='right-nav2-friend-mobile'>
-                  <div>
-                      <p onClick={friendRequest}>Friend requests</p>
-                   <p onClick={addFriend}>Add friend</p>
-                  </div>
-                  <div> 
-                    <p onClick={addFriend}>Sent Request</p>
-                    <p onClick={addFriend}>Notification</p>
-
-                  </div>
-                    
-              </div>
-
-
 
 
              

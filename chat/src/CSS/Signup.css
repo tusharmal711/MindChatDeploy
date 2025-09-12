@@ -3552,6 +3552,8 @@ flex-direction: column;
     width:100%;
     height:100vh;
     display: flex;
+  
+  
 }
 .left-friend{
    margin-left: 6%;
@@ -4021,10 +4023,11 @@ gap:0.5rem;
     display: none;
 }
 .right-nav-friend-mobile{
+  width: 100%;
     border-radius:0.5rem;
     height:3rem;
-    margin:0.5rem;
-    box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+   margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
     display: none;
     align-items: center;
     justify-content: center;
@@ -4055,17 +4058,16 @@ gap:0.5rem;
 
 }
 .right-nav-friend-mobile input{
-    width:45%;
+    width:87%;
     border-radius: 2rem;
     background-color: rgb(232, 232, 232);
     border:none;
     outline:none;
     padding:0.6rem;
-    padding-left: 2rem;
-    padding-right: 1rem;
+   padding-left: 1rem;
     font-size: 1rem;
     position: absolute;
-    right:1rem;
+    
 }
 .right-nav-friend-mobile h2{
     float:left;
@@ -4089,24 +4091,71 @@ gap:0.5rem;
 }
 
  
+
+
+
+.friend-mobile-topbar{
+
+  width: 100%;
+box-shadow: rgba(17, 17, 26, 0.1) 0px 1px 0px;
+  height:3.5rem;
+  display: flex;
+  gap:1rem;
+ align-items:center;
+ justify-content: center;
+position: fixed;
+top:-0.1rem;
+background-color: white;
+z-index: 99;
+display: none;
+}
+.fmt{
+  font-size: 1.5rem;
+ 
+  padding:1rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+ color:black;
+
+}
+.active-link-mob{
+  border-bottom: 2px solid #0062ff;
+  color:#0062ff;
+}
+
+
+
+
+
+
+
  @media (max-width: 675px) {
     .left-friend{
         display: none;
     }
-   
+  .friend-mobile-topbar{
+    display: flex;
+    
+  }
+
     .right-friend{
         width:100%;
+        
     }
     .right-friend-bottom{
        
          display: grid;
   grid-template-columns: repeat(2, 1fr); /* 2 equal columns */
   gap: 8px;
-  margin-bottom: 5rem;
+
+  margin-bottom: 1.1rem;
+ 
     }
     .right-nav-friend-mobile{
         display: flex;
-       
+       margin-top: 3.8rem;
     }
     .right-nav2-friend-mobile{
         display: flex;
@@ -4114,10 +4163,10 @@ gap:0.5rem;
     }
    
    .mobile-friend-heading{
-    display: block;
+   
     font-size: 1.4rem;
     font-family: sans-serif;
-    
+    color:black;
     position: absolute;
     left:1rem;
 }
@@ -4843,7 +4892,7 @@ display: flex;
 }
 
 @media (max-width: 600px) {
-   
+
     .profile-main{
         width: 100%;
         height:100%;
@@ -4990,7 +5039,7 @@ padding:0rem;
   background-color: #f4f4f4;
   width: 100%;
   box-sizing: border-box;
- 
+ padding-bottom: 6rem;
 }
 
 .request-sent-card {
@@ -5054,6 +5103,7 @@ padding:0rem;
      font-family: sans-serif;
     font-size: 1.3rem;
      margin-left:0.9rem;
+    
 }
 .add-friend-container h1{
     font-family: sans-serif;

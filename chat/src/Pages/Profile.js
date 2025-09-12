@@ -22,6 +22,26 @@ const [view, setView] = useState(false);
     const { setShowNavbar } = useScrollContext();
     const lastScrollTop = useRef(0);
   
+
+
+// hide/show navbar when photo view is toggled
+useEffect(() => {
+  if (!view) {
+    setShowNavbar(true); // hide navbar when viewing photo
+  }else{
+    setShowNavbar(false);
+  }
+}, [view, setShowNavbar]);
+
+
+
+
+
+
+
+
+
+
     useEffect(() => {
   const handleScroll = () => {
     const currentScrollTop = window.scrollY;
@@ -41,16 +61,6 @@ const [view, setView] = useState(false);
 }, [setShowNavbar]);
 
 
-
-
-// hide/show navbar when photo view is toggled
-useEffect(() => {
-  if (!view) {
-    setShowNavbar(true); // hide navbar when viewing photo
-  }else{
-    setShowNavbar(false);
-  }
-}, [view, setShowNavbar]);
 
 
 

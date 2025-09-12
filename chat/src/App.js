@@ -24,13 +24,14 @@ import Photos from "./Pages/Profile-subpages/Photos.js";
 import Videos from "./Pages/Profile-subpages/Videos.js";
 import Reels from "./Pages/Profile-subpages/Reels.js";
 import SentRequest from "./Pages/Friend-subpages/SentRequest.js";
-import NotificationPage from "./Pages/Friend-subpages/NotificationPage.js";
+import Notification from "./Pages/Friend-subpages/NotificationPage.js";
 import FriendRequest from "./Pages/Friend-subpages/FriendRequest.js";
 import AddFriend from "./Pages/Friend-subpages/AddFriend.js";
 import CallPage from "./Pages/CallPage.js";
 import Incoming from "./Pages/Incoming-call.js";
 import { socket } from "./Pages/Socket";
 import NewCall from "./Pages/NewCall.js";
+import AllFriend from "./Pages/Friend-subpages/AllFriend.js";
 // import VideoCall from "./Pages/Videocall.js";
  const backendUrl = process.env.REACT_APP_BACKEND_URL; 
 function HomeRedirect() {
@@ -529,9 +530,10 @@ setTimeout(() => {
             <Route path="/call" element={<CallPage />} />
          <Route exact path="/moments" element={<Moments />} />
         <Route exact path="/connect" element={<Connect />}>
+         <Route exact path="my-friend" element={<AllFriend />} />
         <Route exact path="sent-request" element={<SentRequest />} />
         <Route exact path="friend-request" element={<FriendRequest />} />
-        <Route exact path="notification" element={<NotificationPage />} />
+        <Route exact path="notification" element={<Notification />} />
           <Route exact path="add-friend" element={<AddFriend />} />
         
         

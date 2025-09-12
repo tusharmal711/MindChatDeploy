@@ -1,7 +1,7 @@
 import { useState,useEffect } from "react";
 import { FaRegClock } from "react-icons/fa";
 const backendUrl = process.env.REACT_APP_BACKEND_URL; 
-const NotificationPage = ()=>{
+const Notification = ()=>{
       const [senderPhones, setSenderPhones] = useState([]);
       const [users, setUsers] = useState([]);
       const [requests, setRequests] = useState([]); 
@@ -20,6 +20,7 @@ const NotificationPage = ()=>{
             if (!res.ok) throw new Error("Failed to fetch friend requests");
             
             const data = await res.json();
+           
             setRequests(data);
             const phoneNumbers = data.map((friend) => friend.sender); // extract sender phones
             setSenderPhones(phoneNumbers);
@@ -36,7 +37,7 @@ const NotificationPage = ()=>{
     
         const fetchReceivedUsers = async () => {
           try {
-            const res = await fetch(`${backendUrl}api/sentrequestalluser"`, {
+            const res = await fetch(`${backendUrl}api/sentrequestalluser`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ phone: senderPhones }), // array of phones
