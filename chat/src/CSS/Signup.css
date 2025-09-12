@@ -5581,7 +5581,7 @@ width:100%;
   flex-direction: column;
    align-items: center;
     background-color:white;
-   
+   gap:0.25rem;
   }
   .request-sent-card{
     width: 100%;
@@ -5589,7 +5589,7 @@ width:100%;
     margin:0rem;
     box-shadow: none;
     padding:0.3rem;
-   
+   background-color:red;
   }
  
    .received-button button{
@@ -5632,8 +5632,8 @@ width:100%;
   min-height: 120px; /* Adjust based on your UI */
 }
 .fb-spinner {
-  width: 45px;
-  height: 45px;
+  width: 42px;
+  height: 42px;
   border: 7px solid #d3d3d3;      /* silver background circle */
   border-top: 7px solid #1877f2;   /* blue slice */
   border-radius: 50%;
