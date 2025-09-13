@@ -799,87 +799,96 @@ useEffect(() => {
                   <input type="text" placeholder='Search here' value={searchValue} onChange={(e)=>{setSearchValue(e.target.value)}}/>
               </div>
               <h1 className='connect-request'>Requests</h1>
-                <div className='right-friend-bottom' id="right-friend-top">
-                 
-                  {
-
-
-                   loading ?(
-               <div className="spinner-wrapper">
-      <div className="fb-spinner"></div>
-    </div>
-
-             ) : senders.length===0 ?(
-              <div>
-                <p>No request received</p>
-             </div>
-            ) : requests.length===0 ?(
-              <p>Not found</p>
-            ) : (
-             
-                      requests.map((users)=>(
-                  <div className='all-users'  key={users._id}>
-                      <div className='card-img' onClick={() => friendProfileView(users._id)}>
-                         <img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${users.dp}`} />
-
-                      </div>
-                      <div className='card-content'>
-                             <h4>{users.username}</h4>
-                            <button
-  className={`add-friend-accept`}
-  onClick={() => friendRequestSend(users._id)}  // users._id is correct
->
-  Accept
-</button>
-
-                             <button className='add-remove'>Cancel</button>
-                        </div>
-                      
-                  </div>
-                 )
-                )
-            )
-          
-                  }
                
-              </div>
-                 <h1 className='connect-request'>Add friend</h1>
-              <div className='right-friend-bottom' id="right-friend-bottom">
-                
-                {
-                     loading ?(
-               <div className="spinner-wrapper">
+                 
+               {
+  loading ? (
+    <div className="spinner-wrapper">
       <div className="fb-spinner"></div>
     </div>
+  ) : senders.length === 0 ? (
+    <div>
+      <p>No request received</p>
+    </div>
+  ) : requests.length === 0 ? (
+    <p>Not found</p>
+  ) : (
+    <div className="right-friend-bottom" id="right-friend-top">
+      {requests.map((user) => (
+        <div className="all-users" key={user._id}>
+          <div className="card-img" onClick={() => friendProfileView(user._id)}>
+            <img
+              src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${user.dp}`}
+              alt={user.username}
+            />
+          </div>
 
-             ):filteredUsers.length===0 ?(
-                      <p>Not found</p>
-                  ) :(
-                        filteredUsers.map((users)=>(
-                  <div className='all-users'  key={users._id}>
-                      <div className='card-img' onClick={() => friendProfileView(users._id)}>
-                         <img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${users.dp}`} />
+          <div className="card-content">
+            <h4>{user.username}</h4>
 
-                      </div>
-                      <div className='card-content'>
-                             <h4>{users.username}</h4>
-                            <button
-  className={`add-friend ${friendRequests[users._id] === "Sent Request" ? "sent-request" : ""}`}
-  onClick={() => friendRequestSend(users._id)}  // users._id is correct
->
-  {friendRequests[users._id] || "Add Friend"}
-</button>
+            <button
+              className="add-friend-accept"
+              onClick={() => friendRequestSend(user._id)}
+            >
+              Accept
+            </button>
 
-                             <button className='add-remove'>Remove</button>
-                        </div>
-                      
-                  </div>
-                 )
-                  )
+            <button className="add-remove">Cancel</button>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+               
+            
+                 <h1 className='connect-request'>Add friend</h1>
+
+              
+
+
              
-                )
-              }
-              </div>
+                
+          {
+  loading ? (
+    <div className="spinner-wrapper">
+      <div className="fb-spinner"></div>
+    </div>
+  ) : filteredUsers.length === 0 ? (
+    <p>Not found</p>
+  ) : (
+    <div className="right-friend-bottom" id="right-friend-bottom">
+      {filteredUsers.map((user) => (
+        <div className="all-users" key={user._id}>
+          <div className="card-img" onClick={() => friendProfileView(user._id)}>
+            <img
+              src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${user.dp}`}
+              alt={user.username}
+            />
+          </div>
+
+          <div className="card-content">
+            <h4>{user.username}</h4>
+
+            <button
+              className={`add-friend ${
+                friendRequests[user._id] === "Sent Request" ? "sent-request" : ""
+              }`}
+              onClick={() => friendRequestSend(user._id)}
+            >
+              {friendRequests[user._id] || "Add Friend"}
+            </button>
+
+            <button className="add-remove">Remove</button>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+             
                       </div>
                 )      
                }
