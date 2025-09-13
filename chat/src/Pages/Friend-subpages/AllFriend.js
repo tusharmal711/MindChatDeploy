@@ -220,7 +220,7 @@ useEffect(() => {
 
   ) : users.length === 0 ? (
     <div>
-      <p>No friend requests</p>
+      <p>No friend </p>
     </div>
   ) : filteredUsers.length === 0 ? (
     <div>
