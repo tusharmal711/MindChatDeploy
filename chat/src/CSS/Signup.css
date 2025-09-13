@@ -619,7 +619,9 @@ margin: 4rem;
     box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 1px -1px, rgba(0, 0, 0, 0.03) 0px 1px 1px -1px;
 }
 
-
+.noti-heading{
+  margin-top: 1.2rem;
+}
 
 
 /* add contact part is starting from here */
@@ -4572,6 +4574,10 @@ display: none;
 
 
  @media (max-width: 675px) {
+  .noti-heading{
+  margin-top: 0rem;
+}
+
 .new-call{
     display: flex;
 }
@@ -5028,7 +5034,7 @@ padding:0rem;
 /* sent request part is starting from here */
 .request-sent-main{
  
-  width: 100%;
+ width: 100%;
  padding:0;
 }
 .request-sent-container {
@@ -5303,7 +5309,7 @@ width:100%;
     padding:10px;
     border-radius: 50%;
     cursor: pointer;
-     -webkit-tap-highlight-color: transparent; 
+    -webkit-tap-highlight-color: transparent; 
 }
 .call-btn{
     height: 4rem;

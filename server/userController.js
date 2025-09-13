@@ -601,20 +601,36 @@ export const ResetPassword = async (req, res) => {
 
 
 
+
+
 export const fetchalluser = async (req, res) => {
- 
-
-
   try {
-  
-  
-   const users = await User.find({});
-  
+    const { myPhone } = req.body;
+
+    // 1. Find all friend relations where myPhone is sender or receiver
+    const relations = await Friend.find({
+      $or: [{ sender: myPhone }, { receiver: myPhone }]
+    });
+
+    // 2. Extract connected user numbers
+    const connectedNumbers = relations.map(rel => {
+      return rel.sender === myPhone ? rel.receiver : rel.sender;
+    });
+
+    // 3. Add myPhone also in exclude list (so I don’t fetch myself)
+    connectedNumbers.push(myPhone);
+
+    // 4. Fetch all users excluding connectedNumbers
+    const users = await User.find({
+      phone: { $nin: connectedNumbers }
+    });
+
     res.status(200).json(users);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 
 
@@ -654,14 +670,18 @@ export const FriendRequest = async (req, res) => {
 
 export const SentRequestUser = async (req, res) => {
   try {
-    const {sender}=req.body;
-    const addedUser = await Friend.find({sender});
+    const { sender } = req.body;
+
+    // Find and sort in reverse (latest first by _id)
+    const addedUser = await Friend.find({ sender, status: "no" })
+      .sort({ date : -1 }); 
+// console.log("Sent requests:", addedUser.map(u => ({ receiver: u.receiver, date: u.date })));
+
     res.status(200).json(addedUser);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-
 
 
 
@@ -679,7 +699,18 @@ export const ReceivedRequestUser = async (req, res) => {
 };
 
 
+export const NotificationRequestUser = async (req, res) => {
+  try {
+    const { receiver } = req.body;
 
+    // Only fetch pending requests (status: "no")
+    const addedUser = await Friend.find({ receiver});
+
+    res.status(200).json(addedUser);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
 
 
@@ -687,13 +718,20 @@ export const ReceivedRequestUser = async (req, res) => {
 
 export const SentRequestAllUser = async (req, res) => {
   try {
-    const { phone } = req.body; // phone is actually an array of phones
-    const addedUser = await User.find({ phone: { $in: phone } }); // use $in for array
-    res.status(200).json(addedUser);
+    const { phone } = req.body; // array of phones
+
+    // Fetch users that match
+    const users = await User.find({ phone: { $in: phone } });
+
+    // Reorder users according to "phone" array order
+    const orderedUsers = phone.map(p => users.find(u => u.phone === p));
+
+    res.status(200).json(orderedUsers);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 
 

@@ -65,7 +65,7 @@ useEffect(() => {
       const res = await fetch(`${backendUrl}api/fetchallusers`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({}),
+        body: JSON.stringify({myPhone : phone}),
       });
 
       if (!res.ok) throw new Error("Failed to fetch your profile");
@@ -125,41 +125,44 @@ const openLeftFriend = ()=>{
                               <input type="text" placeholder='Search here' value={searchValue} onChange={(e)=>{setSearchValue(e.target.value)}} />
                           </div>
             <h1>Add Friend</h1>
-               <div className='right-friend-bottom' id="right-friend-bottom">
-                {
-
-             loading ?(
-               <div className="spinner-wrapper">
+               
+             {
+  loading ? (
+    <div className="spinner-wrapper">
       <div className="fb-spinner"></div>
     </div>
+  ) : (
+    <div className="right-friend-bottom" id="right-friend-bottom">
+      {filteredUsers.map((user) => (
+        <div className="all-users" key={user._id}>
+          <div className="card-img">
+            <img
+              src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${user.dp}`}
+              alt={user.username}
+            />
+          </div>
 
-             ) : (
-                   filteredUsers.map((users)=>(
-                  <div className='all-users'  key={users._id}>
-                      <div className='card-img'>
-                         <img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${users.dp}`} />
+          <div className="card-content">
+            <h4>{user.username}</h4>
 
-                      </div>
-                      <div className='card-content'>
-                             <h4>{users.username}</h4>
-                            <button
-  className={`add-friend ${friendRequests[users._id] === "Sent Request" ? "sent-request" : ""}`}
-  onClick={() => friendRequestSend(users._id)}  // users._id is correct
->
-  {friendRequests[users._id] || "Add Friend"}
-</button>
+            <button
+              className={`add-friend ${
+                friendRequests[user._id] === "Sent Request" ? "sent-request" : ""
+              }`}
+              onClick={() => friendRequestSend(user._id)}
+            >
+              {friendRequests[user._id] || "Add Friend"}
+            </button>
 
-                             <button className='add-remove'>Remove</button>
-                        </div>
-                      
-                  </div>
-                 )
-                )
-             )
+            <button className="add-remove">Remove</button>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
               
-              
-              }
-              </div>
         </div>
     )
 }

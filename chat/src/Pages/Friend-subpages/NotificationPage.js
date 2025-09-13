@@ -11,7 +11,7 @@ const Notification = ()=>{
     
         const fetchReceivedRequest = async () => {
           try {
-            const res = await fetch(`${backendUrl}api/receivedrequestuser`, {
+            const res = await fetch(`${backendUrl}api/notificationrequestuser`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ receiver: myPhone }),
@@ -132,7 +132,7 @@ const formatTime = (dateString) => {
                  
                   <input type="text" placeholder='Search here' />
               </div>
-            <h1>Notifications</h1>
+            <h1 className="noti-heading">Notifications</h1>
             <div className="notification-card-container">
                 {
                      loading ? (

@@ -24,6 +24,7 @@ const navigate=useNavigate();
   const [users,setUsers]=useState([]);
 const location=useLocation();
 const [loading, setLoading] = useState(false);
+ const phone = sessionStorage.getItem("phone") || Cookies.get("mobile");
 useEffect(() => {
   const fetchAllUsers = async () => {
       setLoading(true);
@@ -32,7 +33,7 @@ useEffect(() => {
       const res = await fetch(`${backendUrl}api/fetchallusers`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({}),
+        body: JSON.stringify({myPhone : phone}),
       });
 
       if (!res.ok) throw new Error("Failed to fetch your profile");
@@ -55,7 +56,7 @@ useEffect(() => {
 
 const [sender,setSender]=useState("");
 const [receiver,setReceiver]=useState("");
- const phone = sessionStorage.getItem("phone") || Cookies.get("mobile");
+
 
 
 
@@ -560,6 +561,53 @@ useEffect(() => {
   }, [senderPhones]);
 
 
+const AcceptRequest = async (senderPhone) => {
+  try {
+    const receiver = sessionStorage.getItem("phone");
+
+    const res = await fetch(`${backendUrl}api/acceptrequest`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sender: senderPhone, receiver }),
+    });
+
+    if (!res.ok) throw new Error("Failed to accept request");
+
+    const result = await res.json();
+
+    // Remove from request list immediately
+    setSenders((prev) => prev.filter((user) => user.phone !== senderPhone));
+    setSenderPhones((prev) => prev.filter((phone) => phone !== senderPhone));
+
+    console.log("Request accepted:", result);
+  } catch (error) {
+    console.error("Error accepting request:", error);
+  }
+};
+
+
+const CancelRequest = async (senderPhone) => {
+  try {
+    const receiver = sessionStorage.getItem("phone");
+
+    const res = await fetch(`${backendUrl}api/cancelrequest`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sender: senderPhone, receiver }),
+    });
+
+    if (!res.ok) throw new Error("Failed to cancel request");
+
+    // Remove from request list immediately
+    setSenders((prev) => prev.filter((user) => user.phone !== senderPhone));
+    setSenderPhones((prev) => prev.filter((phone) => phone !== senderPhone));
+
+    console.log("Request canceled");
+  } catch (error) {
+    console.error("Error canceling request:", error);
+  }
+};
+
 
 
 
@@ -853,12 +901,14 @@ useEffect(() => {
 
                 <button
                   className="add-friend-accept"
-                  onClick={() => friendRequestSend(user._id)}
+                  onClick={() => AcceptRequest(user.phone)}
                 >
                   Accept
                 </button>
 
-                <button className="add-remove">Cancel</button>
+                <button className="add-remove"
+                 onClick={() => CancelRequest(user.phone)}
+                >Cancel</button>
               </div>
             </div>
           ))}
