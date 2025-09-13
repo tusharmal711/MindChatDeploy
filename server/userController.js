@@ -636,9 +636,9 @@ export const countContactsByMobile = async (req, res) => {
 export const FriendRequest = async (req, res) => {
   try {
     
-    const {sender,receiver,text} = req.body;
+    const {sender,receiver} = req.body;
      
-    const newFriend = new Friend({sender,receiver,text : "sent you friend request"});
+    const newFriend = new Friend({sender,receiver});
     const data=await newFriend.save();
 
     res.status(201).json({data});
@@ -667,8 +667,11 @@ export const SentRequestUser = async (req, res) => {
 
 export const ReceivedRequestUser = async (req, res) => {
   try {
-    const {receiver}=req.body;
-    const addedUser = await Friend.find({receiver});
+    const { receiver } = req.body;
+
+    // Only fetch pending requests (status: "no")
+    const addedUser = await Friend.find({ receiver, status: "no" });
+
     res.status(200).json(addedUser);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -691,6 +694,78 @@ export const SentRequestAllUser = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+
+
+export const AcceptRequest = async (req, res) => {
+  try {
+    const { sender, receiver } = req.body;
+
+    // Find the request and update status
+    const updated = await Friend.findOneAndUpdate(
+      { sender, receiver, status: "no" },  // find only pending requests
+      { $set: { status: "yes" } },         // update to accepted
+      { new: true }                        // return updated document
+    );
+
+    if (!updated) {
+      return res.status(404).json({ success: false, message: "Request not found" });
+    }
+
+    res.status(200).json({ success: true, data: updated });
+  } catch (error) {
+    console.error("Error accepting request:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
+
+export const AcceptedUser = async (req, res) => {
+  try {
+    const { phone } = req.body; // logged-in user's phone number
+
+    const friends = await Friend.find({
+      status: "yes",
+      $or: [{ sender: phone }, { receiver: phone }]
+    });
+
+    res.status(200).json(friends);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+
+
+
+// backend
+export const checkContact = async (req, res) => {
+  try {
+    const { myPhone, friendPhones } = req.body; // friendPhones = array
+
+    const contacts = await Contact.find({
+      phone: myPhone,
+      mobile: { $in: friendPhones }
+    });
+
+    const result = {};
+    friendPhones.forEach(fp => {
+      result[fp] = contacts.some(c => c.mobile === fp);
+    });
+
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+
+
+
+
 export const CancelRequest = async (req, res) => {
   try {
     const { sender, receiver } = req.body;

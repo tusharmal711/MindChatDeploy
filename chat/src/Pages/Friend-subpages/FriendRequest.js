@@ -29,7 +29,15 @@ const FriendRequest = () => {
     };
 
     fetchReceivedRequest();
+
   }, []);
+
+
+
+
+
+
+
 
  const [loading, setLoading] = useState(false);
 
@@ -65,9 +73,32 @@ useEffect(() => {
 
 
 
-
-
 const AcceptRequest = async (senderPhone) => {
+  try {
+    const receiver = sessionStorage.getItem("phone"); // logged-in user
+
+    const res = await fetch(`${backendUrl}api/acceptrequest`, {
+      method: "PUT",   
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sender: senderPhone, receiver }),
+    });
+
+    if (!res.ok) throw new Error("Failed to accept request");
+
+    const result = await res.json();
+
+    // Update UI: remove accepted request from pending list
+    setUsers((prev) => prev.filter((user) => user.phone !== senderPhone));
+    setSenderPhones((prev) => prev.filter((phone) => phone !== senderPhone));
+
+    console.log("Request accepted:", result);
+  } catch (error) {
+    console.error("Error accepting request:", error);
+  }
+};
+
+
+const CancelRequest = async (senderPhone) => {
   try {
     const receiver = sessionStorage.getItem("phone"); // or localStorage
 
@@ -183,7 +214,9 @@ const openLeftFriend = ()=>{
             >
               Accept
             </button>
-            <button type="button" className="request-card-cancel">
+            <button type="button" className="request-card-cancel"
+             onClick={() => CancelRequest(user.phone)}
+            >
               Cancel
             </button>
           </div>

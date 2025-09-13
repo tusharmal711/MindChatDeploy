@@ -3,7 +3,10 @@ import mongoose from "mongoose";
 const data=new mongoose.Schema({
     sender : String , 
     receiver : String ,
-    text : String , 
+    status : {
+    type: String,
+    default: "no"  
+  }, 
     date : {
        type : Date,
        default : Date.now
