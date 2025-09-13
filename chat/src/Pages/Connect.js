@@ -765,10 +765,16 @@ useEffect(() => {
                   <Link to="notification"><MdNotifications  className={`fmt ${isActive('notification') ? 'active-link-mob' : ''}`}/></Link>
                 </div>
 
-                      <div className='right-nav-friend-mobile'>
-                 
-                  <input type="text" placeholder='Search here' value={searchValue} onChange={(e)=>{setSearchValue(e.target.value)}}/>
-              </div>
+                      {location.pathname === "/connect" && (
+  <div className='right-nav-friend-mobile'>
+    <input
+      type="text"
+      placeholder="Search here"
+      value={searchValue}
+      onChange={(e) => setSearchValue(e.target.value)}
+    />
+  </div>
+)}
 
 
              
@@ -783,7 +789,7 @@ useEffect(() => {
                    <Outlet />
                   </div>
                 ) : viewSec===3 ? (
-                     <div className='right-friend-top' id="right-friend-top">
+                     <div className='right-friend-to' id="right-friend-top">
                    <Outlet />
                   </div>
                 ) : viewSec===4 ?(
@@ -807,11 +813,13 @@ useEffect(() => {
       <div className="fb-spinner"></div>
     </div>
   ) : senders.length === 0 ? (
-    <div>
+    <div className="right-friend-bottom" id="right-friend-top">
       <p>No request received</p>
     </div>
   ) : requests.length === 0 ? (
+     <div className="right-friend-bottom" id="right-friend-top">
     <p>Not found</p>
+    </div>
   ) : (
     <div className="right-friend-bottom" id="right-friend-top">
       {requests.map((user) => (
@@ -856,7 +864,9 @@ useEffect(() => {
       <div className="fb-spinner"></div>
     </div>
   ) : filteredUsers.length === 0 ? (
+     <div className="right-friend-bottom" id="right-friend-top">
     <p>Not found</p>
+    </div>
   ) : (
     <div className="right-friend-bottom" id="right-friend-bottom">
       {filteredUsers.map((user) => (

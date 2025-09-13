@@ -5136,16 +5136,18 @@ padding:0rem;
 
 .notification-card-container{
 width:100%;
+
 }
 .notification-sent-card{
-   
+ 
     /* box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px; */
     display: flex;
     align-items: center;
     gap:1rem;
-    width:calc(100% - 1rem);
+    width:calc(100% - 1.45rem);
     height:4rem;
     padding:0.5rem;
+    padding-left: 0.95rem;
     margin-top:0.5rem;
     border-radius: 0.6rem;
 }

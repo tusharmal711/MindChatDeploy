@@ -113,6 +113,10 @@ const openLeftFriend = ()=>{
 
     return(
         <div className="add-friend-container">
+           <div className='right-nav-friend-mobile'>
+                 
+                  <input type="text" placeholder='Search here' value={searchValue} onChange={(e)=>{setSearchValue(e.target.value)}}/>
+              </div>
              <div className='right-nav-friend'>
                              <FaChevronRight className='right-friend-arrow' onClick={openLeftFriend}/>
                              <h2 id="r-n-f">Friends</h2>

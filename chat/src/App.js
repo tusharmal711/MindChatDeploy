@@ -531,10 +531,12 @@ setTimeout(() => {
          <Route exact path="/moments" element={<Moments />} />
         <Route exact path="/connect" element={<Connect />}>
          <Route exact path="my-friend" element={<AllFriend />} />
+          <Route exact path="friend-request" element={<FriendRequest />} />
+           <Route exact path="add-friend" element={<AddFriend />} />
         <Route exact path="sent-request" element={<SentRequest />} />
-        <Route exact path="friend-request" element={<FriendRequest />} />
+       
         <Route exact path="notification" element={<Notification />} />
-          <Route exact path="add-friend" element={<AddFriend />} />
+         
         
         
         </Route>

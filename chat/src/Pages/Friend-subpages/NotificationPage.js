@@ -128,6 +128,10 @@ const formatTime = (dateString) => {
 
     return(
         <div className="request-sent-main">
+           <div className='right-nav-friend-mobile'>
+                 
+                  <input type="text" placeholder='Search here' />
+              </div>
             <h1>Notifications</h1>
             <div className="notification-card-container">
                 {
