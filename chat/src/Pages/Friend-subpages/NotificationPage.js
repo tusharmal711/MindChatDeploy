@@ -216,14 +216,15 @@ useEffect(() => {
 const allNotifications = [
   ...users.map((u) => ({
     ...u,
-    type: "request", // identify type
+    type: "request",
+    timestamp: u.date // normalize field name
   })),
   ...acceptUsers.map((u) => ({
     ...u,
-    type: "accept", // identify type
+    type: "accept",
+    timestamp: u.updatedDate // normalize field name
   })),
-].sort((a, b) => new Date(b.date) - new Date(a.date)); // latest first
-
+].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)); // sort by one common field
 
 
 
@@ -313,21 +314,18 @@ const formatTime = (dateString) => {
       </div>
       <div>
         {user.type === "request" ? (
-          <div>
+          
           <p>{user.username} sent you a friend request</p>
-           <p className="noti-time">
-          <FaRegClock /> {user.date ? formatTime(user.date) : "No time available"}
-        </p>
-        </div>
+          
         ) : (
-          <div>
+         
           <p>{user.username} accepted your friend request</p>
-           <p className="noti-time">
-          <FaRegClock /> {user.updatedDate ? formatTime(user.updatedDate) : "No time available"}
-        </p>
-        </div>
+          
         )}
-       
+       <p className="noti-time">
+  <FaRegClock /> 
+  {user.timestamp ? formatTime(user.timestamp) : "No time available"}
+</p>
       </div>
     </div>
   ))
