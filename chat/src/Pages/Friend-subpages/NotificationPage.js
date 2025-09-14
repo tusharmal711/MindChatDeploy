@@ -250,7 +250,9 @@ const formatTime = (dateString) => {
   const date = new Date(dateString);
   const now = new Date();
 
-  const diffMs = now - date;
+  let diffMs = now - date;
+  if (diffMs < 0) diffMs = 0; // prevent -4s, -2s
+
   const diffSeconds = Math.floor(diffMs / 1000);
   const diffMinutes = Math.floor(diffSeconds / 60);
 
@@ -276,6 +278,7 @@ const formatTime = (dateString) => {
     return `${day}/${month}/${year}, ${hours}:${minutes}`;
   }
 };
+
 
 
 
