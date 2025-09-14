@@ -246,9 +246,10 @@ useEffect(() => {
 }, []);
 const formatTime = (dateString) => {
   const date = new Date(dateString);
+   const localDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
   const now = new Date();
 
-  const diffMs = now - date;
+  const diffMs = now - localDate;
   const diffSeconds = Math.floor(diffMs / 1000);
   const diffMinutes = Math.floor(diffSeconds / 60);
 
