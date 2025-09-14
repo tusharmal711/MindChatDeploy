@@ -216,15 +216,13 @@ useEffect(() => {
 const allNotifications = [
   ...users.map((u) => ({
     ...u,
-    type: "request",
-    timestamp: u.date // normalize field name
+    type: "request", // identify type
   })),
   ...acceptUsers.map((u) => ({
     ...u,
-    type: "accept",
-    timestamp: u.updatedDate // normalize field name
+    type: "accept", // identify type
   })),
-].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)); // sort by one common field
+].sort((a, b) => new Date(b.date) - new Date(a.date)); // latest first
 
 
 
@@ -246,14 +244,10 @@ useEffect(() => {
 
   return () => clearInterval(interval); // clean up
 }, []);
-
 const formatTime = (dateString) => {
-  if (!dateString) return "No time available";
-
   const date = new Date(dateString);
-  if (isNaN(date)) return "Invalid date";  // prevent NaN case
-
   const now = new Date();
+
   const diffMs = now - date;
   const diffSeconds = Math.floor(diffMs / 1000);
   const diffMinutes = Math.floor(diffSeconds / 60);
@@ -268,11 +262,19 @@ const formatTime = (dateString) => {
   } else if (diffMinutes < 60) {
     return `${diffMinutes} minute${diffMinutes !== 1 ? 's' : ''} ago`;
   } else if (isToday) {
-    return `Today, ${date.getHours().toString().padStart(2,"0")}:${date.getMinutes().toString().padStart(2,"0")}`;
+    const hours = date.getHours().toString().padStart(2, "0");
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    return `Today, ${hours}:${minutes}`;
   } else {
-    return `${date.getDate().toString().padStart(2,"0")}/${(date.getMonth()+1).toString().padStart(2,"0")}/${date.getFullYear()}, ${date.getHours().toString().padStart(2,"0")}:${date.getMinutes().toString().padStart(2,"0")}`;
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const year = date.getFullYear();
+    const hours = date.getHours().toString().padStart(2, "0");
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    return `${day}/${month}/${year}, ${hours}:${minutes}`;
   }
 };
+
 
 
 
@@ -308,19 +310,20 @@ const formatTime = (dateString) => {
       </div>
       <div>
         {user.type === "request" ? (
-          
+          <div>
           <p>{user.username} sent you a friend request</p>
-           
+           <p className="noti-time">
+          <FaRegClock /> {user.date ? formatTime(user.date) : "No time available"}
+        </p>
+        </div>
         ) : (
-          
+          <div>
           <p>{user.username} accepted your friend request</p>
-          
+           <p className="noti-time">
+          <FaRegClock /> {user.updatedDate ? formatTime(user.updatedDate) : "No time available"}
+        </p>
+        </div>
         )}
-        <p className="noti-time">
-  <FaRegClock /> 
-  {user.timestamp ? formatTime(user.timestamp) : "No time available"}
-</p>
-
        
       </div>
     </div>
