@@ -245,11 +245,11 @@ useEffect(() => {
   return () => clearInterval(interval); // clean up
 }, []);
 const formatTime = (dateString) => {
-  const date = new Date(dateString);
-   const localDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+ const date = new Date(dateString);
   const now = new Date();
-
-  const diffMs = now - localDate;
+  
+  // Use UTC for both dates
+  const diffMs = now.getTime() - date.getTime();
   const diffSeconds = Math.floor(diffMs / 1000);
   const diffMinutes = Math.floor(diffSeconds / 60);
 
