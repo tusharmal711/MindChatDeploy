@@ -246,13 +246,15 @@ useEffect(() => {
 
   return () => clearInterval(interval); // clean up
 }, []);
+
 const formatTime = (dateString) => {
+  if (!dateString) return "No time available";
+
   const date = new Date(dateString);
+  if (isNaN(date)) return "Invalid date";  // prevent NaN case
+
   const now = new Date();
-
-  let diffMs = now - date;
-  if (diffMs < 0) diffMs = 0; // prevent -4s, -2s
-
+  const diffMs = now - date;
   const diffSeconds = Math.floor(diffMs / 1000);
   const diffMinutes = Math.floor(diffSeconds / 60);
 
@@ -266,20 +268,11 @@ const formatTime = (dateString) => {
   } else if (diffMinutes < 60) {
     return `${diffMinutes} minute${diffMinutes !== 1 ? 's' : ''} ago`;
   } else if (isToday) {
-    const hours = date.getHours().toString().padStart(2, "0");
-    const minutes = date.getMinutes().toString().padStart(2, "0");
-    return `Today, ${hours}:${minutes}`;
+    return `Today, ${date.getHours().toString().padStart(2,"0")}:${date.getMinutes().toString().padStart(2,"0")}`;
   } else {
-    const day = date.getDate().toString().padStart(2, "0");
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    const year = date.getFullYear();
-    const hours = date.getHours().toString().padStart(2, "0");
-    const minutes = date.getMinutes().toString().padStart(2, "0");
-    return `${day}/${month}/${year}, ${hours}:${minutes}`;
+    return `${date.getDate().toString().padStart(2,"0")}/${(date.getMonth()+1).toString().padStart(2,"0")}/${date.getFullYear()}, ${date.getHours().toString().padStart(2,"0")}:${date.getMinutes().toString().padStart(2,"0")}`;
   }
 };
-
-
 
 
 
