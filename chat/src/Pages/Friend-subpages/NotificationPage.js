@@ -245,13 +245,15 @@ useEffect(() => {
   return () => clearInterval(interval); // clean up
 }, []);
 const formatTime = (dateString) => {
- const date = new Date(dateString);
+  const date = new Date(dateString);
   const now = new Date();
-  
-  // Use UTC for both dates
-  const diffMs = now.getTime() - date.getTime();
+
+  let diffMs = now - date;
+  if (diffMs < 0) diffMs = 0; // prevent negative values
+
   const diffSeconds = Math.floor(diffMs / 1000);
   const diffMinutes = Math.floor(diffSeconds / 60);
+  const diffHours = Math.floor(diffMinutes / 60);
 
   const isToday =
     date.getDate() === now.getDate() &&
@@ -259,10 +261,10 @@ const formatTime = (dateString) => {
     date.getFullYear() === now.getFullYear();
 
   if (diffSeconds < 60) {
-    return `${diffSeconds} second${diffSeconds !== 1 ? 's' : ''} ago`;
+    return `${diffSeconds} second${diffSeconds !== 1 ? "s" : ""} ago`;
   } else if (diffMinutes < 60) {
-    return `${diffMinutes} minute${diffMinutes !== 1 ? 's' : ''} ago`;
-  } else if (isToday) {
+    return `${diffMinutes} minute${diffMinutes !== 1 ? "s" : ""} ago`;
+  } else if (diffHours < 24 && isToday) {
     const hours = date.getHours().toString().padStart(2, "0");
     const minutes = date.getMinutes().toString().padStart(2, "0");
     return `Today, ${hours}:${minutes}`;
