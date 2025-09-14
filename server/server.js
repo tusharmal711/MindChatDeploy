@@ -644,7 +644,7 @@ app.post("/api/friendrequest", async (req, res) => {
 
     // emit socket event
     io.to(onlinePages[receiver]?.socketId || receiver).emit("newFriendRequest", data);
-
+    
     res.status(201).json({ success: true, data });
   } catch (error) {
     console.error("Error during FriendRequest:", error);

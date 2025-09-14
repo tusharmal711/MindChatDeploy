@@ -1,11 +1,61 @@
 import { useState,useEffect } from "react";
 import { FaRegClock } from "react-icons/fa";
+import { socket } from "../Socket";
 const backendUrl = process.env.REACT_APP_BACKEND_URL; 
 const Notification = ()=>{
       const [senderPhones, setSenderPhones] = useState([]);
       const [users, setUsers] = useState([]);
       const [requests, setRequests] = useState([]); 
       const [time,setTime]=useState("");
+       const [receiverPhones, setReceiverPhones] = useState([]);
+      const [accepts, setAccepts] = useState([]); 
+
+useEffect(() => {
+  const myPhone = sessionStorage.getItem("phone");
+  if (myPhone) {
+    socket.emit("join", myPhone); 
+  }
+}, []);
+
+
+useEffect(() => {
+  socket.on("newFriendRequest", (data) => {
+  
+
+    // add to phone numbers
+    setSenderPhones((prev) => [...prev, data.sender]);
+     setRequests((prev) => [...prev, data]);
+   
+  });
+
+  return () => {
+    socket.off("newFriendRequest");
+  };
+}, []);
+
+
+
+
+// useEffect(() => {
+//   socket.on("newFriendAccept", (updated) => {
+  
+// alert("accepted");
+//     // add to phone numbers
+//     setReceiverPhones((prev) => [...prev, updated.receiver]);
+//      setAccepts((prev) => [...prev, updated]);
+   
+//   });
+
+//   return () => {
+//     socket.off("newFriendAccept");
+//   };
+// }, []);
+
+
+
+
+
+
       useEffect(() => {
         const myPhone = sessionStorage.getItem("phone");
     
@@ -32,6 +82,87 @@ const Notification = ()=>{
         fetchReceivedRequest();
       }, []);
     
+
+
+
+
+ useEffect(() => {
+        const myPhone = sessionStorage.getItem("phone");
+    
+        const fetchAcceptedRequest = async () => {
+          try {
+            const res = await fetch(`${backendUrl}api/notificationacceptuser`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ sender: myPhone }),
+            });
+    
+            if (!res.ok) throw new Error("Failed to fetch friend requests");
+            
+            const data = await res.json();
+           
+            setAccepts(data);
+            const phoneNumbers = data.map((friend) => friend.receiver); // extract sender phones
+            setReceiverPhones(phoneNumbers);
+          } catch (error) {
+            console.error("Error fetching friend requests:", error);
+          }
+        };
+    
+        fetchAcceptedRequest();
+         const interval = setInterval(fetchAcceptedRequest, 1000); // fetch every 5s
+  return () => clearInterval(interval); 
+      }, []);
+    
+
+
+const [acceptUsers,setAcceptUsers]=useState([]);
+
+
+
+
+useEffect(() => {
+  if (receiverPhones.length === 0) return;
+
+  const fetchAcceptUsers = async () => {
+    try {
+      const res = await fetch(`${backendUrl}api/sentrequestalluser`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: receiverPhones }), 
+      });
+
+      if (!res.ok) throw new Error("Failed to fetch accepted users");
+
+      const data = await res.json();
+
+      // enrich with date from accepts[]
+      const enriched = data.map((user) => {
+        const accept = accepts.find((r) => r.receiver === user.phone);
+        return {
+          ...user,
+          updatedDate : accept ? accept.updatedDate : null,
+        };
+      });
+
+      setAcceptUsers(enriched);
+      console.log("Users who accepted your request:", enriched);
+    } catch (error) {
+      console.error("Error fetching accepted users:", error);
+    }
+  };
+
+  fetchAcceptUsers();
+}, [receiverPhones, accepts]);
+
+
+
+
+
+
+
+
+
 
  const [loading, setLoading] = useState(false);
 
@@ -72,6 +203,36 @@ const Notification = ()=>{
     
         fetchReceivedUsers();
       }, [senderPhones]);
+
+
+
+
+
+
+
+
+
+// merge requests and accepted into one list
+const allNotifications = [
+  ...users.map((u) => ({
+    ...u,
+    type: "request", // identify type
+  })),
+  ...acceptUsers.map((u) => ({
+    ...u,
+    type: "accept", // identify type
+  })),
+].sort((a, b) => new Date(b.date) - new Date(a.date)); // latest first
+
+
+
+
+
+
+
+
+
+
 
 
 const [currentTime, setCurrentTime] = useState(Date.now());
@@ -134,30 +295,59 @@ const formatTime = (dateString) => {
               </div>
             <h1 className="noti-heading">Notifications</h1>
             <div className="notification-card-container">
-                {
-                     loading ? (
-  
-                <div className="spinner-wrapper">
-      <div className="fb-spinner"></div>
+             {loading ? (
+  <div className="spinner-wrapper">
+    <div className="fb-spinner"></div>
+  </div>
+) : (
+  allNotifications.map((user, index) => (
+    <div key={index} className="notification-sent-card">
+      <div>
+        <img
+          src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${user.dp}`}
+          className="request-card-image"
+        />
+      </div>
+      <div>
+        {user.type === "request" ? (
+          <div>
+          <p>{user.username} sent you a friend request</p>
+           <p className="noti-time">
+          <FaRegClock /> {user.date ? formatTime(user.date) : "No time available"}
+        </p>
+        </div>
+        ) : (
+          <div>
+          <p>{user.username} accepted your friend request</p>
+           <p className="noti-time">
+          <FaRegClock /> {user.date ? formatTime(user.updatedDate) : "No time available"}
+        </p>
+        </div>
+        )}
+       
+      </div>
     </div>
-
-                  ) :(
-                         users.map((user, index) => (
-                   <div key={index} className="notification-sent-card">
-                     <div>
-                        <img src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${user.dp}`} className="request-card-image"/>
-                        </div>
-                        <div>
-                            <p>{user.username} sent you friend request</p>
-                           <p className="noti-time"><FaRegClock />{user.date ? formatTime(user.date) : "No time available"}</p>
-                            </div>
+  ))
+)}
 
 
-                   </div>
-                   ))
-                  )
-               
-                   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             </div>
         </div>
     )

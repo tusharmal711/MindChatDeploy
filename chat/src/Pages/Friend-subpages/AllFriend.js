@@ -101,21 +101,22 @@ const AcceptRequest = async (senderPhone) => {
 };
 
 
-const CancelRequest = async (senderPhone) => {
+const Unfriend = async (senderPhone) => {
   try {
-    const receiver = sessionStorage.getItem("phone"); // or localStorage
+    const myPhone = sessionStorage.getItem("phone"); // you (current user)
 
-    const res = await fetch(`${backendUrl}api/cancelrequest`, {
+    const res = await fetch(`${backendUrl}api/unfriend`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ sender : senderPhone, receiver: receiver}),
+      body: JSON.stringify({ sender: myPhone, receiver: senderPhone }),
     });
 
     if (!res.ok) throw new Error("Failed to cancel request");
 
-    // Update state after successful deletion
+    // Update UI
     setUsers((prev) => prev.filter((user) => user.phone !== senderPhone));
     setSenderPhones((prev) => prev.filter((phone) => phone !== senderPhone));
+    
   } catch (error) {
     console.error("Error canceling request:", error);
   }
@@ -260,7 +261,7 @@ useEffect(() => {
           <button
             type="button"
             className="request-card-cancel"
-            onClick={() => CancelRequest(user.phone)}
+            onClick={() => Unfriend(user.phone)}
           >
             Unfriend
           </button>

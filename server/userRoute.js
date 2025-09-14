@@ -1,6 +1,6 @@
 import express from "express";
 
-import {Register,sendOTP,VerifyOtp,getRequestCount,markRequestAsRead,AcceptedUser,AcceptRequest,isLogin,deleteDp,FetchAllMessage,sendLoginOTP,VerifyLoginOtp,editAbout,sendFpOTP, countContactsByMobile, fetch, fetchId, delContact, fetchYou, addNewContact,editContact, fetchDp , fetchOtherDp, fetchHistory, ResetPassword, fetchalluser, SentRequestUser, SentRequestAllUser, CancelRequest, ReceivedRequestUser, CallList, FetchCallList, fetchCallUsername, checkContact, NotificationRequestUser} from "./userController.js";
+import {Register,sendOTP,VerifyOtp,getRequestCount,NotificationAcceptUser,markRequestAsRead,AcceptedUser,AcceptRequest,isLogin,deleteDp,FetchAllMessage,sendLoginOTP,VerifyLoginOtp,editAbout,sendFpOTP, countContactsByMobile, fetch, fetchId, delContact, fetchYou, addNewContact,editContact, fetchDp , fetchOtherDp, fetchHistory, ResetPassword, fetchalluser, SentRequestUser, SentRequestAllUser, CancelRequest, ReceivedRequestUser, CallList, FetchCallList, fetchCallUsername, checkContact, NotificationRequestUser,Unfriend} from "./userController.js";
 
 const router = express.Router();
 router.post("/register",Register);
@@ -33,9 +33,11 @@ router.post("/getRequestCount",getRequestCount);
 router.post("/markRequestAsRead",markRequestAsRead);
 
 router.post("/notificationrequestuser",NotificationRequestUser);
+router.post("/notificationacceptuser",NotificationAcceptUser);
 router.post("/sentrequestalluser",SentRequestAllUser);
 router.post("/fetchallusers",fetchalluser);
 router.delete("/cancelrequest",CancelRequest);
+router.delete("/unfriend",Unfriend);
 router.put("/acceptrequest", AcceptRequest);
 // router.post("/fetchfrienduser",fetchFriendUser);
 router.post("/countContactsByMobile",countContactsByMobile);

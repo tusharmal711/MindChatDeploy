@@ -662,7 +662,7 @@ export const countContactsByMobile = async (req, res) => {
 //     const newFriend = new Friend({
 //       sender,
 //       receiver,
-//       seen: isOnPage ? true : false, // 👈 key part
+//       seen: isOnPage ? true : false, // key part
 //     });
 
 //     const data = await newFriend.save();
@@ -749,13 +749,25 @@ export const NotificationRequestUser = async (req, res) => {
 
     // Only fetch pending requests (status: "no")
     const addedUser = await Friend.find({ receiver});
-
+    
     res.status(200).json(addedUser);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
+export const NotificationAcceptUser = async (req, res) => {
+  try {
+    const { sender } = req.body;
+
+    // Only fetch pending requests (status: "no")
+    const addedUser = await Friend.find({sender, status : "yes"});
+    
+    res.status(200).json(addedUser);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
 
 
@@ -786,14 +798,15 @@ export const AcceptRequest = async (req, res) => {
     // Find the request and update status
     const updated = await Friend.findOneAndUpdate(
       { sender, receiver, status: "no" },  // find only pending requests
-      { $set: { status: "yes" } },         // update to accepted
+      { $set: { status: "yes", updatedDate: Date.now() } },         // update to accepted
       { new: true }                        // return updated document
     );
 
     if (!updated) {
       return res.status(404).json({ success: false, message: "Request not found" });
     }
-
+     const io = req.app.get("io");
+      io.to(sender).emit("newFriendAccept", updated);
     res.status(200).json({ success: true, data: updated });
   } catch (error) {
     console.error("Error accepting request:", error);
@@ -865,6 +878,47 @@ export const CancelRequest = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
+
+
+
+
+export const Unfriend = async (req, res) => {
+  try {
+    const { sender, receiver } = req.body;
+
+    if (!sender || !receiver) {
+      return res.status(400).json({ error: "Missing sender or receiver" });
+    }
+
+    // delete request in both directions
+    const deleted = await Friend.deleteOne({
+      $or: [
+        { sender, receiver },
+        { sender: receiver, receiver: sender }
+      ]
+    });
+
+    if (deleted.deletedCount === 0) {
+      return res.status(404).json({ message: "Request not found" });
+    }
+
+    res.status(200).json({ message: "Friend request canceled" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
 
 
 

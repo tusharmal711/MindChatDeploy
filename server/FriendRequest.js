@@ -11,7 +11,11 @@ const data=new mongoose.Schema({
     date : {
        type : Date,
        default : Date.now
-    }
+    },
+    updatedDate : {
+       type : Date,
+       default : Date.now
+    },
    
    });
    
