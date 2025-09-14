@@ -905,7 +905,13 @@ const CancelRequest = async (senderPhone) => {
                       
                      </Link>
                       <Link to="notification"  className={`sent-link ${isActive('notification') ? 'active-link' : ''}`}>
-                      <p className='frl'><MdNotifications className='fri'/> Notification <FaChevronRight className='frla'/></p>
+                      <p className='frl'><MdNotifications className='fri'/>
+                       {/* {count > 0 && location.pathname !== "/connect/notification" && (
+                          <span className="count-badge">{count}</span>
+                             )} */}
+                      
+                      
+                       Notification <FaChevronRight className='frla'/></p>
                       
                        
                      </Link>

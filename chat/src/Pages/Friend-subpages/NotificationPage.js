@@ -320,7 +320,7 @@ const formatTime = (dateString) => {
           <div>
           <p>{user.username} accepted your friend request</p>
            <p className="noti-time">
-          <FaRegClock /> {user.date ? formatTime(user.updatedDate) : "No time available"}
+          <FaRegClock /> {user.updatedDate ? formatTime(user.updatedDate) : "No time available"}
         </p>
         </div>
         )}
