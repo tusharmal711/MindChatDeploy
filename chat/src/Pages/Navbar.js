@@ -14,6 +14,7 @@ import { MdEmail } from "react-icons/md";
 import Cookies from "js-cookie";
 import { MdChat } from "react-icons/md";
 import { HiOutlineEye } from "react-icons/hi";
+import { useLocation } from "react-router-dom";
 import { MdOutlinePhotoCamera } from "react-icons/md";
 import { MdOutlineDriveFolderUpload } from "react-icons/md";
 import { RiDeleteBin6Line } from "react-icons/ri";
@@ -37,7 +38,7 @@ const Navbar = ()=>{
    //    navigate("/chatboard", { state: {isOpen : true} });
    //  };
 
-
+const location=useLocation();
 
    const backendUrl = process.env.REACT_APP_BACKEND_URL; 
 
@@ -98,6 +99,32 @@ sessionStorage.setItem("profile-dp", JSON.stringify(data));
 
 
 
+ const [count, setCount] = useState(0);
+
+
+
+useEffect(() => {
+  const myPhone = sessionStorage.getItem("phone");
+
+  const fetchCount = async () => {
+    const res = await fetch(`${backendUrl}api/getRequestCount`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ receiver: myPhone }),
+    });
+    const data = await res.json();
+    
+    setCount(data.count); // only unseen notifications
+  };
+
+  fetchCount();
+
+
+  // listen socket for real-time update
+  const interval = setInterval(fetchCount, 1000); 
+  return () => clearInterval(interval); 
+
+}, []);
 
 
 
@@ -801,7 +828,11 @@ you.map((profile)=>(
 
       <NavLink to="/chatboard" className="mob chat"><div className="nav-chat"><MdChat className="mob-icon"/><span>Chats</span></div></NavLink>
       <NavLink to="/moments" className="mob moments"><div className="nav-chat"><SiEventstore className="mob-icon"/><span>Moments</span></div></NavLink>
-      <NavLink to="/connect" className="mob connect"><div className="nav-chat"><TbFriends className="mob-icon"/><span>Friends</span></div></NavLink>
+      <NavLink to="/connect" className="mob connect"><div className="nav-chat"><TbFriends className="mob-icon"/>
+       {count > 0 && location.pathname !== "/connect/friend-request" && (
+                          <span className="count-badge-connect-mobile">{count}</span>
+                             )}
+      <span>Friends</span></div></NavLink>
       <NavLink to="/calls" className="mob calls"><div className="nav-chat"><BiSolidPhoneCall className="mob-icon"/><span>Calls</span></div></NavLink>
     {/* <NavLink to="#" id="logout" className=link logout" onClick={sendData}><IoLogOut /></NavLink> */}
 
@@ -1219,7 +1250,14 @@ you.map((profile)=>(
 ))}
     <NavLink to="/chatboard" className="link chat"><MdChat /></NavLink>
     <NavLink to="/moments" className="link moments"><SiEventstore /></NavLink>
-    <NavLink to="/connect" className="link connect"><TbFriends /></NavLink>
+    <NavLink to="/connect" className="link connect"><TbFriends />
+    
+    {count > 0 && location.pathname !== "/connect/friend-request" && (
+                          <span className="count-badge-connect">{count}</span>
+                             )}
+    
+    
+    </NavLink>
     <NavLink to="/calls" className="link calls"><BiSolidPhoneCall /></NavLink>
     {/* <NavLink to="#" id="logout" className="link logout" onClick={sendData}><IoLogOut /></NavLink> */}
 

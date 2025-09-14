@@ -135,7 +135,9 @@ const openLeftFriend = ()=>{
     <div className="right-friend-bottom" id="right-friend-bottom">
       {filteredUsers.map((user) => (
         <div className="all-users" key={user._id}>
-          <div className="card-img">
+          <div className="card-img"
+          
+          >
             <img
               src={`https://res.cloudinary.com/dnd9qzxws/image/upload/v1743761726/${user.dp}`}
               alt={user.username}

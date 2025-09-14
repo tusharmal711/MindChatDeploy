@@ -17,6 +17,7 @@ import { BsSendCheckFill } from "react-icons/bs";
 import { MdChildFriendly } from "react-icons/md";
 import { RiUserReceived2Fill } from "react-icons/ri";
 import { MdNotifications } from "react-icons/md";
+import { socket } from "./Socket";
 import Cookies from "js-cookie";
 const backendUrl = process.env.REACT_APP_BACKEND_URL; 
 const Connect = ()=>{
@@ -25,6 +26,30 @@ const navigate=useNavigate();
 const location=useLocation();
 const [loading, setLoading] = useState(false);
  const phone = sessionStorage.getItem("phone") || Cookies.get("mobile");
+
+
+
+useEffect(() => {
+  const myPhone = sessionStorage.getItem("phone");
+  if (myPhone) {
+    socket.emit("join", myPhone); //receiver তার room এ join করছে
+  }
+}, []);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 useEffect(() => {
   const fetchAllUsers = async () => {
       setLoading(true);
@@ -51,6 +76,50 @@ useEffect(() => {
 
 
 },[]);
+
+useEffect(() => {
+  const myPhone = sessionStorage.getItem("phone");
+  if (myPhone) {
+    socket.emit("join", myPhone); //receiver তার room এ join করছে
+  }
+}, []);
+
+
+ const [count, setCount] = useState(0);
+
+
+
+useEffect(() => {
+  const myPhone = sessionStorage.getItem("phone");
+
+  const fetchCount = async () => {
+    const res = await fetch(`${backendUrl}api/getRequestCount`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ receiver: myPhone }),
+    });
+    const data = await res.json();
+    
+    setCount(data.count); // only unseen notifications
+  };
+
+  fetchCount();
+
+
+  // listen socket for real-time update
+  const interval = setInterval(fetchCount, 1000); 
+  return () => clearInterval(interval); 
+
+}, []);
+
+
+
+
+
+
+
+
+
 
 
 
@@ -504,6 +573,20 @@ useEffect(() => {
 
 
 
+useEffect(() => {
+  socket.on("newFriendRequest", (data) => {
+  
+
+    // add to phone numbers
+    setSenderPhones((prev) => [...prev, data.sender]);
+ 
+   
+  });
+
+  return () => {
+    socket.off("newFriendRequest");
+  };
+}, []);
 
   const [senderPhones, setSenderPhones] = useState([]);
   const [senders, setSenders] = useState([]);
@@ -580,6 +663,21 @@ const AcceptRequest = async (senderPhone) => {
     setSenderPhones((prev) => prev.filter((phone) => phone !== senderPhone));
 
     console.log("Request accepted:", result);
+
+
+      await fetch(`${backendUrl}api/markRequestAsRead`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ receiver }),
+    });
+
+
+
+
+
+
+
+
   } catch (error) {
     console.error("Error accepting request:", error);
   }
@@ -785,8 +883,17 @@ const CancelRequest = async (senderPhone) => {
 
                      <Link to="friend-request"  className={`sent-link ${isActive('friend-request') ? 'active-link' : ''}`}>
                      
-                         <p className='frl'> <RiUserReceived2Fill className='fri'/> Friend request <FaChevronRight className='frla'/></p>
+                         <p className='frl'> <RiUserReceived2Fill className='fri'/> 
+                         {count > 0 && location.pathname !== "/connect/friend-request" && (
+                          <span className="count-badge">{count}</span>
+                             )}
+                         Friend request 
+                          
+
+                         <FaChevronRight className='frla'/></p>
                      </Link>
+
+
                      <Link to="add-friend" className={`sent-link ${isActive('add-friend') ? 'active-link' : ''}`}>
                       <p className='frl'><IoPersonAddSharp className='fri'/> Add friend <FaChevronRight className='frla'/></p>
                       
@@ -809,7 +916,12 @@ const CancelRequest = async (senderPhone) => {
              
                 <div className='friend-mobile-topbar'>
                   <Link to="my-friend"><FaUserFriends  className={`fmt ${isActive('my-friend') ? 'active-link-mob' : ''}`}/></Link>
-                  <Link to="friend-request"><RiUserReceived2Fill  className={`fmt ${isActive('friend-request') ? 'active-link-mob' : ''}`}/></Link>
+                  <Link to="friend-request" className='friedn-request-mobile-link'><RiUserReceived2Fill  className={`fmt ${isActive('friend-request') ? 'active-link-mob' : ''}`}/>
+                  {count > 0 && location.pathname !== "/connect/friend-request" && (
+                          <span className="count-badge-mobile">{count}</span>
+                             )}
+                  
+                  </Link>
                   <Link to="add-friend"><IoPersonAddSharp  className={`fmt ${isActive('add-friend') ? 'active-link-mob' : ''}`}/></Link>
                  <Link to="sent-request"> <MdChildFriendly  className={`fmt ${isActive('sent-request') ? 'active-link-mob' : ''}`}/></Link>
                   <Link to="notification"><MdNotifications  className={`fmt ${isActive('notification') ? 'active-link-mob' : ''}`}/></Link>

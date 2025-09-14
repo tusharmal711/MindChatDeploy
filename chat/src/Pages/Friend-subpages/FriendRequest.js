@@ -1,10 +1,86 @@
 import { useState, useEffect } from "react";
 import { FaLongArrowAltRight } from "react-icons/fa";
+import { useLocation } from "react-router-dom";
 import { FaChevronRight } from "react-icons/fa";
+import { socket } from "../Socket";
 const backendUrl = process.env.REACT_APP_BACKEND_URL; 
 const FriendRequest = () => {
   const [senderPhones, setSenderPhones] = useState([]);
   const [users, setUsers] = useState([]);
+useEffect(() => {
+  const myPhone = sessionStorage.getItem("phone");
+  if (myPhone) {
+    socket.emit("join", myPhone); //receiver তার room এ join করছে
+  }
+}, []);
+
+
+const location=useLocation();
+
+
+
+
+ useEffect(() => {
+    const myPhone = sessionStorage.getItem("phone");
+    if (location.pathname === "/connect/friend-request") {
+      socket.emit("page-join", { phone : myPhone, path: "/connect/friend-request" });
+    }
+
+    return () => {
+      socket.emit("page-leave", { phone : myPhone, path: "/connect/friend-request" });
+    };
+  }, [location.pathname]);
+
+
+
+
+
+
+
+
+
+
+
+
+
+ const [count, setCount] = useState(0);
+
+useEffect(() => {
+  socket.on("newFriendRequest", (data) => {
+  
+
+    // add to phone numbers
+    setSenderPhones((prev) => [...prev, data.sender]);
+ 
+   
+  });
+
+  return () => {
+    socket.off("newFriendRequest");
+  };
+}, []);
+
+
+useEffect(() => {
+  const myPhone = sessionStorage.getItem("phone");
+
+  const markAsRead = async () => {
+    await fetch(`${backendUrl}api/markRequestAsRead`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ receiver: myPhone }),
+    });
+
+    setCount(0); 
+  };
+
+  markAsRead();
+}, []);
+
+
+
+
+
 
   useEffect(() => {
     const myPhone = sessionStorage.getItem("phone");
@@ -31,7 +107,6 @@ const FriendRequest = () => {
     fetchReceivedRequest();
 
   }, []);
-
 
 
 

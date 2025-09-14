@@ -10,6 +10,7 @@ import path from "path";
 import fs from "fs";
 import User from "./User.js";
 import Contact from "./Contact.js";
+import Friend from "./FriendRequest.js";
 dotenv.config();
 import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
@@ -157,10 +158,22 @@ const roomUsers = {};
 const phoneToSocket = new Map();
 const ongoingCalls = new Map();
 const onlineUsers = new Map();
+app.set("io", io);
+export const onlinePages = {}; 
 io.on("connection", async (socket) => {
 
+  socket.on("join", (phone) => {
+    socket.join(phone); 
+    
+  });
+ socket.on("page-join", ({ phone, path }) => {
+    onlinePages[phone] = { path, socketId: socket.id };
+   
+  });
 
-
+  socket.on("page-leave", ({ phone }) => {
+    delete onlinePages[phone];
+  });
 
   console.log("User connected:", socket.id);
 
@@ -610,7 +623,32 @@ app.post("/api/changeDp", upload.single("dp"), async (req, res) => {
 
 
 
+app.post("/api/friendrequest", async (req, res) => {
+  try {
+    const { sender, receiver } = req.body;
 
+    console.log("OnlinePages entry for receiver:", onlinePages[receiver]);
+
+    const isOnPage = onlinePages[receiver]?.path === "/connect/friend-request";
+    console.log("Receiver is on friend-request page?", isOnPage);
+
+    const newFriend = new Friend({
+      sender,
+      receiver,
+      seen: isOnPage ? true : false,
+    });
+
+    const data = await newFriend.save();
+
+    // emit to receiver via socket
+    io.to(onlinePages[receiver]?.socketId || receiver).emit("newFriendRequest", data);
+
+    res.status(201).json({ data });
+  } catch (error) {
+    console.error("Error during FriendRequest:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
 
 
 

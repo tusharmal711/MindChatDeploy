@@ -11,7 +11,7 @@ import Messages from "./server.js";
 import fs from 'fs'; // File system module
 import path from 'path';
 import Friend from "./FriendRequest.js";
-
+import onlinePages from "./server.js";
 dotenv.config();
 
 const sender = process.env.EMAIL_USER;
@@ -649,22 +649,66 @@ export const countContactsByMobile = async (req, res) => {
 
 
 
-export const FriendRequest = async (req, res) => {
-  try {
-    
-    const {sender,receiver} = req.body;
-     
-    const newFriend = new Friend({sender,receiver});
-    const data=await newFriend.save();
+// export const FriendRequest = async (req, res) => {
+//   try {
+//     const { sender, receiver } = req.body;
 
-    res.status(201).json({data});
-  } catch (error) {
-    console.error("Error during registration:", error);
-    res.status(500).json({ success: false, message: error.message });
+//     // check if receiver is on /connect/friend-request
+//     console.log(onlinePages[receiver]);
+//     const isOnPage =
+//   onlinePages[receiver] && onlinePages[receiver].path === "/connect/friend-request";
+//   console.log(isOnPage);
+      
+//     const newFriend = new Friend({
+//       sender,
+//       receiver,
+//       seen: isOnPage ? true : false, // 👈 key part
+//     });
+
+//     const data = await newFriend.save();
+
+//     const io = req.app.get("io");
+//     io.to(receiver).emit("newFriendRequest", data);
+
+//     res.status(201).json({ data });
+//   } catch (error) {
+//     console.error("Error during FriendRequest:", error);
+//     res.status(500).json({ success: false, message: error.message });
+//   }
+// };
+
+// unread notification count
+export const getRequestCount = async (req, res) => {
+  try {
+    const { receiver } = req.body;
+
+    const count = await Friend.countDocuments({
+      receiver,
+      seen: false,
+    });
+     
+    res.json({ count });
+    
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 };
 
+// mark all as read
+export const markRequestAsRead = async (req, res) => {
+  try {
+    const { receiver } = req.body;
 
+    await Friend.updateMany(
+      { receiver, seen: false },
+      { $set: { seen: true } }
+    );
+
+    res.json({ message: "All notifications marked as read" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
 
 
 

@@ -1,6 +1,6 @@
 import express from "express";
 
-import {Register,sendOTP,FriendRequest,VerifyOtp,AcceptedUser,AcceptRequest,isLogin,deleteDp,FetchAllMessage,sendLoginOTP,VerifyLoginOtp,editAbout,sendFpOTP, countContactsByMobile, fetch, fetchId, delContact, fetchYou, addNewContact,editContact, fetchDp , fetchOtherDp, fetchHistory, ResetPassword, fetchalluser, SentRequestUser, SentRequestAllUser, CancelRequest, ReceivedRequestUser, CallList, FetchCallList, fetchCallUsername, checkContact, NotificationRequestUser} from "./userController.js";
+import {Register,sendOTP,VerifyOtp,getRequestCount,markRequestAsRead,AcceptedUser,AcceptRequest,isLogin,deleteDp,FetchAllMessage,sendLoginOTP,VerifyLoginOtp,editAbout,sendFpOTP, countContactsByMobile, fetch, fetchId, delContact, fetchYou, addNewContact,editContact, fetchDp , fetchOtherDp, fetchHistory, ResetPassword, fetchalluser, SentRequestUser, SentRequestAllUser, CancelRequest, ReceivedRequestUser, CallList, FetchCallList, fetchCallUsername, checkContact, NotificationRequestUser} from "./userController.js";
 
 const router = express.Router();
 router.post("/register",Register);
@@ -22,12 +22,16 @@ router.post("/fetchDp",fetchDp);
 router.post("/fetchOtherDp",fetchOtherDp);
 router.post("/editAbout",editAbout);
 router.post("/deleteDp",deleteDp);
-router.post("/friendrequest",FriendRequest);
+// router.post("/friendrequest",FriendRequest);
 router.post("/fetchHistory",fetchHistory);
 router.post("/sentrequestuser",SentRequestUser);
 router.post("/checkcontact",checkContact);
 router.post("/receivedrequestuser",ReceivedRequestUser);
 router.post("/accepteduser",AcceptedUser);
+
+router.post("/getRequestCount",getRequestCount);
+router.post("/markRequestAsRead",markRequestAsRead);
+
 router.post("/notificationrequestuser",NotificationRequestUser);
 router.post("/sentrequestalluser",SentRequestAllUser);
 router.post("/fetchallusers",fetchalluser);
