@@ -5466,10 +5466,16 @@ font-family: sans-serif;
 font-size: 1rem;
 }
 
+.fmt{
+  -webkit-tap-highlight-color: transparent;
+}
+.top-mob-link{
+   -webkit-tap-highlight-color: transparent;
+}
 
-
-
-
+.friedn-request-mobile-link{
+   -webkit-tap-highlight-color: transparent;
+}
 
 
 

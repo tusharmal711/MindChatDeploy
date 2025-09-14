@@ -622,15 +622,17 @@ app.post("/api/changeDp", upload.single("dp"), async (req, res) => {
 
 
 
-
 app.post("/api/friendrequest", async (req, res) => {
   try {
     const { sender, receiver } = req.body;
 
-    console.log("OnlinePages entry for receiver:", onlinePages[receiver]);
+    // check for duplicate request
+    const existing = await Friend.findOne({ sender, receiver });
+    if (existing) {
+      return res.status(400).json({ success: false, message: "Request already sent" });
+    }
 
     const isOnPage = onlinePages[receiver]?.path === "/connect/friend-request";
-    console.log("Receiver is on friend-request page?", isOnPage);
 
     const newFriend = new Friend({
       sender,
@@ -640,10 +642,10 @@ app.post("/api/friendrequest", async (req, res) => {
 
     const data = await newFriend.save();
 
-    // emit to receiver via socket
+    // emit socket event
     io.to(onlinePages[receiver]?.socketId || receiver).emit("newFriendRequest", data);
 
-    res.status(201).json({ data });
+    res.status(201).json({ success: true, data });
   } catch (error) {
     console.error("Error during FriendRequest:", error);
     res.status(500).json({ success: false, message: error.message });

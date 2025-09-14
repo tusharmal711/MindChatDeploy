@@ -915,16 +915,16 @@ const CancelRequest = async (senderPhone) => {
             <div className='right-friend' ref={scrollRef}>
              
                 <div className='friend-mobile-topbar'>
-                  <Link to="my-friend"><FaUserFriends  className={`fmt ${isActive('my-friend') ? 'active-link-mob' : ''}`}/></Link>
+                  <Link to="my-friend" className='top-mob-link'><FaUserFriends  className={`fmt ${isActive('my-friend') ? 'active-link-mob' : ''}`}/></Link>
                   <Link to="friend-request" className='friedn-request-mobile-link'><RiUserReceived2Fill  className={`fmt ${isActive('friend-request') ? 'active-link-mob' : ''}`}/>
                   {count > 0 && location.pathname !== "/connect/friend-request" && (
                           <span className="count-badge-mobile">{count}</span>
                              )}
                   
                   </Link>
-                  <Link to="add-friend"><IoPersonAddSharp  className={`fmt ${isActive('add-friend') ? 'active-link-mob' : ''}`}/></Link>
-                 <Link to="sent-request"> <MdChildFriendly  className={`fmt ${isActive('sent-request') ? 'active-link-mob' : ''}`}/></Link>
-                  <Link to="notification"><MdNotifications  className={`fmt ${isActive('notification') ? 'active-link-mob' : ''}`}/></Link>
+                  <Link to="add-friend" className='top-mob-link'><IoPersonAddSharp  className={`fmt ${isActive('add-friend') ? 'active-link-mob' : ''}`}/></Link>
+                 <Link to="sent-request" className='top-mob-link'> <MdChildFriendly  className={`fmt ${isActive('sent-request') ? 'active-link-mob' : ''}`}/></Link>
+                  <Link to="notification" className='top-mob-link'><MdNotifications  className={`fmt ${isActive('notification') ? 'active-link-mob' : ''}`}/></Link>
                 </div>
 
                       {location.pathname === "/connect" && (
