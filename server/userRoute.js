@@ -1,6 +1,6 @@
 import express from "express";
 
-import {Register,sendOTP,VerifyOtp,getRequestCount,NotificationAcceptUser,markRequestAsRead,AcceptedUser,AcceptRequest,isLogin,deleteDp,FetchAllMessage,sendLoginOTP,VerifyLoginOtp,editAbout,sendFpOTP, countContactsByMobile, fetch, fetchId, delContact, fetchYou, addNewContact,editContact, fetchDp , fetchOtherDp, fetchHistory, ResetPassword, fetchalluser, SentRequestUser, SentRequestAllUser, CancelRequest, ReceivedRequestUser, CallList, FetchCallList, fetchCallUsername, checkContact, NotificationRequestUser,Unfriend} from "./userController.js";
+import {Register,sendOTP,VerifyOtp,getRequestCount,getCallCount,markCallAsRead,NotificationAcceptUser,markRequestAsRead,AcceptedUser,AcceptRequest,isLogin,deleteDp,FetchAllMessage,sendLoginOTP,VerifyLoginOtp,editAbout,sendFpOTP, countContactsByMobile, fetch, fetchId, delContact, fetchYou, addNewContact,editContact, fetchDp , fetchOtherDp, fetchHistory, ResetPassword, fetchalluser, SentRequestUser, SentRequestAllUser, CancelRequest, ReceivedRequestUser, FetchCallList, fetchCallUsername, checkContact, NotificationRequestUser,Unfriend} from "./userController.js";
 
 const router = express.Router();
 router.post("/register",Register);
@@ -32,6 +32,18 @@ router.post("/accepteduser",AcceptedUser);
 router.post("/getRequestCount",getRequestCount);
 router.post("/markRequestAsRead",markRequestAsRead);
 
+
+
+
+router.post("/getCallCount",getCallCount);
+router.post("/markCallAsRead",markCallAsRead);
+
+
+
+
+
+
+
 router.post("/notificationrequestuser",NotificationRequestUser);
 router.post("/notificationacceptuser",NotificationAcceptUser);
 router.post("/sentrequestalluser",SentRequestAllUser);
@@ -44,7 +56,7 @@ router.post("/countContactsByMobile",countContactsByMobile);
 
 router.post("/fetchAllMessage",FetchAllMessage);
 
-router.post("/callList",CallList);
+// router.post("/callList",CallList);
 router.post("/fetchCallList",FetchCallList);
 router.post("/fetchCallUsername",fetchCallUsername);
 // router.post("/user/:id",fetchUserId);

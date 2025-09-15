@@ -712,6 +712,63 @@ export const markRequestAsRead = async (req, res) => {
 
 
 
+
+
+
+
+
+export const getCallCount = async (req, res) => {
+  try {
+    const { callee } = req.body;
+
+    const count = await CallContact.countDocuments({
+      callee,
+      seen: false,
+    });
+     
+    res.json({ count });
+    
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// mark all as read
+export const markCallAsRead = async (req, res) => {
+  try {
+    const { callee } = req.body;
+
+    await CallContact.updateMany(
+      { callee, seen: false },
+      { $set: { seen: true } }
+    );
+
+    res.json({ message: "All notifications marked as read" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 export const SentRequestUser = async (req, res) => {
   try {
     const { sender } = req.body;
@@ -946,28 +1003,6 @@ export const FetchAllMessage = async (req, res) => {
 
 
 
-export const CallList = async (req, res) => {
-  try {
-    const { caller, callee, time, status } = req.body;
-
-    // If status is not provided, don't save
-    if (!status) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Call not saved because status is missing" 
-      });
-    }
-
-    const newCall = new CallContact({ caller, callee, time, status });
-    await newCall.save();
-
-    res.status(201).json({ success: true, message: "Call saved successfully" });
-
-  } catch (error) {
-    console.error("Error during call save", error);
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
 
 
 

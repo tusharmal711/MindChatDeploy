@@ -128,6 +128,33 @@ useEffect(() => {
 
 
 
+ const [callcount, setCallCount] = useState(0);
+
+
+
+useEffect(() => {
+  const myPhone = sessionStorage.getItem("phone");
+
+  const fetchCallCount = async () => {
+    const res = await fetch(`${backendUrl}api/getCallCount`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ callee: myPhone }),
+    });
+    const data = await res.json();
+    
+    setCallCount(data.count); // only unseen notifications
+  };
+
+  fetchCallCount();
+
+
+  // listen socket for real-time update
+  const interval = setInterval(fetchCallCount, 1000); 
+  return () => clearInterval(interval); 
+
+}, []);
+
 
 
 
@@ -833,7 +860,12 @@ you.map((profile)=>(
                           <span className="count-badge-connect-mobile">{count}</span>
                              )}
       <span>Friends</span></div></NavLink>
-      <NavLink to="/calls" className="mob calls"><div className="nav-chat"><BiSolidPhoneCall className="mob-icon"/><span>Calls</span></div></NavLink>
+      <NavLink to="/calls" className="mob calls"><div className="nav-chat"><BiSolidPhoneCall className="mob-icon"/>
+       {callcount > 0 && location.pathname !== "/calls" && (
+                          <span className="count-badge-call-mobile">{callcount}</span>
+                             )}
+      
+      <span>Calls</span></div></NavLink>
     {/* <NavLink to="#" id="logout" className=link logout" onClick={sendData}><IoLogOut /></NavLink> */}
 
     {/* <button id="logout" className="link logout" onClick={()=>{setIsOpen(true)}}>
@@ -1258,7 +1290,11 @@ you.map((profile)=>(
     
     
     </NavLink>
-    <NavLink to="/calls" className="link calls"><BiSolidPhoneCall /></NavLink>
+    <NavLink to="/calls" className="link calls"><BiSolidPhoneCall />
+     {callcount > 0 && location.pathname !== "/calls" && (
+                          <span className="count-badge-call">{callcount}</span>
+                             )}
+    </NavLink>
     {/* <NavLink to="#" id="logout" className="link logout" onClick={sendData}><IoLogOut /></NavLink> */}
 
     <button id="logout" className="link logout" onClick={()=>{setIsOpen(true)}}>

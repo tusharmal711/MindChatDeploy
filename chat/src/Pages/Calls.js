@@ -2,7 +2,7 @@ import SwipeNavigator from './SwipeNavigator';
 import { useState,useEffect , useRef } from 'react';
 import Cookies from "js-cookie";
 import { MdCall } from "react-icons/md";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate , useLocation } from 'react-router-dom';
 import { RiVideoOnAiFill } from "react-icons/ri";
 import { MdCallMade } from "react-icons/md";
 import { MdAddIcCall } from "react-icons/md";
@@ -21,12 +21,68 @@ const [callStatus,setCallStatus]=useState("Accept");
 const [contacts,setContacts]=useState([]);
 
 
-// socket.on("connect", () => {
-//   console.log("Connected with ID:", socket.id); 
-//   socket.emit("register", myPhone);            
-// });
+useEffect(() => {
+  const myPhone = sessionStorage.getItem("phone");
+  if (myPhone) {
+    socket.emit("join", myPhone); //receiver তার room এ join করছে
+  }
+}, []);
+
+
+const location=useLocation();
+
+
+
+
+ useEffect(() => {
+    const myPhone = sessionStorage.getItem("phone");
+    if (location.pathname === "/calls") {
+      socket.emit("page-join", { phone : myPhone, path: "/calls" });
+    }
+
+    return () => {
+      socket.emit("page-leave", { phone : myPhone, path: "/calls" });
+    };
+  }, [location.pathname]);
+
+
+
+
+
+
+useEffect(() => {
+  const myPhone = sessionStorage.getItem("phone");
+
+  const markAsRead = async () => {
+    await fetch(`${backendUrl}api/markCallAsRead`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ callee: myPhone }),
+    });
+
+   
+  };
+
+  markAsRead();
+}, []);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
  const [loading, setLoading] = useState(false);
 useEffect(() => {
+
+
 
 
 const fetchContacts = async () => {

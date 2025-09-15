@@ -11,6 +11,7 @@ import fs from "fs";
 import User from "./User.js";
 import Contact from "./Contact.js";
 import Friend from "./FriendRequest.js";
+import CallContact from "./CallContact.js";
 dotenv.config();
 import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
@@ -653,6 +654,29 @@ app.post("/api/friendrequest", async (req, res) => {
 });
 
 
+
+app.post("/api/callList", async (req, res) => {
+  try {
+    const { caller, callee, time, status } = req.body;
+
+    // If status is not provided, don't save
+    if (!status) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Call not saved because status is missing" 
+      });
+    }
+     const isOnPage = onlinePages[callee]?.path === "/calls";
+    const newCall = new CallContact({ caller, callee, time, status , seen: isOnPage ? true : false});
+    await newCall.save();
+
+    res.status(201).json({ success: true, message: "Call saved successfully" });
+
+  } catch (error) {
+    console.error("Error during call save", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
 
 
 
