@@ -790,14 +790,16 @@ export const ReceivedRequestUser = async (req, res) => {
   try {
     const { receiver } = req.body;
 
-    // Only fetch pending requests (status: "no")
-    const addedUser = await Friend.find({ receiver, status: "no" });
+    // Fetch only pending requests, latest first
+    const addedUser = await Friend.find({ receiver, status: "no" })
+      .sort({ date: -1 });  // newest request first
 
     res.status(200).json(addedUser);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 
 export const NotificationRequestUser = async (req, res) => {
