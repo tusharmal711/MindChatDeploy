@@ -10,13 +10,14 @@ import bcrypt from "bcrypt";
 import Messages from "./server.js";
 import fs from 'fs'; // File system module
 import path from 'path';
+import { Resend } from 'resend';
 import Friend from "./FriendRequest.js";
 import onlinePages from "./server.js";
 dotenv.config();
 
 const sender = process.env.EMAIL_USER;
 const emailPass = process.env.EMAIL_PASS;
-
+const resend = new Resend(process.env.RESEND_API_KEY);
 const app = express();
 
 app.use(express.json());
@@ -46,7 +47,7 @@ export const sendOTP = async (req, res) => {
    if(existUser){
     res.status(500).json({ success: false, message: "Failed to send OTP" });
    }else{
-    await otpSend.sendMail({
+    await resend.emails.send({
       from: `"MindChat" <${sender}>`,
       to: email,
       subject: `MindChat - Code : ${otp}`,
@@ -138,7 +139,7 @@ export const sendFpOTP = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to send OTP" });
    }else{
    
-    await otpSend.sendMail({
+    await resend.emails.send({
        from: `"MindChat" <${sender}>`,
       to: email,
       subject: `MindChat - OTP : ${otp}`,
@@ -232,8 +233,7 @@ export const isLogin = async(req, res) => {
 export const sendLoginOTP = async (req, res) => {
   try {
     const { phone } = req.body;
-console.log(sender);
-    console.log(emailPass);
+
     // Find the user's email based on the phone number
     const user = await User.findOne({ phone }, { email: 1 });
 
@@ -244,7 +244,7 @@ console.log(sender);
     const otp = generateSecureOTP();
 
     // Send OTP via email
-await otpSend.sendMail({
+await  resend.emails.send({
   from: `"MindChat" <${sender}>`,
   to: user.email,
   subject: `MindChat - Code : ${otp}`,
