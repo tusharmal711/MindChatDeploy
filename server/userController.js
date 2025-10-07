@@ -16,6 +16,7 @@ dotenv.config();
 
 const sender = process.env.EMAIL_USER;
 const emailPass = process.env.EMAIL_PASS;
+
 const app = express();
 
 app.use(express.json());
@@ -38,6 +39,7 @@ const otpStorage = new Map();
 
 export const sendOTP = async (req, res) => {
   try {
+    
     const { email } = req.body;
     const otp = generateSecureOTP();
    const existUser=await User.findOne({email:email});
@@ -230,7 +232,8 @@ export const isLogin = async(req, res) => {
 export const sendLoginOTP = async (req, res) => {
   try {
     const { phone } = req.body;
-
+console.log(sender);
+    console.log(emailPass);
     // Find the user's email based on the phone number
     const user = await User.findOne({ phone }, { email: 1 });
 
