@@ -32,6 +32,7 @@ const otpSend = nodemailer.createTransport({
     user: sender,
     pass: emailPass,
   },
+   connectionTimeout: 10000,
 });
 
 // Temporary storage for OTPs
