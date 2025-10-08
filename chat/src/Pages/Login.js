@@ -19,7 +19,10 @@ const Login = () =>{
   
    
  const [showPassword,setShowPassword]=useState(false);
-
+socket.on("connect", () => {
+  console.log("Connected with ID:", socket.id); 
+  socket.emit("register", phone);            
+});
   
  const sendOTP = async (e) => {
   e.preventDefault();

@@ -232,8 +232,7 @@ export const isLogin = async(req, res) => {
 export const sendLoginOTP = async (req, res) => {
   try {
     const { phone } = req.body;
-console.log(sender);
-    console.log(emailPass);
+
     // Find the user's email based on the phone number
     const user = await User.findOne({ phone }, { email: 1 });
 
