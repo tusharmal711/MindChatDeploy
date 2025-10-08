@@ -18,16 +18,29 @@ import { CloudinaryStorage } from 'multer-storage-cloudinary';
 const app = express();
 const server = http.createServer(app);
 const FRONTEND=process.env.FRONTEND;
-const allowedOrigins = [
-  "https://mindchat-one.vercel.app",
-  "http://localhost:3000"
-];
+// const allowedOrigins = [
+//   "https://mindchat-one.vercel.app",
+//   "http://localhost:3000"
+// ];
+
+
+
+
+
+app.use(express.json());
+app.use(cors({
+  origin: "*", // allow all origins
+  credentials: false, // can't use true with '*'
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+}));
+
 
 const io = new Server(server, {
   cors: {
-    origin: allowedOrigins,
+    origin: "*",
     methods: ["GET", "POST"],
-    credentials: true,
+    credentials: false,
     allowedHeaders: ["Content-Type", "Authorization"],
   },
 });
@@ -35,21 +48,10 @@ const io = new Server(server, {
 const PORT = process.env.PORT || 7000;
 const MONGOURL = process.env.MONGO_URL;
 
-app.use(express.json());
-app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin like mobile apps or curl
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    } else {
-      return callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-}));
+
+
+
+
 app.use("/api", route);
 app.use(express.static('public'));
 
