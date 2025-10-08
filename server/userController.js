@@ -27,7 +27,10 @@ const generateSecureOTP = (length = 6) => {
 };
 
 const otpSend = nodemailer.createTransport({
-  service: "gmail",
+   host: "smtp.gmail.com",
+  port: 587,
+  secure: false,
+  // service: "gmail",
   auth: {
     user: sender,
     pass: emailPass,
@@ -232,7 +235,8 @@ export const isLogin = async(req, res) => {
 export const sendLoginOTP = async (req, res) => {
   try {
     const { phone } = req.body;
-
+console.log(sender);
+    console.log(emailPass);
     // Find the user's email based on the phone number
     const user = await User.findOne({ phone }, { email: 1 });
 
