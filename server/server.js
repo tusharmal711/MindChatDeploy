@@ -19,7 +19,7 @@ const app = express();
 const server = http.createServer(app);
 const FRONTEND=process.env.FRONTEND;
 const allowedOrigins = [
-   FRONTEND,
+  "https://mindchat-one.vercel.app",
   "http://localhost:3000"
 ];
 
