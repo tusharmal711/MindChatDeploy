@@ -25,7 +25,7 @@ const Login = () =>{
   e.preventDefault();
   
   try {
-    const response = await axios.post(`http://localhost:3001/api/loginOTP`, { phone });
+    const response = await axios.post(`${backendUrl}api/loginOTP`, { phone });
 
     if (response.status === 201) {
       toast.success("OTP sent successfully!", { position: "top-right" });
