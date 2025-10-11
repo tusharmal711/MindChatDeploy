@@ -10,7 +10,7 @@ import { FaRegEyeSlash } from "react-icons/fa";
 
 const Signup = () => {
   const backendUrl = process.env.REACT_APP_BACKEND_URL; 
-  const [user, setUser] = useState({ username: "", email: "", phone: "", password: "" });
+  const [user, setUser] = useState({ username: "", email: "", phone: ""});
   const [otp, setOtp] = useState("");
 
   
@@ -33,7 +33,7 @@ const Signup = () => {
     e.preventDefault();
     try {
       
-      const response = await axios.post(`${backendUrl}api/sendOTP`, { email: user.email });
+      const response = await axios.post(`${backendUrl}api/sendOTP`, {phone: user.phone });
 
       if (response.status === 201) {
         toast.success("OTP sent successfully!", { position: "top-right" });
@@ -63,7 +63,7 @@ const Signup = () => {
     
     try {
       const response = await axios.post(`${backendUrl}api/verifyOTP`, {
-        email: user.email,
+        phone: user.phone,
         otp: otp,
       });
 
@@ -155,14 +155,7 @@ const getOtpColor = () => {
       }}
             />
           </div>
-          <div className="input-field password">
-            <input type={showPassword ? "text" : "password"} placeholder="Password" name="password" onChange={handleChange} required />
          
-           <div className="eye" onClick={togglePassword}>
-                    {showPassword ? <FaRegEye /> : <FaRegEyeSlash />}
-                   </div>
-         
-          </div>
           <div className="otp">
             <input type="number" onChange={(e)=>setOtp(e.target.value)} id="otp" placeholder="# Code"  style={{
        

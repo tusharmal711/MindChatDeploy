@@ -12,6 +12,8 @@ import fs from 'fs'; // File system module
 import path from 'path';
 import Friend from "./FriendRequest.js";
 import onlinePages from "./server.js";
+import axios from "axios";
+import twilio from 'twilio';
 dotenv.config();
 
 const sender = process.env.EMAIL_USER;
@@ -25,6 +27,15 @@ app.use(cors());
 const generateSecureOTP = (length = 6) => {
   return crypto.randomInt(100000, 999999).toString();
 };
+
+
+
+const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+
+
+
+
+
 
 const otpSend = nodemailer.createTransport({
   service: "gmail",
@@ -40,35 +51,27 @@ const otpStorage = new Map();
 export const sendOTP = async (req, res) => {
   try {
     
-    const { email } = req.body;
+    const { phone } = req.body;
     const otp = generateSecureOTP();
-   const existUser=await User.findOne({email:email});
+   const existUser=await User.findOne({phone});
    if(existUser){
     res.status(500).json({ success: false, message: "Failed to send OTP" });
    }else{
-    await otpSend.sendMail({
-      from: `"MindChat" <${sender}>`,
-      to: email,
-      subject: `MindChat - Code : ${otp}`,
-      html: `<div style="font-family: Arial, sans-serif; line-height: 1.5;">
-      <div style="padding: 20px; text-align: center;">
-      <img src="https://mindchat-one.vercel.app/Images/app.png" alt="Mind Chat Logo"
-           style="max-width: 150px; height: 110px; width: 110px;">
-    </div>
-      <h2>Your Signup Code</h2>
-      <p>Please use the following OTP code to complete your verification for signup in MindChat</p>
-      <div style="font-size: 24px; font-weight: bold; margin: 20px 0;">
-        ${otp}
-      </div>
-      <p>This code is valid for the next 10 minutes.</p>
-      <p>If you did not request this code, please ignore this email.</p>
-    </div>`,
+    
+    const otp = generateSecureOTP();
+const toPhone = phone.startsWith("+") ? phone : "+91" + phone;
+    // Send OTP via Twilio SMS
+    await client.messages.create({
+      body: `Your MindChat OTP is ${otp}`,
+      from: process.env.TWILIO_PHONE_NUMBER, // your Twilio number
+      to: toPhone
     });
 
-    otpStorage.set(email, otp);
-    setTimeout(() => otpStorage.delete(email), 300000); // OTP expires in 5 minutes
+    // Store OTP temporarily
+    otpStorage.set(phone, otp);
+    setTimeout(() => otpStorage.delete(phone), 300000); // OTP expires in 5 minutes
 
-    res.status(201).json({ success: true, message: "OTP sent successfully" });
+    return res.status(201).json({ success: true, message: "OTP sent successfully" });
    }
    
   } catch (error) {
@@ -79,23 +82,23 @@ export const sendOTP = async (req, res) => {
 
 
 export const VerifyOtp = async (req, res) => {
-  const { email, otp } = req.body;
+  const { phone, otp } = req.body;
 
   try {
     // Validate input
-    if (!email || !otp) {
+    if (!phone || !otp) {
       return res.status(400).json({ success: false, message: "Email and OTP are required" });
     }
 
     // Check if OTP exists for the given email
-    if (!otpStorage.has(email)) {
+    if (!otpStorage.has(phone)) {
       return res.status(400).json({ success: false, message: "OTP not found or expired" });
     }
 
     // Verify OTP
-    const storedOtp = otpStorage.get(email);
+    const storedOtp = otpStorage.get(phone);
     if (storedOtp === otp) {
-      otpStorage.delete(email); // Remove OTP after successful verification
+      otpStorage.delete(phone); // Remove OTP after successful verification
       return res.status(200).json({ success: true, message: "OTP verified successfully" });
     } else {
       return res.status(400).json({ success: false, message: "Invalid OTP" });
@@ -108,13 +111,13 @@ export const VerifyOtp = async (req, res) => {
 
 export const Register = async (req, res) => {
   try {
-    const { username, email, phone, password} = req.body;
+    const { username, email, phone} = req.body;
 
    
 
     otpStorage.delete(email);
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ username, email, phone,password:hashedPassword});
+    
+    const newUser = new User({ username, email, phone});
     await newUser.save();
 
     res.status(201).json({ success: true, message: "User registered successfully!" });
@@ -177,6 +180,41 @@ export const sendFpOTP = async (req, res) => {
 
 
 
+export const sendLoginOTP = async (req, res) => {
+  try {
+    const { phone } = req.body; // phone number with country code, e.g., +919876543210
+
+    // Find user based on phone
+    const user = await User.findOne({ phone });
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found!" });
+    }
+
+    const otp = generateSecureOTP();
+const toPhone = phone.startsWith("+") ? phone : "+91" + phone;
+    // Send OTP via Twilio SMS
+    await client.messages.create({
+      body: `Your MindChat OTP is ${otp}`,
+      from: process.env.TWILIO_PHONE_NUMBER, // your Twilio number
+      to: toPhone
+    });
+
+    // Store OTP temporarily
+    otpStorage.set(phone, otp);
+    setTimeout(() => otpStorage.delete(phone), 300000); // OTP expires in 5 minutes
+
+    return res.status(201).json({ success: true, message: "OTP sent successfully" });
+
+  } catch (error) {
+    console.error("Error sending OTP:", error.message);
+
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Internal Server Error. Failed to send OTP",
+    });
+  }
+};
+
 
 
 
@@ -198,7 +236,7 @@ export const sendFpOTP = async (req, res) => {
 // login credential is starting from here 
 export const isLogin = async(req, res) => {
   try {
-      const { phone, password } = req.body;
+      const { phone} = req.body;
 
       // Check if user exists
       const user = await User.findOne({ phone });
@@ -206,15 +244,11 @@ export const isLogin = async(req, res) => {
           return res.status(400).json({ message: "User not found" });
       }
 
-      // Compare password
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) {
-          return res.status(401).json({ message: "Invalid credentials" });
-      }else{
+    
         res.status(200).json({ message: "Login successful"});
         
 
-      }
+      
      
       
       // Generate JWT token
@@ -229,63 +263,6 @@ export const isLogin = async(req, res) => {
 
 
 
-export const sendLoginOTP = async (req, res) => {
-  try {
-    const { phone } = req.body;
-console.log(sender);
-    console.log(emailPass);
-    // Find the user's email based on the phone number
-    const user = await User.findOne({ phone }, { email: 1 });
-
-    if (!user || !user.email) {
-      return res.status(404).json({ success: false, message: "User not found !" });
-    }
-
-    const otp = generateSecureOTP();
-
-    // Send OTP via email
-await otpSend.sendMail({
-  from: `"MindChat" <${sender}>`,
-  to: user.email,
-  subject: `MindChat - Code : ${otp}`,
-
-  html: `<div style="font-family: Arial, sans-serif; line-height: 1.5; max-width: 600px; margin: auto;">
-    <div style="padding: 20px; text-align: center;">
-      <img src="https://mindchat-one.vercel.app/Images/app.png" alt="Mind Chat Logo"
-           style="max-width: 150px; height: 110px; width: 110px;">
-    </div>
-    <div style="padding: 20px; box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;">
-      <h2 style="color: #333;">Your Login Code</h2>
-      <p style="font-size: 15px; color: rgb(77, 77, 77);">
-        Please use the following OTP code to complete your verification for login.
-      </p>
-      <div style="font-size: 28px; font-weight: bold; margin: 20px 0; color: #007BFF;">
-        ${otp}
-      </div>
-      <p style="font-size: 15px; color: rgb(77, 77, 77);">This code is valid for the next 5 minutes.</p>
-      <p style="font-size: 15px; color: rgb(77, 77, 77);">If you did not request this code, please ignore this email.</p>
-      <p style="font-size: 15px; color: rgb(77, 77, 77);">Thank you</p>
-    </div>
-  </div>`
-});
-
-
-    // Store OTP temporarily
-    otpStorage.set(user.email, otp);
-    setTimeout(() => otpStorage.delete(user.email), 300000); // OTP expires in 5 minutes
-
-    return res.status(201).json({ success: true, message: "OTP sent successfully" });
-
-  } catch (error) {
-    console.error("Error sending OTP:", error);
-
-    return res.status(500).json({
-      success: false,
-      message: error.message || "Internal Server Error. Failed to send OTP",
-    });
-  }
-};
-
 
 
 
@@ -293,7 +270,7 @@ await otpSend.sendMail({
 
 export const VerifyLoginOtp = async (req, res) => {
   const { phone, otp } = req.body;
-  const user = await User.findOne({ phone }, { email: 1 });
+  const user = await User.findOne({ phone });
 
 
   try {
@@ -303,14 +280,14 @@ export const VerifyLoginOtp = async (req, res) => {
     }
 
     // Check if OTP exists for the given email
-    if (!otpStorage.has(user.email)) {
+    if (!otpStorage.has(user.phone)) {
       return res.status(400).json({ success: false, message: "OTP not found or expired" });
     }
 
     // Verify OTP
-    const storedOtp = otpStorage.get(user.email);
+    const storedOtp = otpStorage.get(user.phone);
     if (storedOtp === otp) {
-      otpStorage.delete(user.email); // Remove OTP after successful verification
+      otpStorage.delete(user.phone); // Remove OTP after successful verification
       return res.status(200).json({ success: true, message: "OTP verified successfully" });
     } else {
       return res.status(400).json({ success: false, message: "Invalid OTP" });

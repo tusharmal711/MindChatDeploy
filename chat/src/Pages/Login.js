@@ -56,7 +56,7 @@ const isLogin = async (e) => {
   try {
     const response = await axios.post(`${backendUrl}api/login`, {
       phone,
-      password,
+    
     });
 
     if (response.status === 200) {   //  Proper check
@@ -101,7 +101,7 @@ const verifyOTP = async () => {
       toast.error("Invalid OTP!", { position: "top-right" });
     }
   } catch (error) {
-    toast.error("Entered invalid otp !", { position: "top-right" });
+    toast.error("Please fill the form !", { position: "top-right" });
   }
 };
 
@@ -159,19 +159,7 @@ const getOtpColor = () => {
       }}
           />
       </div>
-      <div className="input-field password">
-         
-          <input type={showPassword ? "text" : "password"} value={password} onChange={(e)=>setPassword(e.target.value)} placeholder="Password"required />
-          <div className="eye" onClick={togglePassword}>
-           {showPassword ? <FaRegEye /> : <FaRegEyeSlash />}
-          </div>
-          
-         
-          
-          
-          
-          
-      </div>
+
       <div className="otp">
             <input type="number" onChange={(e)=>setOtp(e.target.value)}   autoComplete="one-time-code" id="otp" placeholder="# Code" 
             style={{
@@ -186,9 +174,7 @@ const getOtpColor = () => {
           </div>
     
       <button type="button" onClick={verifyOTP} className="login" >Login</button>
-      <div className="al">
-          <Link to="/forgotpassword" id="fp">Forgot password ?</Link>
-      </div>
+    
       <div className="line"></div>
       <button  className="signup" onClick={()=>{navigate("/signup")}}>Signup</button>
   </form>
