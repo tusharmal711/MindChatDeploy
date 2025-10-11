@@ -14,8 +14,8 @@ import Friend from "./FriendRequest.js";
 import onlinePages from "./server.js";
 dotenv.config();
 
-const sender = process.env.BREVO_USER;
-const emailPass = process.env.BREVO_PASS;
+const sender = process.env.EMAIL_USER;
+const emailPass = process.env.EMAIL_PASS;
 
 const app = express();
 
@@ -27,8 +27,7 @@ const generateSecureOTP = (length = 6) => {
 };
 
 const otpSend = nodemailer.createTransport({
-  host: "smtp-relay.brevo.com", // Brevo's SMTP host
-  port: 587,
+  service: "gmail",
   auth: {
     user: sender,
     pass: emailPass,
@@ -48,7 +47,7 @@ export const sendOTP = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to send OTP" });
    }else{
     await otpSend.sendMail({
-       from: `"MindChat" <${process.env.BREVO_FROM}>`,
+      from: `"MindChat" <${sender}>`,
       to: email,
       subject: `MindChat - Code : ${otp}`,
       html: `<div style="font-family: Arial, sans-serif; line-height: 1.5;">
@@ -140,7 +139,7 @@ export const sendFpOTP = async (req, res) => {
    }else{
    
     await otpSend.sendMail({
-       from: `"MindChat" <${process.env.BREVO_FROM}>`,
+       from: `"MindChat" <${sender}>`,
       to: email,
       subject: `MindChat - OTP : ${otp}`,
       html: `<div style="font-family: Arial, sans-serif; line-height: 1.5;">
@@ -246,7 +245,7 @@ console.log(sender);
 
     // Send OTP via email
 await otpSend.sendMail({
-   from: `"MindChat" <${process.env.BREVO_FROM}>`,
+  from: `"MindChat" <${sender}>`,
   to: user.email,
   subject: `MindChat - Code : ${otp}`,
 
