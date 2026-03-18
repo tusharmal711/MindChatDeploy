@@ -33,7 +33,7 @@ const Signup = () => {
     e.preventDefault();
     try {
       
-      const response = await axios.post(`${backendUrl}api/sendOTP`, {phone: user.phone });
+      const response = await axios.post(`${backendUrl}api/sendOTP`, {phone: user.phone,email: user.email});
 
       if (response.status === 201) {
         toast.success("OTP sent successfully!", { position: "top-right" });

@@ -86,10 +86,10 @@ export const sendOTP = async (req, res) => {
     console.log("Resend response:", response);
 
     // ⏳ Store OTP (key = phone or email)
-    otpStorage.set(phone, otp);
+    otpStorage.set(email, otp);
 
     // ⏱ Expire after 5 minutes
-    setTimeout(() => otpStorage.delete(phone), 5 * 60 * 1000);
+    setTimeout(() => otpStorage.delete(email), 5 * 60 * 1000);
 
     return res.status(201).json({
       success: true,
