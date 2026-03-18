@@ -222,7 +222,7 @@ const friendRequestSend = async (userId) => {
       [userId]: "Sent Request"
     }));
 
-    console.log("Friend request sent:", data);
+   
   } catch (error) {
     console.error("Error sending friend request:", error);
   }
