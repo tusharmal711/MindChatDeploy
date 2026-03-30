@@ -108,23 +108,23 @@ export const sendOTP = async (req, res) => {
 
 
 export const VerifyOtp = async (req, res) => {
-  const { phone, otp } = req.body;
+  const { email, otp } = req.body;
 
   try {
     // Validate input
-    if (!phone || !otp) {
+    if (!email || !otp) {
       return res.status(400).json({ success: false, message: "Email and OTP are required" });
     }
 
     // Check if OTP exists for the given email
-    if (!otpStorage.has(phone)) {
+    if (!otpStorage.has(email)) {
       return res.status(400).json({ success: false, message: "OTP not found or expired" });
     }
 
     // Verify OTP
-    const storedOtp = otpStorage.get(phone);
+    const storedOtp = otpStorage.get(email);
     if (storedOtp === otp) {
-      otpStorage.delete(phone); // Remove OTP after successful verification
+      otpStorage.delete(email); // Remove OTP after successful verification
       return res.status(200).json({ success: true, message: "OTP verified successfully" });
     } else {
       return res.status(400).json({ success: false, message: "Invalid OTP" });
