@@ -15,13 +15,11 @@ import onlinePages from "./server.js";
 import axios from "axios";
 import twilio from 'twilio';
 import sgMail from "@sendgrid/mail";
-import { Resend } from "resend";
 dotenv.config();
 
 const sender = process.env.EMAIL_USER;
 const emailPass = process.env.EMAIL_PASS;
 
-const resend = new Resend(process.env.RESEND_API_KEY);
 const app = express();
 
 app.use(express.json());
@@ -33,20 +31,28 @@ const generateSecureOTP = (length = 6) => {
 
 
 
-const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
-
-
-
-
-
-
-const otpSend = nodemailer.createTransport({
-  service: "gmail",
+// Nodemailer transporter for sending OTPs
+const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
   auth: {
-    user: sender,
-    pass: emailPass,
-  },
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
 });
+
+// Helper function to send OTP email via Nodemailer
+const sendOTPEmail = async (toEmail, subject, html) => {
+  const mailOptions = {
+    from: `"Mind Chat" <${sender}>`,
+    to: toEmail,
+    subject,
+    html,
+  };
+
+  return transporter.sendMail(mailOptions);
+};
 
 // Temporary storage for OTPs
 const otpStorage = new Map();
@@ -54,7 +60,7 @@ const otpStorage = new Map();
 export const sendOTP = async (req, res) => {
   try {
     const { phone, email } = req.body;
-
+console.log("Printing");
     // 🔍 Check if user already exists
     const existUser = await User.findOne({ phone });
 
@@ -68,22 +74,21 @@ export const sendOTP = async (req, res) => {
     // 🔐 Generate OTP
     const otp = generateSecureOTP();
 
-    // 📧 Send OTP via Resend (EMAIL instead of SMS)
-    const response = await resend.emails.send({
-      from: "Mind Chat <onboarding@resend.dev>",
-      to: email, // ⚠️ email required now
-      subject: "MindChat - Signup OTP",
-      html: `
+    // 📧 Send OTP via Nodemailer
+    const info = await sendOTPEmail(
+      email,
+      "MindChat - Signup OTP",
+      `
         <div style="font-family: Arial, sans-serif;">
           <h2>Mind Chat Signup Verification</h2>
           <p>Your OTP is:</p>
           <h1 style="letter-spacing: 3px;">${otp}</h1>
           <p>This OTP is valid for <b>5 minutes</b>.</p>
         </div>
-      `,
-    });
+      `
+    );
 
-    console.log("Resend response:", response);
+    console.log("Nodemailer response:", info);
 
     // ⏳ Store OTP (key = phone or email)
     otpStorage.set(email, otp);
@@ -95,7 +100,7 @@ export const sendOTP = async (req, res) => {
       success: true,
       message: "OTP sent successfully",
     });
-
+console.log("Nodemailer response:", info);
   } catch (error) {
     console.error("Error sending OTP:", error);
 
@@ -139,8 +144,6 @@ export const Register = async (req, res) => {
   try {
     const { username, email, phone} = req.body;
 
-   
-
     otpStorage.delete(email);
     
     const newUser = new User({ username, email, phone});
@@ -174,12 +177,11 @@ export const sendFpOTP = async (req, res) => {
     // 🔐 Generate OTP
     const otp = generateSecureOTP();
 
-    // 📧 Send email via Resend
-    const response = await resend.emails.send({
-      from: "Mind Chat <onboarding@resend.dev>", // ✅ correct format
-      to: email,
-      subject: `MindChat - OTP : ${otp}`,
-      html: `
+    // 📧 Send email via Nodemailer
+    const info = await sendOTPEmail(
+      email,
+      `MindChat - OTP : ${otp}`,
+      `
         <div style="font-family: Arial, sans-serif; line-height: 1.5;">
           
           <div style="padding: 20px; text-align: center;">
@@ -200,10 +202,10 @@ export const sendFpOTP = async (req, res) => {
 
           <p>If you did not request this code, please ignore this email.</p>
         </div>
-      `,
-    });
+      `
+    );
 
-    console.log("Resend response:", response);
+    console.log("Nodemailer response:", info);
 
     // ⏳ Store OTP
     otpStorage.set(email, otp);
@@ -231,13 +233,6 @@ export const sendFpOTP = async (req, res) => {
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-
-
-
-
-
-
 
 
 export const sendLoginOTP = async (req, res) => {
@@ -257,22 +252,21 @@ export const sendLoginOTP = async (req, res) => {
     // 🔐 Generate OTP
     const otp = generateSecureOTP();
 
-    // 📧 Send OTP via Resend
-    const response = await resend.emails.send({
-      from: "Mind Chat <onboarding@resend.dev>", // change after domain verification
-      to: user.email,
-      subject: "Mind Chat - OTP Verification",
-      html: `
+    // 📧 Send OTP via Nodemailer
+    const info = await sendOTPEmail(
+      user.email,
+      "Mind Chat - OTP Verification",
+      `
         <div style="font-family: Arial, sans-serif; padding: 10px">
           <h2>Mind Chat OTP Verification</h2>
           <p>Your OTP code is:</p>
           <h1 style="letter-spacing: 3px; color: #4CAF50;">${otp}</h1>
           <p>This OTP is valid for <b>5 minutes</b>.</p>
         </div>
-      `,
-    });
+      `
+    );
 
-    console.log("Resend response:", response);
+    console.log("Nodemailer response:", info);
 
     // ⏳ Store OTP temporarily
     otpStorage.set(user.email, otp);
@@ -298,22 +292,6 @@ export const sendLoginOTP = async (req, res) => {
 };
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // login credential is starting from here 
 export const isLogin = async(req, res) => {
   try {
@@ -325,13 +303,8 @@ export const isLogin = async(req, res) => {
           return res.status(400).json({ message: "User not found" });
       }
 
-    
         res.status(200).json({ message: "Login successful"});
-        
 
-      
-     
-      
       // Generate JWT token
       // const token = jwt.sign({ userId: user._id, phone: user.phone }, "your_secret_key", { expiresIn: "1h" });
 
@@ -340,13 +313,6 @@ export const isLogin = async(req, res) => {
       res.status(500).json({ message: "Server error", error });
   }
 };
-
-
-
-
-
-
-
 
 
 export const VerifyLoginOtp = async (req, res) => {
@@ -378,29 +344,6 @@ export const VerifyLoginOtp = async (req, res) => {
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
-
-
-
-
-
-
-
-
-// API to Add a New Contact
-//  export const addContact = async (req, res) => {
-  
-//   try {
-//     const { phone , username, mobile, bc} = req.body;
-
-//      const user = new Contact({ phone, username, mobile , bc});
-//       await user.save();
-    
-
-//     res.status(200).json({ message: "User added successfully", user });
-//   } catch (error) {
-//     res.status(500).json({ message: "Server error", error });
-//   }
-// };
 
 
 // if not added then add
@@ -494,26 +437,6 @@ export const fetchDp = async (req, res) => {
 };
 
 
-// export const fetchFriendUser = async (req, res) => {
-//   try {
-//     const { mobile } = req.body;
-
-//     const user = await User.findOne({ phone: mobile });
-
-//     if (!user) {
-//       return res.status(404).json({ message: "User not found" });
-//     }
-
-//     res.status(200).json(user); // Send full user object
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// };
-
-
-
-
-
 export const fetchOtherDp = async (req, res) => {
   try {
     const {mobile}=req.body;
@@ -523,11 +446,6 @@ export const fetchOtherDp = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
-
-
-
-
 
 
 export const fetchId= async (req, res) => {
@@ -541,16 +459,6 @@ export const fetchId= async (req, res) => {
     res.status(500).json({ error: "Failed to fetch contact details" });
   }
 };
-
-
-
-
-
-
-
-
-
-
 
 
 export const delContact = async (req, res) => {
@@ -574,9 +482,6 @@ export const delContact = async (req, res) => {
     res.status(500).json({ message: "Failed to delete contact" });
   }
 };
-
-
-
 
 
 export const fetchYou = async (req, res) => {
@@ -645,9 +550,6 @@ export const fetchHistory = async (req, res) => {
 
 
 export const ResetPassword = async (req, res) => {
- 
-
-
   try {
     const { email, password } = req.body;
   
@@ -659,7 +561,6 @@ export const ResetPassword = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 
 
 
@@ -693,10 +594,6 @@ export const fetchalluser = async (req, res) => {
 };
 
 
-
-
-
-
 export const countContactsByMobile = async (req, res) => {
   const { phone } = req.body;
 
@@ -708,35 +605,6 @@ export const countContactsByMobile = async (req, res) => {
   }
 };
 
-
-
-// export const FriendRequest = async (req, res) => {
-//   try {
-//     const { sender, receiver } = req.body;
-
-//     // check if receiver is on /connect/friend-request
-//     console.log(onlinePages[receiver]);
-//     const isOnPage =
-//   onlinePages[receiver] && onlinePages[receiver].path === "/connect/friend-request";
-//   console.log(isOnPage);
-      
-//     const newFriend = new Friend({
-//       sender,
-//       receiver,
-//       seen: isOnPage ? true : false, // key part
-//     });
-
-//     const data = await newFriend.save();
-
-//     const io = req.app.get("io");
-//     io.to(receiver).emit("newFriendRequest", data);
-
-//     res.status(201).json({ data });
-//   } catch (error) {
-//     console.error("Error during FriendRequest:", error);
-//     res.status(500).json({ success: false, message: error.message });
-//   }
-// };
 
 // unread notification count
 export const getRequestCount = async (req, res) => {
@@ -772,12 +640,6 @@ export const markRequestAsRead = async (req, res) => {
 };
 
 
-
-
-
-
-
-
 export const getCallCount = async (req, res) => {
   try {
     const { callee } = req.body;
@@ -811,25 +673,6 @@ export const markCallAsRead = async (req, res) => {
 };
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 export const SentRequestUser = async (req, res) => {
   try {
     const { sender } = req.body;
@@ -837,7 +680,6 @@ export const SentRequestUser = async (req, res) => {
     // Find and sort in reverse (latest first by _id)
     const addedUser = await Friend.find({ sender, status: "no" })
       .sort({ date : -1 }); 
-// console.log("Sent requests:", addedUser.map(u => ({ receiver: u.receiver, date: u.date })));
 
     res.status(200).json(addedUser);
   } catch (error) {
@@ -952,9 +794,6 @@ export const AcceptedUser = async (req, res) => {
 };
 
 
-
-
-
 // backend
 export const checkContact = async (req, res) => {
   try {
@@ -975,10 +814,6 @@ export const checkContact = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
-
-
-
 
 
 export const CancelRequest = async (req, res) => {
@@ -1030,18 +865,6 @@ export const Unfriend = async (req, res) => {
 };
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 export const FetchAllMessage = async (req, res) => {
   try {
     const { room } = req.body;
@@ -1061,12 +884,6 @@ export const FetchAllMessage = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
-
-
-
-
-
 
 
 export const FetchCallList = async (req, res) => {
@@ -1099,10 +916,6 @@ export const FetchCallList = async (req, res) => {
 };
 
 
-
-
-
-
 // API to Get All Contacts
 export const fetchCallUsername = async (req, res) => {
   try {
@@ -1113,4 +926,3 @@ export const fetchCallUsername = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
